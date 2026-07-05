@@ -271,6 +271,22 @@
   .chk-items li.gift-bad{background:#FCE7E5}
   .chk-items li.gift-ok,.chk-items li.gift-warn,.chk-items li.gift-bad{border-radius:7px;margin:2px 0;border-bottom:none}
   .gift-flag{flex:none;font-size:.95rem;cursor:help;line-height:1;align-self:center}
+  .ftable-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px;border-radius:12px}
+  .ftable{width:100%;border-collapse:collapse;font-size:.9rem;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .ftable th,.ftable td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  .ftable th{background:var(--motorway);color:#fff;font-family:'Saira Condensed',sans-serif;font-weight:800;letter-spacing:.03em;text-transform:uppercase;font-size:.78rem;white-space:nowrap}
+  .ftable td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .ftable tr:last-child td{border-bottom:none}
+  .ftable .cheap{color:var(--sign-green);font-weight:700}
+  .ftable .pricey{color:#B3423A;font-weight:700}
+  .fuel-stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:10px 0 18px}
+  .fuel-stat .fs{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;border-top:4px solid var(--sign-green)}
+  .fuel-stat .fs.warn{border-top-color:var(--lane-yellow)}
+  .fuel-stat .fs b{display:block;font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.45rem;color:var(--motorway);line-height:1.1}
+  .fuel-stat .fs span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .budget-total{background:var(--motorway);color:#fff;border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .budget-total span{font-family:'Saira Condensed',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:.95rem}
+  .budget-total b{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.8rem;color:var(--lane-yellow)}
 
   /* ---------- BORDER NEWS ---------- */
   .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -424,7 +440,7 @@
 </header>
 
 <nav class="qnav" aria-label="Sections">
-  <a href="index.html">🏠 Home</a><a href="minsk-barcelona-return-trip.html">↺ Return trip</a><a href="#route">🗺️ Route</a><a href="#tolls">💶 Tolls</a><a href="#p4n">⛺ Sleep spots</a><a href="#airbnb">🏠 Airbnb</a><a href="#rules">👶 Rules</a><a href="#belarus">🇧🇾 Belarus</a><a href="#gifts">🎁 Gifts</a><a href="#checklist">✅ Checklist</a><a href="#bordernews">🛂 Border news</a>
+  <a href="index.html">🏠 Home</a><a href="minsk-barcelona-return-trip.html">↺ Return trip</a><a href="#route">🗺️ Route</a><a href="#tolls">💶 Tolls</a><a href="#fuel">⛽ Fuel</a><a href="#p4n">⛺ Sleep spots</a><a href="#airbnb">🏠 Airbnb</a><a href="#rules">👶 Rules</a><a href="#belarus">🇧🇾 Belarus</a><a href="#gifts">🎁 Gifts</a><a href="#budget">💰 Budget</a><a href="#checklist">✅ Checklist</a><a href="#bordernews">🛂 Border news</a>
 </nav>
 
 
@@ -713,6 +729,58 @@
     </div>
   </section>
 
+  <!-- ==================== FUEL ==================== -->
+  <section id="fuel">
+    <h2>Fuel — prices, where to fill &amp; cost ⛽</h2>
+    <p class="lede">The car is a 2021 Toyota Corolla 1.8 Hybrid Touring Sports with a roof box. Loaded, at a steady 110–120 km/h, budget about <b>6.0 L/100 km</b> of petrol E95 (it sips far less unladen, but the roof box and motorway speed add up). Tank ≈ 43 L ≈ ~700 km per fill. Golden rule: <b>fill up in the cheap countries — Spain, Germany, Czechia, Poland — and just roll through France</b>, whose motorway <i>aires</i> are the priciest fuel on the whole route.</p>
+
+    <h3 class="subgroup">What a litre costs (national averages, late June 2026)</h3>
+    <div class="ftable-wrap">
+      <table class="ftable">
+        <thead><tr><th>Country</th><th>Petrol E95</th><th>Diesel</th><th>vs cheapest</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>🇪🇸 Spain</td><td class="num cheap">€1.44</td><td class="num">€1.50</td><td>baseline</td><td>Fill FULL before the French border</td></tr>
+          <tr><td>🇫🇷 France</td><td class="num pricey">€1.94</td><td class="num pricey">€1.87</td><td>~35% pricier</td><td>Aires €2.00–2.50 — avoid buying here</td></tr>
+          <tr><td>🇩🇪 Germany</td><td class="num">€1.90</td><td class="num">€1.76</td><td>~32% pricier</td><td>Use JET/discount, not the aires</td></tr>
+          <tr><td>🇨🇿 Czechia</td><td class="num">€1.60</td><td class="num">€1.45</td><td>~11% pricier</td><td>Cheaper — but skip border stations</td></tr>
+          <tr><td>🇵🇱 Poland</td><td class="num cheap">€1.39</td><td class="num cheap">€1.41</td><td>cheapest</td><td>Cheapest on the route — big fill here</td></tr>
+          <tr><td>🇧🇾 Belarus</td><td class="num cheap">≈€0.81</td><td class="num cheap">≈€0.81</td><td>~45% cheaper</td><td>State-fixed 2.69 BYN — fill everything here</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subgroup">Where to actually fill the tank</h3>
+    <div class="tips">
+      <div class="tipsign">
+        <h4>✅ Five full-tank stops</h4>
+        <ul>
+          <li><b>Barcelona</b> — start full (Repsol / Moeve / Plenoil, ~€1.44).</li>
+          <li><b>La Jonquera</b>, ES — top up at GALP/Moeve; last Spanish prices before France.</li>
+          <li><b>Karlsruhe / Pforzheim</b>, DE — JET/discount; covers you into Czechia.</li>
+          <li><b>Plzeň</b>, CZ — Benzina / MOL / EuroOil, past the border markup.</li>
+          <li><b>Wrocław</b>, PL — Orlen / Lotos ~€1.39; the cheapest fill of the trip.</li>
+        </ul>
+      </div>
+      <div class="tipsign blue">
+        <h4>⚠️ Where NOT to buy</h4>
+        <ul>
+          <li>French autoroute <i>aires</i> — up to €2.50/L. A Leclerc/Intermarché just off the exit is ~15–20% cheaper.</li>
+          <li>Rozvadov / Waidhaus (DE–CZ border) — inflated "tourist trap"; drive 20–30 km into Czechia first.</li>
+          <li>Any station right at a border — nearly always marked up.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="subgroup">Estimated fuel cost — Barcelona → Minsk</h3>
+    <div class="fuel-stat">
+      <div class="fs"><b>~155 L</b><span>petrol, EU legs (~2,590 km)</span></div>
+      <div class="fs"><b>≈€250–290</b><span>EU fuel, smart-fill</span></div>
+      <div class="fs warn"><b>≈€17</b><span>Brest → Minsk (~350 km @ €0.81)</span></div>
+      <div class="fs"><b>≈€270–305</b><span>outbound fuel total</span></div>
+    </div>
+    <div class="notice">⛽ <b>Belarus is the bargain:</b> fuel is state-fixed at about <b>€0.81/L</b> nationwide — zero shopping around, just fill at any Belorusneft. Your <b>~1,500 km of driving over the 15-day stay</b> works out to only about <b>€75 of fuel</b>. Top the tank up to full right after Brest.</div>
+  </section>
+
   <!-- ==================== BUDGET SLEEP SPOTS (PARK4NIGHT) ==================== -->
   <section id="p4n">
     <h2>Budget sleep spots along the route (park4night)</h2>
@@ -908,6 +976,49 @@
     </div>
     <div class="chk-grid" id="giftGrid"></div>
     <div class="notice">🛂 <b>Customs into Belarus:</b> Belarus is in the EAEU customs union, and EU counter-sanctions plus veterinary rules restrict meat and dairy imports — jamón and cheese can be questioned, so keep them sealed and clearly for personal use. Alcohol is roughly <b>3 L per adult</b> duty-free and tobacco is limited; declare anything above the allowances. When in doubt, favour sweets, oil, tinned goods and non-edible keepsakes.</div>
+  </section>
+
+  <!-- ==================== BUDGET ==================== -->
+  <section id="budget">
+    <h2>Whole-trip budget 💰</h2>
+    <p class="lede">Rough planning ranges for the full round trip — there, ~15 days in Belarus, and back — for two adults + a baby over roughly four weeks. Treat these as a starting point, not a quote: groceries and rooms are much cheaper in Poland, Czechia and Belarus than in France, Switzerland or Italy.</p>
+    <div class="ftable-wrap">
+      <table class="ftable">
+        <thead><tr><th>Category</th><th>Low</th><th>Typical</th><th>What's in it</th></tr></thead>
+        <tbody>
+          <tr><td>⛽ Fuel / gas</td><td class="num">€560</td><td class="num">€660</td><td>Outbound ~€290 + Belarus 15 days ~€75 + return ~€250–310</td></tr>
+          <tr><td>🎫 Tolls, vignettes &amp; car insurance</td><td class="num">€130</td><td class="num">€170</td><td>FR autoroute ~€50, CZ vignette €18, CH vignette ~€43 (return A), BY border insurance ~€30, BelToll €25 deposit (refunded)</td></tr>
+          <tr><td>⛴️ Ferry Genoa→Barcelona (Variant A only)</td><td class="num">€300</td><td class="num">€450</td><td>Car + 4-berth overnight cabin; €0 on the all-drive Variant B</td></tr>
+          <tr><td>🏨 Accommodation</td><td class="num">€700</td><td class="num">€1,200</td><td>4 nights out + ~15 in Belarus + 4–5 back; camping/own-place low, Airbnb high</td></tr>
+          <tr><td>🍽️ Food</td><td class="num">€800</td><td class="num">€1,150</td><td>~26 days, 2 adults + baby; self-catering + some restaurants (~€30–45/day)</td></tr>
+          <tr><td>🎁 Gifts</td><td class="num">€150</td><td class="num">€300</td><td>To the family in Belarus + back to friends in Barcelona</td></tr>
+          <tr><td>🧾 Misc / contingency</td><td class="num">€150</td><td class="num">€300</td><td>SIM, parking, baby supplies, attractions, "just in case"</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="budget-total"><span>Estimated total — Variant A (with ferry)</span><b>≈ €2,800 – 4,200</b></div>
+    <p class="chk-note">Variant B (all-driving home) drops the ferry but adds ~€60 of fuel, so roughly <b>€2,550 – 3,850</b>. Fuel is the easy win — filling in ES/DE/CZ/PL and topping up cheaply in Belarus keeps the whole ~5,300 km round trip near €600–660.</p>
+
+    <div class="tips" style="margin-top:22px">
+      <div class="tipsign blue">
+        <h4>💶 Money to take (cash)</h4>
+        <ul>
+          <li>Cards work across the EU — carry ~<b>€300–400 in EUR cash</b> for tolls, campsites, small aires and markets.</li>
+          <li>Belarus: foreign cards are unreliable and EU rules restrict exporting euro banknotes to BY — bring <b>~$600–900 in USD</b> to exchange to BYN.</li>
+          <li>At the border, cash-in-hand for <b>insurance ~€30 + BelToll ~€25 deposit</b>, kept reachable on the front seat.</li>
+          <li>Exchange leftover BYN before you leave — it's hard to change once back in the EU.</li>
+        </ul>
+      </div>
+      <div class="tipsign">
+        <h4>💳 To spend vs. to carry</h4>
+        <ul>
+          <li><b>To spend</b> (the estimate above): ≈ €2,800–4,200 all in.</li>
+          <li><b>To carry liquid</b>: cards + ~€350 EUR cash + ~$800 USD as a Belarus / emergency buffer.</li>
+          <li>Book the pricey bits early (ferry, any city hotels) so the on-the-road cash is mostly food + fuel.</li>
+          <li>These are planning figures — check live fuel, ferry and room prices before departure.</li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <!-- ==================== PACKING CHECKLIST ==================== -->
