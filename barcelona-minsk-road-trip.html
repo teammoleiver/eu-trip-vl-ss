@@ -304,6 +304,31 @@
   .count-down{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.3rem;color:var(--motorway);margin-left:auto}
   .count-down.urgent{color:#B3423A}
   @media(max-width:640px){ .ready-pct{font-size:2.2rem} .count-down{margin-left:0;width:100%} }
+  .route-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+  .route-lbl{font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);white-space:nowrap}
+  .route-mini{flex:1 1 140px;height:12px;background:#E4E8F1;border-radius:8px;overflow:hidden;min-width:120px}
+  .route-mini i{display:block;height:100%;width:0;background:var(--motorway-2);border-radius:8px;transition:width .4s ease}
+  .route-txt{font-weight:600;font-size:.9rem;color:var(--motorway-2)}
+  .stop{cursor:pointer}
+  .stop.reached .dot{background:var(--sign-green)!important;border-color:var(--sign-green)!important}
+  .stop.reached .name{color:var(--sign-green)}
+  .stop.reached .name::after{content:" ✓ reached";font-size:.68rem;color:var(--sign-green);font-weight:700;letter-spacing:.04em}
+  .exp-add{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+  .exp-add input,.exp-add select{border:1px solid var(--line);border-radius:8px;padding:9px 10px;font:inherit;font-size:16px;color:var(--ink)}
+  .exp-add #expAmt{width:130px}
+  .exp-add #expNote{flex:1 1 160px;min-width:120px}
+  .exp-add button{border:none;border-radius:8px;background:var(--sign-green);color:#fff;font-weight:700;padding:0 20px;cursor:pointer;font-size:.95rem}
+  .exp-list{list-style:none;margin:8px 0 0}
+  .exp-list li{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed #EDEFF4;font-size:.92rem}
+  .exp-list li:last-child{border-bottom:none}
+  .exp-list .ea{font-family:'Saira Condensed',sans-serif;font-weight:800;color:var(--motorway);min-width:66px}
+  .exp-list .ec{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:#EEF1F7;color:var(--motorway-2);padding:2px 8px;border-radius:20px;white-space:nowrap}
+  .exp-list .en{flex:1;color:var(--muted);min-width:0}
+  .exp-list .ex{border:none;background:none;color:#C3C9D4;cursor:pointer;font-size:1rem}
+  .exp-list .ex:hover{color:#B3423A}
+  .exp-empty{color:var(--muted);font-size:.9rem;padding:6px 0;border-bottom:none}
+  .card.sleepable{cursor:pointer}
+  .card .paid-badge{display:inline-block;margin-top:8px;font-size:.72rem;font-weight:700;color:var(--sign-green);background:#EAF6EE;border:1px solid #BFDCCB;border-radius:6px;padding:2px 8px}
 
   /* ---------- BORDER NEWS ---------- */
   .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -478,6 +503,11 @@
         <label class="count-lbl" for="departDate">🚦 Departure date</label>
         <input type="date" id="departDate" class="count-date" value="2026-07-16">
         <div class="count-down" id="countDown">—</div>
+      </div>
+      <div class="route-row">
+        <span class="route-lbl">🛣️ On the road</span>
+        <div class="route-mini"><i id="routeBar"></i></div>
+        <span class="route-txt" id="routeTxt">Tap a stop below as you reach it</span>
       </div>
     </div>
   </section>
@@ -1053,6 +1083,22 @@
         </ul>
       </div>
     </div>
+
+    <h3 class="acc-part" style="margin-top:28px">💸 What we're actually spending</h3>
+    <p class="lede" style="margin-bottom:12px">Log spends the moment they happen — type the amount, pick a category, tap Add. It tallies the real total and shows it against the proposed budget above, so you always know where you stand. Saves on this device. Tip: you can also click any accommodation card further up to log what you paid for that night.</p>
+    <div class="exp">
+      <div class="exp-add">
+        <input type="number" id="expAmt" placeholder="€ amount" min="0" step="0.01" inputmode="decimal">
+        <select id="expCat">
+          <option>Fuel</option><option>Food</option><option>Accommodation</option><option>Tolls</option><option>Gifts</option><option>Ferry</option><option>Misc</option>
+        </select>
+        <input type="text" id="expNote" placeholder="note (e.g. lunch in Narbonne)">
+        <button id="expBtn" type="button">Add</button>
+      </div>
+      <div class="ftable-wrap"><table class="ftable" id="expTable"></table></div>
+      <div class="budget-total"><span>Actually spent so far</span><b id="expTotal">€0</b></div>
+      <ul class="exp-list" id="expList"></ul>
+    </div>
   </section>
 
   <!-- ==================== PACKING CHECKLIST ==================== -->
@@ -1395,6 +1441,112 @@ async function refreshNews(){
   }
   btn.disabled = false; btn.textContent = "⟳ Refresh now";
 }
+
+/* ================= ACTUAL SPEND TRACKER ================= */
+const EXP_KEY = "bcn_minsk_expenses_v1";
+const EXP_CATS = ["Fuel","Food","Accommodation","Tolls","Gifts","Ferry","Misc"];
+const EXP_BUDGET = {Fuel:660, Food:1150, Accommodation:1200, Tolls:170, Gifts:300, Ferry:450, Misc:300};
+let expData = [];
+function expLoad(){ try{ const v=localStorage.getItem(EXP_KEY); if(v) return JSON.parse(v); }catch(e){} return []; }
+function expSave(){ try{ localStorage.setItem(EXP_KEY, JSON.stringify(expData)); }catch(e){} }
+function expRender(){
+  const sums={}; EXP_CATS.forEach(c=>sums[c]=0);
+  let totalSpent=0; expData.forEach(e=>{ const a=Number(e.a)||0; totalSpent+=a; if(sums[e.c]===undefined) sums[e.c]=0; sums[e.c]+=a; });
+  let totalProp=0; EXP_CATS.forEach(c=>totalProp+=(EXP_BUDGET[c]||0));
+  const tbl=document.getElementById("expTable");
+  if(tbl){
+    let h="<thead><tr><th>Category</th><th>Proposed</th><th>Spent</th><th>Left</th></tr></thead><tbody>";
+    EXP_CATS.forEach(c=>{ const sp=Math.round(sums[c]||0), pr=EXP_BUDGET[c]||0, left=pr-sp;
+      h+="<tr><td>"+c+"</td><td class='num'>€"+pr+"</td><td class='num'>€"+sp+"</td><td class='num "+(left<0?"pricey":"cheap")+"'>€"+left+"</td></tr>"; });
+    const tl=totalProp-Math.round(totalSpent);
+    h+="<tr><td><b>Total</b></td><td class='num'><b>€"+totalProp+"</b></td><td class='num'><b>€"+Math.round(totalSpent)+"</b></td><td class='num "+(tl<0?"pricey":"cheap")+"'><b>€"+tl+"</b></td></tr></tbody>";
+    tbl.innerHTML=h;
+  }
+  const tot=document.getElementById("expTotal"); if(tot) tot.textContent="€"+Math.round(totalSpent);
+  const list=document.getElementById("expList");
+  if(list){ list.innerHTML="";
+    if(!expData.length){ const li=document.createElement("li"); li.className="exp-empty"; li.textContent="No spends logged yet — add your first above."; list.appendChild(li); return; }
+    expData.forEach((e,i)=>{ const li=document.createElement("li");
+      const a=document.createElement("span"); a.className="ea"; a.textContent="€"+(Number(e.a)||0);
+      const c=document.createElement("span"); c.className="ec"; c.textContent=e.c;
+      const n=document.createElement("span"); n.className="en"; n.textContent=e.n||"";
+      const x=document.createElement("button"); x.className="ex"; x.textContent="✕"; x.title="Delete"; x.onclick=()=>{ expData.splice(i,1); expSave(); expRender(); };
+      li.appendChild(a); li.appendChild(c); li.appendChild(n); li.appendChild(x); list.appendChild(li);
+    });
+  }
+}
+function expAdd(){
+  const amtEl=document.getElementById("expAmt"), catEl=document.getElementById("expCat"), noteEl=document.getElementById("expNote");
+  const amt=parseFloat(amtEl.value); if(!(amt>0)){ amtEl.focus(); return; }
+  expData.push({a:Math.round(amt*100)/100, c:catEl.value, n:noteEl.value.trim()});
+  expSave(); amtEl.value=""; noteEl.value=""; amtEl.focus(); expRender();
+}
+function initExpenses(){
+  expData=expLoad();
+  const btn=document.getElementById("expBtn"); if(btn) btn.onclick=expAdd;
+  const amt=document.getElementById("expAmt"); if(amt) amt.onkeydown=(e)=>{ if(e.key==="Enter") expAdd(); };
+  expRender();
+}
+
+/* ================= ROUTE PROGRESS (click stops as reached) ================= */
+const ROUTE_KEY="bcn_minsk_route_v1";
+const DAY_START=[0,639,1239,1729,2379]; const TOTAL_KM=2940;
+let routeReached={};
+function routeSave(){ try{ localStorage.setItem(ROUTE_KEY, JSON.stringify(routeReached)); }catch(e){} }
+function renderRoute(){
+  const bar=document.getElementById("routeBar"), txt=document.getElementById("routeTxt"); if(!bar) return;
+  let maxCum=-1, lastName="";
+  document.querySelectorAll("#route .stop.reached").forEach(s=>{ const c=parseInt(s.getAttribute("data-cum")||"0",10);
+    if(c>=maxCum){ maxCum=c; const n=s.querySelector(".name"); lastName=n?n.textContent.replace(/\s*✓ reached$/,"").trim():""; } });
+  if(maxCum<0){ bar.style.width="0%"; txt.textContent="Tap a stop below as you reach it"; return; }
+  const pct=Math.min(100,Math.round(maxCum/TOTAL_KM*100)); bar.style.width=pct+"%";
+  const rem=Math.max(0,TOTAL_KM-maxCum);
+  txt.textContent = rem<=0 ? "🎉 Arrived in Minsk!" : "📍 "+lastName+" · ~"+rem+" km to Minsk ("+pct+"%)";
+}
+function initRoute(){
+  try{ const v=localStorage.getItem(ROUTE_KEY); if(v) routeReached=JSON.parse(v); }catch(e){}
+  const days=document.querySelectorAll("#route .day");
+  days.forEach((day,di)=>{
+    const stops=day.querySelectorAll(".stop");
+    stops.forEach((stop,si)=>{
+      const key="d"+di+"s"+si;
+      let km=0; const kmEl=stop.querySelector(".km"); if(kmEl){ const m=kmEl.textContent.match(/(\d+)/); if(m) km=parseInt(m[1],10); }
+      const isLast=(si===stops.length-1);
+      const cum=isLast ? (DAY_START[di+1]!==undefined?DAY_START[di+1]:TOTAL_KM) : ((DAY_START[di]||0)+km);
+      stop.setAttribute("data-cum", cum);
+      stop.title="Tap to mark as reached";
+      if(routeReached[key]) stop.classList.add("reached");
+      stop.addEventListener("click",(e)=>{
+        if(e.target.tagName==="A"||(e.target.closest&&e.target.closest("a"))) return;
+        if(routeReached[key]){ delete routeReached[key]; stop.classList.remove("reached"); }
+        else { routeReached[key]=1; stop.classList.add("reached"); }
+        routeSave(); renderRoute();
+      });
+    });
+  });
+  renderRoute();
+}
+
+/* ================= CLICK AN ACCOMMODATION CARD TO LOG WHAT YOU PAID ================= */
+function initSleepPrices(){
+  const cards=document.querySelectorAll("#p4n .card");
+  cards.forEach(card=>{
+    card.classList.add("sleepable");
+    card.addEventListener("click",(e)=>{
+      if(e.target.tagName==="A"||(e.target.closest&&e.target.closest("a"))) return;
+      const nmEl=card.querySelector(".nm"); const name=nmEl?nmEl.textContent.replace(/\s*↗\s*$/,"").trim():"this night";
+      const p=prompt("What did you pay for the night at "+name+"? (€)"); if(p===null) return;
+      const amt=parseFloat(p); if(!(amt>0)) return;
+      expData.push({a:Math.round(amt*100)/100, c:"Accommodation", n:name}); expSave(); expRender();
+      let b=card.querySelector(".paid-badge"); if(!b){ b=document.createElement("span"); b.className="paid-badge"; card.appendChild(b); }
+      b.textContent="✓ €"+(Math.round(amt*100)/100)+" logged to spending";
+    });
+  });
+}
+
+try{ initExpenses(); }catch(e){}
+try{ initRoute(); }catch(e){}
+try{ initSleepPrices(); }catch(e){}
 </script>
 
 <footer>
