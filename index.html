@@ -120,6 +120,31 @@
     .legs{grid-template-columns:1fr;gap:14px}
     .pick{font-size:1.4rem}
   }
+
+  /* ---------- DOCUMENT VAULT ---------- */
+  #docs{margin-top:48px}
+  .vault-note{background:#FFF9E8;border:1px solid #F0D488;border-left:5px solid var(--lane-yellow);border-radius:10px;padding:13px 16px;font-size:.88rem;color:#5b4a13;margin:0 0 22px;max-width:74ch}
+  .vault{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  .royal{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px;text-align:center;box-shadow:0 2px 10px rgba(16,33,75,.05);border-top:5px solid var(--lane-yellow)}
+  .royal-face{font-size:3rem;line-height:1;background:linear-gradient(160deg,#FFF7DE,#FCEFC0);border:2px solid #F0D488;border-radius:50%;width:84px;height:84px;cursor:pointer;transition:transform .15s ease}
+  .royal-face:hover{transform:scale(1.06) rotate(-4deg)}
+  .royal.open .royal-face{transform:scale(1.04)}
+  .royal-name{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.25rem;text-transform:uppercase;letter-spacing:.02em;margin-top:10px;color:var(--motorway)}
+  .royal-role{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+  .royal-hint{font-size:.75rem;color:var(--motorway-2);font-weight:600}
+  .royal-body{display:none;margin-top:14px;text-align:left}
+  .royal.open .royal-body{display:block}
+  .royal-docs{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .doc-empty{font-size:.85rem;color:var(--muted);text-align:center;padding:6px 0}
+  .doc{display:flex;align-items:center;gap:8px;background:#F5F6F9;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+  .doc-view{flex:1;display:flex;align-items:center;gap:8px;border:none;background:none;cursor:pointer;font:inherit;font-size:.9rem;font-weight:600;color:var(--motorway);text-align:left;min-width:0}
+  .doc-view span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .doc-dl,.doc-del{border:none;background:none;cursor:pointer;font-size:1.05rem;padding:2px 5px;flex:none}
+  .doc-dl{color:var(--sign-green)} .doc-del{color:#C3C9D4} .doc-del:hover{color:#B3423A}
+  .royal-add{display:flex;gap:8px;flex-wrap:wrap}
+  .royal-add select{flex:1 1 120px;border:1px solid var(--line);border-radius:8px;padding:8px 9px;font:inherit;font-size:15px;background:#fff;min-width:0}
+  .up-btn{display:inline-flex;align-items:center;gap:6px;background:var(--sign-green);color:#fff;font-weight:700;font-size:.85rem;border-radius:8px;padding:9px 14px;cursor:pointer;white-space:nowrap}
+  .up-btn:hover{opacity:.9}
 </style>
 </head>
 <body>
@@ -178,8 +203,101 @@
     </div>
 
     <div class="note">💡 Both plans work offline and save your checklist progress on this device. On mobile, tap the sticky top bar in either plan to jump to any section — or use the <b>Home</b> link there to come back here.</div>
+
+    <section id="docs">
+      <h2 class="pick">Family document vault 🗂️</h2>
+      <p class="lede">Passports, driving licences, NIE and insurance — one tap away at the border. Tap a royal to open their folder, then upload, view or download.</p>
+      <div class="vault-note">🔒 <b>Private to this device.</b> Files are stored only in this browser (nothing is uploaded to the internet or GitHub). They stay after you refresh, but won't appear on another phone/computer, and clearing your browser data removes them. Upload the same files on each device you'll carry.</div>
+      <div class="vault" id="vault">
+        <div class="royal" data-person="saleh">
+          <button class="royal-face" title="Open folder">🤴</button>
+          <div class="royal-name">Saleh Seddik</div>
+          <div class="royal-role">Father · The King 👑</div>
+          <div class="royal-hint">tap the face to open</div>
+          <div class="royal-body">
+            <div class="royal-docs"></div>
+            <div class="royal-add">
+              <select class="doc-type"><option>Passport</option><option>Driving Licence</option><option>NIE</option><option>Insurance</option><option>Other</option></select>
+              <label class="up-btn">＋ Upload<input type="file" accept="image/*,application/pdf" hidden></label>
+            </div>
+          </div>
+        </div>
+        <div class="royal" data-person="valeryia">
+          <button class="royal-face" title="Open folder">👸</button>
+          <div class="royal-name">Valeryia Zhdanava</div>
+          <div class="royal-role">Mother · The Queen 👑</div>
+          <div class="royal-hint">tap the face to open</div>
+          <div class="royal-body">
+            <div class="royal-docs"></div>
+            <div class="royal-add">
+              <select class="doc-type"><option>Passport</option><option>Driving Licence</option><option>NIE</option><option>Insurance</option><option>Other</option></select>
+              <label class="up-btn">＋ Upload<input type="file" accept="image/*,application/pdf" hidden></label>
+            </div>
+          </div>
+        </div>
+        <div class="royal" data-person="jousef">
+          <button class="royal-face" title="Open folder">👶</button>
+          <div class="royal-name">Jousef</div>
+          <div class="royal-role">The Prince 🤴</div>
+          <div class="royal-hint">tap the face to open</div>
+          <div class="royal-body">
+            <div class="royal-docs"></div>
+            <div class="royal-add">
+              <select class="doc-type"><option>Passport</option><option>Birth certificate</option><option>NIE</option><option>Insurance</option><option>Other</option></select>
+              <label class="up-btn">＋ Upload<input type="file" accept="image/*,application/pdf" hidden></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
+
+<script>
+/* ================= FAMILY DOCUMENT VAULT (IndexedDB, on-device only) ================= */
+function vaultDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open("famdocs",1);
+    r.onupgradeneeded=()=>{ const db=r.result; if(!db.objectStoreNames.contains("docs")) db.createObjectStore("docs",{keyPath:"id",autoIncrement:true}); };
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+  });
+}
+async function docAdd(rec){ const db=await vaultDB(); return new Promise((res,rej)=>{ const tx=db.transaction("docs","readwrite"); tx.objectStore("docs").add(rec); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
+async function docAll(){ const db=await vaultDB(); return new Promise((res,rej)=>{ const tx=db.transaction("docs","readonly"); const rq=tx.objectStore("docs").getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); }); }
+async function docDel(id){ const db=await vaultDB(); return new Promise((res,rej)=>{ const tx=db.transaction("docs","readwrite"); tx.objectStore("docs").delete(id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
+async function renderVault(){
+  let all=[]; try{ all=await docAll(); }catch(e){}
+  document.querySelectorAll(".royal").forEach(r=>{
+    const person=r.getAttribute("data-person");
+    const wrap=r.querySelector(".royal-docs"); wrap.innerHTML="";
+    const mine=all.filter(d=>d.person===person);
+    r.querySelector(".royal-hint").textContent = mine.length ? (mine.length+" file"+(mine.length!==1?"s":"")+" — tap to open") : "no files yet — tap to add";
+    if(!mine.length){ const e=document.createElement("div"); e.className="doc-empty"; e.textContent="No documents yet — upload below."; wrap.appendChild(e); return; }
+    mine.forEach(d=>{
+      const card=document.createElement("div"); card.className="doc";
+      const icon=(d.mime&&d.mime.indexOf("pdf")!==-1)?"📄":"🖼️";
+      const view=document.createElement("button"); view.className="doc-view"; view.innerHTML=icon+' <span>'+d.type+' — '+d.name+'</span>'; view.title="View "+d.name;
+      view.onclick=()=>{ const url=URL.createObjectURL(d.blob); window.open(url,"_blank"); setTimeout(()=>URL.revokeObjectURL(url),120000); };
+      const dl=document.createElement("button"); dl.className="doc-dl"; dl.textContent="⤓"; dl.title="Download";
+      dl.onclick=()=>{ const url=URL.createObjectURL(d.blob); const a=document.createElement("a"); a.href=url; a.download=d.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000); };
+      const del=document.createElement("button"); del.className="doc-del"; del.textContent="✕"; del.title="Delete";
+      del.onclick=async()=>{ if(confirm("Delete "+d.type+" ("+d.name+")?")){ await docDel(d.id); renderVault(); } };
+      card.appendChild(view); card.appendChild(dl); card.appendChild(del); wrap.appendChild(card);
+    });
+  });
+}
+document.querySelectorAll(".royal").forEach(r=>{
+  const person=r.getAttribute("data-person");
+  r.querySelector(".royal-face").onclick=()=>r.classList.toggle("open");
+  const input=r.querySelector('input[type=file]'), typeSel=r.querySelector(".doc-type");
+  input.onchange=async()=>{ const f=input.files&&input.files[0]; if(!f) return;
+    if(f.size>25*1024*1024){ alert("That file is over 25 MB — please use a smaller photo/scan."); input.value=""; return; }
+    try{ await docAdd({person, type:typeSel.value, name:f.name, mime:f.type, blob:f}); }catch(e){ alert("Could not save the file on this device."); }
+    input.value=""; r.classList.add("open"); renderVault();
+  };
+});
+renderVault();
+</script>
 
 <footer>
   <b>Barcelona ⇄ Minsk</b> · full round-trip family plan · ≈5,300 km · Jul–Aug 2026<br>
