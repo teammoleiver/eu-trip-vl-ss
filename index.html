@@ -125,10 +125,10 @@
   #docs{margin-top:48px}
   .vault-note{background:#FFF9E8;border:1px solid #F0D488;border-left:5px solid var(--lane-yellow);border-radius:10px;padding:13px 16px;font-size:.88rem;color:#5b4a13;margin:0 0 22px;max-width:74ch}
   .vault{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
-  .royal{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px;text-align:center;box-shadow:0 2px 10px rgba(16,33,75,.05);border-top:5px solid var(--lane-yellow)}
-  .royal-face{font-size:3rem;line-height:1;background:linear-gradient(160deg,#FFF7DE,#FCEFC0);border:2px solid #F0D488;border-radius:50%;width:84px;height:84px;cursor:pointer;transition:transform .15s ease}
-  .royal-face:hover{transform:scale(1.06) rotate(-4deg)}
-  .royal.open .royal-face{transform:scale(1.04)}
+  .royal{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px;text-align:center;box-shadow:0 2px 10px rgba(16,33,75,.05);border-top:5px solid var(--lane-yellow);transition:transform .15s ease,box-shadow .15s ease}
+  .royal:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(16,33,75,.12)}
+  .royal-face{font-size:3rem;line-height:1;background:linear-gradient(160deg,#FFF7DE,#FCEFC0);border:2px solid #F0D488;border-radius:50%;width:84px;height:84px;display:inline-flex;align-items:center;justify-content:center;transition:transform .15s ease}
+  .royal:hover .royal-face{transform:scale(1.06) rotate(-4deg)}
   .royal-name{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.25rem;text-transform:uppercase;letter-spacing:.02em;margin-top:10px;color:var(--motorway)}
   .royal-role{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
   .royal-hint{font-size:.75rem;color:var(--motorway-2);font-weight:600}
@@ -238,65 +238,37 @@
       <p class="lede">Passports, driving licences, NIE and insurance — one tap away at the border. Tap a royal to open their folder, then upload, view or download.</p>
       <div class="vault-note">🔒 <b>Private to this device.</b> Files are stored only in this browser (nothing is uploaded to the internet or GitHub). They stay after you refresh, but won't appear on another phone/computer, and clearing your browser data removes them. Upload the same files on each device you'll carry.</div>
       <div class="vault" id="vault">
-        <div class="royal" data-person="saleh">
-          <button class="royal-face" title="Open folder">🤴</button>
+        <a class="royal" href="docs.html?person=saleh">
+          <div class="royal-face">🤴</div>
           <div class="royal-name">Saleh Seddik</div>
           <div class="royal-role">Father · The King 👑</div>
-          <div class="royal-hint">tap the face to open</div>
-          <div class="royal-body">
-            <div class="royal-docs"></div>
-            <div class="royal-add">
-              <select class="doc-type"><option>Passport</option><option>Driving Licence</option><option>NIE</option><option>Insurance</option><option>Other</option></select>
-              <label class="up-btn">＋ Upload<input type="file" accept="image/*,application/pdf" multiple hidden></label>
-            </div>
-          </div>
-        </div>
-        <div class="royal" data-person="valeryia">
-          <button class="royal-face" title="Open folder">👸</button>
+          <div class="royal-hint" data-person="saleh">tap to open</div>
+        </a>
+        <a class="royal" href="docs.html?person=valeryia">
+          <div class="royal-face">👸</div>
           <div class="royal-name">Valeryia Zhdanava</div>
           <div class="royal-role">Mother · The Queen 👑</div>
-          <div class="royal-hint">tap the face to open</div>
-          <div class="royal-body">
-            <div class="royal-docs"></div>
-            <div class="royal-add">
-              <select class="doc-type"><option>Passport</option><option>Driving Licence</option><option>NIE</option><option>Insurance</option><option>Other</option></select>
-              <label class="up-btn">＋ Upload<input type="file" accept="image/*,application/pdf" multiple hidden></label>
-            </div>
-          </div>
-        </div>
-        <div class="royal" data-person="jousef">
-          <button class="royal-face" title="Open folder">👶</button>
+          <div class="royal-hint" data-person="valeryia">tap to open</div>
+        </a>
+        <a class="royal" href="docs.html?person=jousef">
+          <div class="royal-face">👶</div>
           <div class="royal-name">Jousef</div>
           <div class="royal-role">The Prince 🤴</div>
-          <div class="royal-hint">tap the face to open</div>
-          <div class="royal-body">
-            <div class="royal-docs"></div>
-            <div class="royal-add">
-              <select class="doc-type"><option>Passport</option><option>Birth certificate</option><option>NIE</option><option>Insurance</option><option>Other</option></select>
-              <label class="up-btn">＋ Upload<input type="file" accept="image/*,application/pdf" multiple hidden></label>
-            </div>
-          </div>
-        </div>
-        <div class="royal" data-person="car">
-          <button class="royal-face" title="Open folder">🚗</button>
+          <div class="royal-hint" data-person="jousef">tap to open</div>
+        </a>
+        <a class="royal" href="docs.html?person=car">
+          <div class="royal-face">🚗</div>
           <div class="royal-name">The Car</div>
           <div class="royal-role">Toyota Corolla · Papers 📄</div>
-          <div class="royal-hint">tap the car to open</div>
-          <div class="royal-body">
-            <div class="royal-docs"></div>
-            <div class="royal-add">
-              <select class="doc-type"><option>Registration (Permiso)</option><option>Ficha Técnica</option><option>Insurance</option><option>Green Card</option><option>BelToll</option><option>Purchase invoice</option><option>ITV</option><option>Other</option></select>
-              <label class="up-btn">＋ Upload<input type="file" accept="image/*,application/pdf" multiple hidden></label>
-            </div>
-          </div>
-        </div>
+          <div class="royal-hint" data-person="car">tap to open</div>
+        </a>
       </div>
     </section>
   </main>
 </div>
 
 <script>
-/* ================= FAMILY DOCUMENT VAULT (IndexedDB, on-device only) ================= */
+/* ===== Vault folder counts (files live in IndexedDB; full view is docs.html) ===== */
 function vaultDB(){
   return new Promise((res,rej)=>{
     const r=indexedDB.open("famdocs",1);
@@ -304,45 +276,15 @@ function vaultDB(){
     r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
   });
 }
-async function docAdd(rec){ const db=await vaultDB(); return new Promise((res,rej)=>{ const tx=db.transaction("docs","readwrite"); tx.objectStore("docs").add(rec); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
-async function docAll(){ const db=await vaultDB(); return new Promise((res,rej)=>{ const tx=db.transaction("docs","readonly"); const rq=tx.objectStore("docs").getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); }); }
-async function docDel(id){ const db=await vaultDB(); return new Promise((res,rej)=>{ const tx=db.transaction("docs","readwrite"); tx.objectStore("docs").delete(id); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
-async function renderVault(){
-  let all=[]; try{ all=await docAll(); }catch(e){}
-  document.querySelectorAll(".royal").forEach(r=>{
-    const person=r.getAttribute("data-person");
-    const wrap=r.querySelector(".royal-docs"); wrap.innerHTML="";
-    const mine=all.filter(d=>d.person===person);
-    r.querySelector(".royal-hint").textContent = mine.length ? (mine.length+" file"+(mine.length!==1?"s":"")+" — tap to open") : "no files yet — tap to add";
-    if(!mine.length){ const e=document.createElement("div"); e.className="doc-empty"; e.textContent="No documents yet — upload below."; wrap.appendChild(e); return; }
-    mine.forEach(d=>{
-      const card=document.createElement("div"); card.className="doc";
-      const icon=(d.mime&&d.mime.indexOf("pdf")!==-1)?"📄":"🖼️";
-      const view=document.createElement("button"); view.className="doc-view"; view.innerHTML=icon+' <span>'+d.type+' — '+d.name+'</span>'; view.title="View "+d.name;
-      view.onclick=()=>{ const url=URL.createObjectURL(d.blob); window.open(url,"_blank"); setTimeout(()=>URL.revokeObjectURL(url),120000); };
-      const dl=document.createElement("button"); dl.className="doc-dl"; dl.textContent="⤓"; dl.title="Download";
-      dl.onclick=()=>{ const url=URL.createObjectURL(d.blob); const a=document.createElement("a"); a.href=url; a.download=d.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000); };
-      const del=document.createElement("button"); del.className="doc-del"; del.textContent="✕"; del.title="Delete";
-      del.onclick=async()=>{ if(confirm("Delete "+d.type+" ("+d.name+")?")){ await docDel(d.id); renderVault(); } };
-      card.appendChild(view); card.appendChild(dl); card.appendChild(del); wrap.appendChild(card);
-    });
+async function vaultCounts(){
+  let all=[];
+  try{ const db=await vaultDB(); all=await new Promise((res,rej)=>{ const tx=db.transaction("docs","readonly"); const rq=tx.objectStore("docs").getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); }); }catch(e){}
+  document.querySelectorAll(".royal-hint[data-person]").forEach(h=>{
+    const p=h.getAttribute("data-person"); const n=all.filter(d=>d.person===p).length;
+    h.textContent = n ? ("📁 "+n+" file"+(n!==1?"s":"")+" — tap to open") : "no files yet — tap to add";
   });
 }
-document.querySelectorAll(".royal").forEach(r=>{
-  const person=r.getAttribute("data-person");
-  r.querySelector(".royal-face").onclick=()=>r.classList.toggle("open");
-  const input=r.querySelector('input[type=file]'), typeSel=r.querySelector(".doc-type");
-  input.onchange=async()=>{ const files=input.files?Array.from(input.files):[]; if(!files.length) return;
-    let skipped=0;
-    for(const f of files){
-      if(f.size>25*1024*1024){ skipped++; continue; }
-      try{ await docAdd({person, type:typeSel.value, name:f.name, mime:f.type, blob:f}); }catch(e){}
-    }
-    input.value=""; r.classList.add("open"); renderVault();
-    if(skipped) alert(skipped+" file(s) were over 25 MB and were skipped — please use smaller scans.");
-  };
-});
-renderVault();
+vaultCounts();
 </script>
 
 <footer>

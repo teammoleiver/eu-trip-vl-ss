@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10214B">
+<title>Document folder · Barcelona ⇄ Minsk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--motorway:#10214B;--motorway-2:#1B3C8C;--paper:#F5F6F9;--ink:#171A22;--lane-yellow:#FFC93C;--sign-green:#1E7A46;--line:#D8DCE6;--muted:#464C5A}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(160deg,var(--motorway-2),var(--motorway) 70%);color:#fff;padding:22px 0}
+  .top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .back{color:#C9D3EE;text-decoration:none;font-weight:600;font-size:.9rem}
+  .back:hover{color:#fff}
+  .face{font-size:2.6rem;background:linear-gradient(160deg,#FFF7DE,#FCEFC0);border:2px solid #F0D488;border-radius:50%;width:70px;height:70px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .who h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.7rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.05}
+  .who .role{font-size:.8rem;color:#C9D3EE;text-transform:uppercase;letter-spacing:.1em}
+  main{padding:24px 0 48px}
+  .upbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:20px;box-shadow:0 2px 8px rgba(16,33,75,.05)}
+  .upbar select{border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:16px;flex:1 1 180px;min-width:0}
+  .up-btn{display:inline-flex;align-items:center;gap:8px;background:var(--sign-green);color:#fff;font-weight:700;border-radius:8px;padding:11px 20px;cursor:pointer;white-space:nowrap}
+  .up-btn:hover{opacity:.9}
+  .hint{font-size:.82rem;color:var(--muted);flex-basis:100%}
+  .empty{text-align:center;color:var(--muted);padding:40px 10px;background:#fff;border:1px dashed var(--line);border-radius:12px}
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+  .dtile{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(16,33,75,.06);display:flex;flex-direction:column}
+  .dthumb{height:160px;background:#EEF1F7;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
+  .dthumb img{width:100%;height:100%;object-fit:cover}
+  .dthumb .pdf{font-size:3.2rem}
+  .dmeta{padding:10px 12px 4px}
+  .dtype{font-weight:700;font-size:.88rem;color:var(--motorway)}
+  .dname{font-size:.72rem;color:var(--muted);word-break:break-word;margin-top:2px}
+  .dact{display:flex;gap:6px;padding:8px 10px 12px;margin-top:auto}
+  .dact button{flex:1;border:none;border-radius:8px;padding:8px;font-size:.78rem;font-weight:700;cursor:pointer}
+  .dview{background:var(--motorway-2);color:#fff}
+  .ddl{background:var(--sign-green);color:#fff}
+  .ddel{background:#F3E4E2;color:#B3423A;flex:0 0 auto;padding:8px 10px}
+</style>
+</head>
+<body>
+<div id="authGate" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#1B3C8C,#10214B 70%);display:flex;align-items:center;justify-content:center;padding:20px;font-family:'IBM Plex Sans',system-ui,sans-serif">
+  <form id="authForm" style="background:#10214B;border:3px solid #fff;border-radius:14px;padding:26px 24px;max-width:360px;width:100%;color:#fff;box-shadow:0 12px 40px rgba(0,0,0,.45)">
+    <div style="font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.55rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.1">🔒 Private family plan</div>
+    <p style="color:#C9D3EE;font-size:.9rem;margin:8px 0 16px">Enter your login to open the trip.</p>
+    <input id="authUser" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:none;margin-bottom:10px;font-size:16px">
+    <input id="authPass" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:none;margin-bottom:12px;font-size:16px">
+    <button type="submit" style="width:100%;padding:12px;border:none;border-radius:8px;background:#FFC93C;color:#10214B;font-weight:800;font-family:'Saira Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;cursor:pointer">Enter</button>
+    <div id="authErr" style="color:#FFB3AD;font-size:.85rem;margin-top:10px;min-height:1.1em"></div>
+  </form>
+</div>
+<script>
+(function(){
+  var KEY="eu_auth_v1", HASH="323905b683a1fd194c24b26c2f3808b74d7515fb7910f1842aeea3660bcbb09d";
+  var gate=document.getElementById("authGate");
+  function reveal(){ if(gate&&gate.parentNode) gate.parentNode.removeChild(gate); document.documentElement.style.overflow=""; }
+  try{ if(localStorage.getItem(KEY)==="1"){ reveal(); return; } }catch(e){}
+  document.documentElement.style.overflow="hidden";
+  function sha(s){ if(!(window.crypto&&crypto.subtle)) return Promise.resolve(""); return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function(b){ return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join(""); }); }
+  document.getElementById("authForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var u=document.getElementById("authUser").value.trim().toLowerCase();
+    var p=document.getElementById("authPass").value;
+    sha(u+":"+p).then(function(h){
+      if(h===HASH){ try{localStorage.setItem(KEY,"1");}catch(e){} reveal(); }
+      else { document.getElementById("authErr").textContent = h ? "Wrong username or password." : "Open this page over https:// or localhost to log in."; }
+    });
+  });
+})();
+</script>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="index.html">← Back to Home</a>
+    <div class="top" style="margin-top:12px">
+      <div class="face" id="face">📄</div>
+      <div class="who"><h1 id="who">Folder</h1><div class="role" id="role"></div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <main>
+    <div class="upbar">
+      <select id="docType"></select>
+      <label class="up-btn">＋ Upload document<input type="file" id="fileInput" accept="image/*,application/pdf" multiple hidden></label>
+      <div class="hint">🔒 Files stay only in this browser on this device — nothing is uploaded to the internet. You can pick several at once.</div>
+    </div>
+    <div id="gallery"></div>
+  </main>
+</div>
+
+<script>
+/* ================= DOC FOLDER (IndexedDB, on-device only) ================= */
+var PEOPLE={
+  saleh:{icon:"🤴",name:"Saleh Seddik",role:"Father · The King 👑",types:["Passport","Driving Licence","NIE","Insurance","Other"]},
+  valeryia:{icon:"👸",name:"Valeryia Zhdanava",role:"Mother · The Queen 👑",types:["Passport","Driving Licence","NIE","Insurance","Other"]},
+  jousef:{icon:"👶",name:"Jousef",role:"The Prince 🤴",types:["Passport","Birth certificate","NIE","Insurance","Other"]},
+  car:{icon:"🚗",name:"The Car",role:"Toyota Corolla · Papers 📄",types:["Registration (Permiso)","Ficha Técnica","Insurance","Green Card","BelToll","Purchase invoice","ITV","Other"]}
+};
+function qs(k){ var m=new RegExp("[?&]"+k+"=([^&]*)").exec(location.search); return m?decodeURIComponent(m[1]):""; }
+var PERSON=qs("person"); if(!PEOPLE[PERSON]) PERSON="saleh";
+var META=PEOPLE[PERSON];
+document.getElementById("face").textContent=META.icon;
+document.getElementById("who").textContent=META.name;
+document.getElementById("role").textContent=META.role;
+document.title=META.name+" · documents";
+var sel=document.getElementById("docType");
+META.types.forEach(function(t){ var o=document.createElement("option"); o.textContent=t; sel.appendChild(o); });
+
+function vaultDB(){ return new Promise(function(res,rej){ var r=indexedDB.open("famdocs",1);
+  r.onupgradeneeded=function(){ var db=r.result; if(!db.objectStoreNames.contains("docs")) db.createObjectStore("docs",{keyPath:"id",autoIncrement:true}); };
+  r.onsuccess=function(){res(r.result);}; r.onerror=function(){rej(r.error);}; }); }
+function docAdd(rec){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readwrite"); tx.objectStore("docs").add(rec); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
+function docAll(){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readonly"); var rq=tx.objectStore("docs").getAll(); rq.onsuccess=function(){res(rq.result||[]);}; rq.onerror=function(){rej(rq.error);}; }); }); }
+function docDel(id){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readwrite"); tx.objectStore("docs").delete(id); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
+
+function render(){
+  docAll().then(function(all){
+    var mine=all.filter(function(d){return d.person===PERSON;});
+    var g=document.getElementById("gallery"); g.innerHTML="";
+    if(!mine.length){ var e=document.createElement("div"); e.className="empty"; e.textContent="No documents here yet — use ＋ Upload document above to add photos or PDFs."; g.appendChild(e); return; }
+    var grid=document.createElement("div"); grid.className="dgrid";
+    mine.forEach(function(d){
+      var tile=document.createElement("div"); tile.className="dtile";
+      var thumb=document.createElement("div"); thumb.className="dthumb"; thumb.title="View "+d.name;
+      var isImg=d.mime&&d.mime.indexOf("image")!==-1;
+      if(isImg){ var img=document.createElement("img"); img.src=URL.createObjectURL(d.blob); img.alt=d.type; thumb.appendChild(img); }
+      else { var pdf=document.createElement("div"); pdf.className="pdf"; pdf.textContent="📄"; thumb.appendChild(pdf); }
+      thumb.onclick=function(){ var url=URL.createObjectURL(d.blob); window.open(url,"_blank"); setTimeout(function(){URL.revokeObjectURL(url);},120000); };
+      var meta=document.createElement("div"); meta.className="dmeta";
+      meta.innerHTML='<div class="dtype">'+d.type+'</div><div class="dname">'+(d.name||"")+'</div>';
+      var act=document.createElement("div"); act.className="dact";
+      var vb=document.createElement("button"); vb.className="dview"; vb.textContent="View"; vb.onclick=thumb.onclick;
+      var db2=document.createElement("button"); db2.className="ddl"; db2.textContent="Download";
+      db2.onclick=function(){ var url=URL.createObjectURL(d.blob); var a=document.createElement("a"); a.href=url; a.download=d.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url);},2000); };
+      var xb=document.createElement("button"); xb.className="ddel"; xb.textContent="✕"; xb.title="Delete";
+      xb.onclick=function(){ if(confirm("Delete "+d.type+" ("+d.name+")?")){ docDel(d.id).then(render); } };
+      act.appendChild(vb); act.appendChild(db2); act.appendChild(xb);
+      tile.appendChild(thumb); tile.appendChild(meta); tile.appendChild(act);
+      grid.appendChild(tile);
+    });
+    g.appendChild(grid);
+  });
+}
+var fi=document.getElementById("fileInput");
+fi.onchange=function(){
+  var files=fi.files?Array.prototype.slice.call(fi.files):[]; if(!files.length) return;
+  var type=sel.value, skipped=0, chain=Promise.resolve();
+  files.forEach(function(f){
+    if(f.size>25*1024*1024){ skipped++; return; }
+    chain=chain.then(function(){ return docAdd({person:PERSON,type:type,name:f.name,mime:f.type,blob:f}); }).catch(function(){});
+  });
+  chain.then(function(){ fi.value=""; render(); if(skipped) alert(skipped+" file(s) were over 25 MB and were skipped — please use smaller scans."); });
+};
+render();
+</script>
+</body>
+</html>
