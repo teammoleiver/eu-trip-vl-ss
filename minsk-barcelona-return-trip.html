@@ -578,29 +578,15 @@
   <!-- ============ GIFTS BACK ============ -->
   <section id="gifts">
     <h2>Gifts to bring back to friends in Barcelona 🎁</h2>
-    <p class="lede">The best of Belarus to carry home. Buy these in Minsk before you leave — supermarkets (chocolate, sweets), GUM/TSUM department stores and craft shops (linen, straw, ceramics) have everything.</p>
-    <div class="tips">
-      <div class="tipsign">
-        <h4>🍫 Taste of Belarus</h4>
-        <ul>
-          <li>Belarusian chocolate &amp; sweets — Kommunarka, Spartak, zefir marshmallow.</li>
-          <li>Herbal balsam (bittersweet liqueur) and a good local vodka.</li>
-          <li>Sguschyonka (condensed milk) and honey cakes.</li>
-          <li>Forest honey, herbal teas and dried berries.</li>
-          <li>Kvass concentrate — a fun, very local taste to share.</li>
-        </ul>
-      </div>
-      <div class="tipsign blue">
-        <h4>🧵 Crafts &amp; goods</h4>
-        <ul>
-          <li>Belarusian linen — tablecloths, towels, shirts (world-famous flax).</li>
-          <li>Straw-weaving (salamka) and vytinanka paper cut-outs.</li>
-          <li>Belita-Vitex cosmetics — great-value skincare, easy to pack.</li>
-          <li>Wooden toys and hand-painted ceramics (Rakov pottery).</li>
-          <li>Vyshyvanka embroidery and amber jewellery.</li>
-        </ul>
-      </div>
+    <p class="lede">The best of Belarus to carry home — buy these in Minsk before you leave (supermarkets for chocolate and sweets, GUM/TSUM and craft shops for linen, straw and ceramics). The suggestions are pre-filled — tick what you've bought, click any line to edit, add your own with the + field, or make a new list. Everything saves on this device.</p>
+    <div class="chk-toolbar">
+      <span class="chk-count" id="giftCount">0 / 0 done</span>
+      <div class="chk-progress"><i id="giftBar"></i></div>
+      <button class="chk-btn add" onclick="giftList.addCategory()">＋ New list</button>
+      <button class="chk-btn" onclick="giftList.uncheckAll()">Uncheck all</button>
+      <button class="chk-btn warn" onclick="giftList.reset()">Reset to suggestions</button>
     </div>
+    <div class="chk-grid" id="giftGrid"></div>
     <div class="notice">🛂 <b>Customs back into the EU:</b> from a non-EU country, <b>meat, milk and dairy are banned</b> and honey/other animal products are limited — so favour chocolate, sweets, linen, crafts and cosmetics. Alcohol duty-free per adult: <b>1 L of spirits over 22%</b> (or 2 L up to 22%) plus <b>4 L wine</b>; tobacco 200 cigarettes; other goods up to about <b>€430 per adult</b> (€150 for under-15s). Keep receipts for anything valuable.</div>
   </section>
 
@@ -735,6 +721,78 @@ function chkAddCategory(){
 function chkUncheckAll(){ chkData.forEach(c => c.items.forEach(i => i.d=false)); chkSave(); chkRender(); }
 function chkReset(){ if(confirm("Reset to the default return list?")){ chkData = chkFromDefault(); chkSave(); chkRender(); } }
 (async function(){ chkData = await chkLoad() || chkFromDefault(); chkRender(); })();
+
+/* ================= REUSABLE EDITABLE LIST (used by gifts) ================= */
+function makeChecklist(opts){
+  const KEY = opts.key;
+  let data = null;
+  function save(){ const s = JSON.stringify(data);
+    try{ localStorage.setItem(KEY, s); }catch(e){}
+    try{ if(window.storage && window.storage.set) window.storage.set(KEY, s); }catch(e){} }
+  async function load(){
+    try{ const v = localStorage.getItem(KEY); if(v) return JSON.parse(v); }catch(e){}
+    try{ if(window.storage && window.storage.get){ const r = await window.storage.get(KEY); if(r && r.value) return JSON.parse(r.value); } }catch(e){}
+    return null; }
+  function fromDefault(){ return opts.defaults.map(cat => ({c:cat.c, items:cat.items.map(t => ({t:t, d:false}))})); }
+  function render(){
+    const grid = document.getElementById(opts.grid); if(!grid) return; grid.innerHTML = "";
+    let total = 0, done = 0;
+    data.forEach((cat, ci) => {
+      const catDone = cat.items.filter(i=>i.d).length; total += cat.items.length; done += catDone;
+      const box = document.createElement("div"); box.className = "chk-cat";
+      const h = document.createElement("h4");
+      const nameEl = document.createElement("span"); nameEl.className = "cat-name"; nameEl.textContent = cat.c; nameEl.title = "Tap to rename this list";
+      nameEl.onclick = () => { const nv = prompt("Rename list:", cat.c); if(nv !== null && nv.trim() !== ""){ cat.c = nv.trim(); save(); render(); } };
+      const cnt = document.createElement("span"); cnt.className = "done-count"; cnt.textContent = catDone + "/" + cat.items.length;
+      const catDel = document.createElement("button"); catDel.className = "cat-del"; catDel.textContent = "✕"; catDel.title = "Delete this whole list";
+      catDel.onclick = () => { if(confirm('Delete the whole list "' + cat.c + '"?')){ data.splice(ci,1); save(); render(); } };
+      h.appendChild(nameEl); h.appendChild(cnt); h.appendChild(catDel); box.appendChild(h);
+      const ul = document.createElement("ul"); ul.className = "chk-items";
+      cat.items.forEach((it, ii) => {
+        const li = document.createElement("li"); if(it.d) li.className = "done";
+        const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = it.d;
+        cb.onchange = () => { it.d = cb.checked; save(); render(); };
+        const span = document.createElement("span"); span.className = "txt"; span.textContent = it.t; span.title = "Click to edit";
+        span.onclick = () => { const nv = prompt("Edit item:", it.t); if(nv !== null && nv.trim() !== ""){ it.t = nv.trim(); save(); render(); } };
+        const del = document.createElement("button"); del.className = "del"; del.textContent = "✕"; del.title = "Remove item";
+        del.onclick = () => { if(confirm("Remove: " + it.t + "?")){ cat.items.splice(ii,1); save(); render(); } };
+        li.appendChild(cb); li.appendChild(span); li.appendChild(del); ul.appendChild(li);
+      });
+      box.appendChild(ul);
+      const add = document.createElement("div"); add.className = "chk-add";
+      const inp = document.createElement("input"); inp.placeholder = opts.addPlaceholder || "Add your own item…";
+      const btn = document.createElement("button"); btn.textContent = "+";
+      const doAdd = () => { if(inp.value.trim() !== ""){ cat.items.push({t:inp.value.trim(), d:false}); inp.value=""; save(); render(); } };
+      btn.onclick = doAdd; inp.onkeydown = (e) => { if(e.key === "Enter") doAdd(); };
+      add.appendChild(inp); add.appendChild(btn); box.appendChild(add);
+      grid.appendChild(box);
+    });
+    const c = document.getElementById(opts.count); if(c) c.textContent = done + " / " + total + " done";
+    const b = document.getElementById(opts.bar); if(b) b.style.width = (total ? Math.round(done/total*100) : 0) + "%";
+  }
+  const api = {
+    addCategory(){ const nv = prompt("Name of the new list:"); if(nv !== null && nv.trim() !== ""){ data.push({c:nv.trim(), items:[]}); save(); render();
+      setTimeout(() => { const g=document.getElementById(opts.grid); if(g && g.lastElementChild) g.lastElementChild.scrollIntoView({behavior:"smooth",block:"center"}); }, 50); } },
+    uncheckAll(){ data.forEach(c => c.items.forEach(i => i.d = false)); save(); render(); },
+    reset(){ if(confirm(opts.resetMsg || "Reset this list to the defaults? Your custom items will be lost.")){ data = fromDefault(); save(); render(); } }
+  };
+  (async function(){ data = await load() || fromDefault(); render(); })();
+  return api;
+}
+
+/* ================= GIFTS BACK TO BARCELONA (editable) ================= */
+const GIFT_DEFAULT = [
+ {c:"🍫 Taste of Belarus", items:[
+  "Belarusian chocolate & sweets — Kommunarka, Spartak, zefir","Herbal balsam (bittersweet liqueur) + a good local vodka",
+  "Sguschyonka (condensed milk) and honey cakes","Forest honey, herbal teas and dried berries",
+  "Kvass concentrate — a very local taste to share"]},
+ {c:"🧵 Crafts & goods", items:[
+  "Belarusian linen — tablecloths, towels, shirts","Straw-weaving (salamka) + vytinanka paper cut-outs",
+  "Belita-Vitex cosmetics — great-value skincare","Wooden toys and hand-painted ceramics (Rakov pottery)",
+  "Vyshyvanka embroidery + amber jewellery"]}
+];
+window.giftList = makeChecklist({key:"minsk_bcn_gifts_v1", grid:"giftGrid", count:"giftCount", bar:"giftBar",
+  defaults:GIFT_DEFAULT, addPlaceholder:"Add a gift idea…", resetMsg:"Reset the gift list back to the suggestions? Your custom items will be lost."});
 
 /* ================= NEWS (return panels) ================= */
 const NEWS_PROMPTS = {
