@@ -102,7 +102,11 @@ var PEOPLE={
   jousef:{icon:"👶",name:"Jousef",role:"The Prince 🤴",types:["Passport","Birth certificate","NIE","Insurance","Other"]},
   car:{icon:"🚗",name:"The Car",role:"Toyota Corolla · Papers 📄",types:["Registration (Permiso)","Ficha Técnica","Insurance","Green Card","BelToll","Purchase invoice","ITV","Other"]}
 };
-function qs(k){ var m=new RegExp("[?&]"+k+"=([^&]*)").exec(location.search); return m?decodeURIComponent(m[1]):""; }
+function qs(k){
+  var str=(location.hash?location.hash.slice(1):"")||(location.search?location.search.slice(1):"");
+  var m=new RegExp("(?:^|&)"+k+"=([^&]*)").exec(str);
+  return m?decodeURIComponent(m[1]):"";
+}
 var PERSON=qs("person"); if(!PEOPLE[PERSON]) PERSON="saleh";
 var META=PEOPLE[PERSON];
 document.getElementById("face").textContent=META.icon;
