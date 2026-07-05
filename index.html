@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10214B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BCN⇄Minsk">
+<title>Barcelona ⇄ Minsk · Family Road Trip Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --motorway:#10214B;
+    --motorway-2:#1B3C8C;
+    --paper:#F5F6F9;
+    --ink:#171A22;
+    --lane-yellow:#FFC93C;
+    --sign-green:#1E7A46;
+    --line:#D8DCE6;
+    --muted:#5B6270;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.55;
+    min-height:100vh;display:flex;flex-direction:column;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px;width:100%}
+
+  header{background:var(--motorway);color:#fff;padding:56px 0 0;position:relative;overflow:hidden}
+  .sign{
+    border:3px solid #fff;border-radius:14px;padding:28px 28px 24px;
+    background:linear-gradient(160deg,var(--motorway-2),var(--motorway) 70%);
+    box-shadow:0 12px 40px rgba(0,0,0,.35);position:relative;
+  }
+  .sign .eyebrow{
+    font-family:'Saira Condensed',sans-serif;font-weight:600;letter-spacing:.22em;
+    text-transform:uppercase;font-size:.8rem;color:var(--lane-yellow);margin-bottom:10px;
+  }
+  h1{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;
+    font-size:clamp(2.4rem,7vw,4.4rem);line-height:1.02;text-transform:uppercase;letter-spacing:.01em;
+  }
+  h1 .arrow{color:var(--lane-yellow)}
+  .sign .sub{margin-top:14px;font-size:1rem;color:#C9D3EE;max-width:60ch}
+  .statbar{display:flex;flex-wrap:wrap;gap:0;margin-top:26px;border-top:2px dashed rgba(255,255,255,.35)}
+  .statbar div{flex:1 1 120px;padding:14px 16px 12px;border-right:2px dashed rgba(255,255,255,.35)}
+  .statbar div:last-child{border-right:none}
+  .statbar b{display:block;font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.7rem;line-height:1}
+  .statbar span{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:#AEBBE0}
+  .road{height:34px;margin-top:44px;background:#22242B;position:relative}
+  .road::before{
+    content:"";position:absolute;left:0;right:0;top:50%;height:4px;transform:translateY(-50%);
+    background:repeating-linear-gradient(90deg,var(--lane-yellow) 0 46px,transparent 46px 84px);
+  }
+
+  main{padding:52px 0 8px;flex:1}
+  .pick{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;
+    letter-spacing:.03em;font-size:1.7rem;margin-bottom:6px;
+  }
+  .lede{color:var(--muted);max-width:64ch;margin-bottom:28px}
+
+  .legs{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  a.leg{
+    display:block;text-decoration:none;color:inherit;background:#fff;
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 2px 10px rgba(16,33,75,.05);transition:transform .18s ease,box-shadow .18s ease;
+  }
+  a.leg:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(16,33,75,.12)}
+  .leg-head{padding:20px 22px 16px;background:var(--motorway);color:#fff}
+  .leg-badge{
+    display:inline-block;font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:.95rem;
+    background:var(--lane-yellow);color:var(--motorway);border-radius:8px;padding:2px 12px;
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px;
+  }
+  .leg-head h2{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.6rem;
+    text-transform:uppercase;letter-spacing:.02em;line-height:1.1;
+  }
+  .leg-head h2 .arrow{color:var(--lane-yellow)}
+  .leg-body{padding:16px 22px 20px}
+  .leg-body p{font-size:.92rem;color:var(--muted);margin-bottom:14px}
+  .leg-facts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .fact{
+    font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    background:#EEF1F7;color:var(--motorway-2);border-radius:20px;padding:4px 11px;
+  }
+  .go{
+    display:inline-flex;align-items:center;gap:8px;font-family:'Saira Condensed',sans-serif;
+    font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1rem;
+    color:#fff;background:var(--sign-green);border-radius:10px;padding:10px 18px;
+  }
+  a.leg.return .go{background:var(--motorway-2)}
+
+  .note{
+    background:#FFF9E8;border:1px solid #F0D488;border-left:5px solid var(--lane-yellow);
+    border-radius:10px;padding:14px 16px;font-size:.9rem;color:#5b4a13;margin:30px 0 8px;max-width:74ch;
+  }
+
+  footer{
+    background:var(--motorway);color:#AEBBE0;text-align:center;
+    padding:30px 20px 36px;font-size:.85rem;margin-top:44px;
+  }
+  footer b{color:#fff}
+
+  @media (max-width:640px){
+    .wrap{padding:0 14px}
+    header{padding-top:34px}
+    .sign{padding:20px 16px 16px;border-radius:12px}
+    h1{font-size:clamp(2rem,10vw,2.9rem)}
+    .statbar div{flex:1 1 45%;padding:10px 10px 8px}
+    .statbar b{font-size:1.35rem}
+    main{padding:36px 0 6px}
+    .legs{grid-template-columns:1fr;gap:14px}
+    .pick{font-size:1.4rem}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="sign">
+      <div class="eyebrow">Family Road Trip · Toyota Corolla + Roof Box · Baby on Board</div>
+      <h1>Barcelona <span class="arrow">⇄</span> Minsk</h1>
+      <p class="sub">The complete round-trip plan across Europe — the drive out to Minsk, 15 days in Belarus, and two ways home. Pick a direction to open its full day-by-day plan, sleep spots, checklist and live border news.</p>
+      <div class="statbar">
+        <div><b>≈5,300</b><span>km round trip</span></div>
+        <div><b>6+</b><span>countries</span></div>
+        <div><b>Jul–Aug</b><span>2026</span></div>
+        <div><b>2</b><span>drivers</span></div>
+        <div><b>1</b><span>happy baby</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="road"></div>
+</header>
+
+<div class="wrap">
+  <main>
+    <h2 class="pick">Pick your direction</h2>
+    <p class="lede">Two full plans, cross-linked so you can flip between the way out and the way home at any time.</p>
+
+    <div class="legs">
+      <a class="leg" href="barcelona-minsk-road-trip.html">
+        <div class="leg-head">
+          <span class="leg-badge">Outbound · 16–20 Jul</span>
+          <h2>Barcelona <span class="arrow">→</span> Minsk</h2>
+        </div>
+        <div class="leg-body">
+          <p>Five days across six countries — Barcelona to Warsaw, then the big border day into Belarus. Driving capped at ~6–7 h/day with baby breaks every 60–90 min.</p>
+          <div class="leg-facts">
+            <span class="fact">≈2,940 km</span><span class="fact">5 days</span><span class="fact">Tolls &amp; vignettes</span><span class="fact">Terespol–Brest crossing</span>
+          </div>
+          <span class="go">Open the outbound plan →</span>
+        </div>
+      </a>
+
+      <a class="leg return" href="minsk-barcelona-return-trip.html">
+        <div class="leg-head">
+          <span class="leg-badge">Return · from 4 Aug</span>
+          <h2>Minsk <span class="arrow">→</span> Barcelona</h2>
+        </div>
+        <div class="leg-body">
+          <p>15 days in Belarus, then home two ways: Variant A via Berlin, Benelux, Switzerland, Italy + the Genoa→Barcelona ferry, or Variant B all-driving via Lyon. Pick on the road.</p>
+          <div class="leg-facts">
+            <span class="fact">15 days in Belarus</span><span class="fact">2 variants</span><span class="fact">Ferry or drive</span><span class="fact">≈2,350–3,050 km</span>
+          </div>
+          <span class="go">Open the return plan →</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="note">💡 Both plans work offline and save your checklist progress on this device. On mobile, tap the sticky top bar in either plan to jump to any section — or use the <b>Home</b> link there to come back here.</div>
+  </main>
+</div>
+
+<footer>
+  <b>Barcelona ⇄ Minsk</b> · full round-trip family plan · ≈5,300 km · Jul–Aug 2026<br>
+  Bon viatge · Bon voyage · Gute Fahrt · Šťastnou cestu · Szerokiej drogi · Шчаслівай дарогі!
+</footer>
+
+</body>
+</html>
