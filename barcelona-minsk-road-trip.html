@@ -1248,7 +1248,7 @@ const CHK_DEFAULT = [
  {c:"✅ Preparation tasks", items:[
   "Check car before the trip · SS","What is prohibited to cross into RB (Belarus border) · VB","Prepare my phone & laptop · VL",
   "Collect needed docs to take · VL","Find apartment in BLR · VB","Learn how to change a wheel · SS","Check WhatsApp chats · VB",
-  "Take money with us — 2000?","Prepare for interview","Plan the way to go (build the route)","Read up on the route & the tools/apps we need",
+  "Take money with us — 2000?","Prepare for interview","Plan the way to go (build the route)",
   "Pack everything in the car to see how it fits","Take keys from Belarus","Download Google Maps offline","Buy internet (SIM) in BLR"]}
 ];
 let chkData = null;
@@ -1351,9 +1351,20 @@ function chkSeedNewCategories(){
   try{ localStorage.setItem(SEED_KEY, JSON.stringify(seeded)); }catch(e){}
   if(changed) chkSave();
 }
+/* one-time removal of retired default items (only if left unedited) */
+function chkOneTimeCleanup(){
+  const CLEAN_KEY = CHK_KEY + "_clean1";
+  try{ if(localStorage.getItem(CLEAN_KEY)==="1") return; }catch(e){}
+  const purge = ["Read up on the route & the tools/apps we need"];
+  let changed=false;
+  chkData.forEach(cat=>{ const n=cat.items.length; cat.items=cat.items.filter(it=>purge.indexOf(it.t)===-1); if(cat.items.length!==n) changed=true; });
+  try{ localStorage.setItem(CLEAN_KEY,"1"); }catch(e){}
+  if(changed) chkSave();
+}
 (async function(){
   chkData = await chkLoad() || chkFromDefault();
   chkSeedNewCategories();
+  chkOneTimeCleanup();
   chkRender();
 })();
 
