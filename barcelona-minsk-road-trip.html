@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10214B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BCN→Minsk">
+<title>Barcelona → Minsk · 5-Day Family Road Trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --motorway:#10214B;      /* deep European motorway blue */
+    --motorway-2:#1B3C8C;
+    --paper:#F5F6F9;
+    --ink:#171A22;
+    --lane-yellow:#FFC93C;   /* road-marking yellow */
+    --sign-green:#1E7A46;    /* exit-sign green */
+    --line:#D8DCE6;
+    --muted:#5B6270;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+
+  /* ---------- HERO: motorway sign ---------- */
+  header{
+    background:var(--motorway);
+    color:#fff;
+    padding:56px 0 0;
+    position:relative;
+    overflow:hidden;
+  }
+  .sign{
+    border:3px solid #fff;
+    border-radius:14px;
+    padding:28px 28px 24px;
+    background:linear-gradient(160deg,var(--motorway-2),var(--motorway) 70%);
+    box-shadow:0 12px 40px rgba(0,0,0,.35);
+    position:relative;
+  }
+  .sign .eyebrow{
+    font-family:'Saira Condensed',sans-serif;
+    font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+    font-size:.8rem;color:var(--lane-yellow);margin-bottom:10px;
+  }
+  h1{
+    font-family:'Saira Condensed',sans-serif;
+    font-weight:800;
+    font-size:clamp(2.4rem,7vw,4.4rem);
+    line-height:1.02;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+  }
+  h1 .arrow{color:var(--lane-yellow)}
+  .sign .sub{
+    margin-top:14px;font-size:1rem;color:#C9D3EE;max-width:56ch;
+  }
+  .statbar{
+    display:flex;flex-wrap:wrap;gap:0;margin-top:26px;
+    border-top:2px dashed rgba(255,255,255,.35);
+  }
+  .statbar div{
+    flex:1 1 130px;padding:14px 16px 12px;
+    border-right:2px dashed rgba(255,255,255,.35);
+  }
+  .statbar div:last-child{border-right:none}
+  .statbar b{
+    display:block;font-family:'Saira Condensed',sans-serif;
+    font-weight:800;font-size:1.7rem;line-height:1;
+  }
+  .statbar span{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:#AEBBE0}
+  /* road stripe under hero */
+  .road{
+    height:34px;margin-top:44px;background:#22242B;position:relative;
+  }
+  .road::before{
+    content:"";position:absolute;left:0;right:0;top:50%;height:4px;transform:translateY(-50%);
+    background:repeating-linear-gradient(90deg,var(--lane-yellow) 0 46px,transparent 46px 84px);
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:52px 0 8px}
+  h2{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;
+    text-transform:uppercase;letter-spacing:.03em;
+    font-size:1.7rem;margin-bottom:6px;
+  }
+  .lede{color:var(--muted);max-width:64ch;margin-bottom:28px}
+
+  /* ---------- DAY TIMELINE ---------- */
+  .day{
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    margin-bottom:26px;overflow:hidden;
+    box-shadow:0 2px 10px rgba(16,33,75,.05);
+  }
+  .day-head{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    padding:18px 22px 14px;background:var(--motorway);color:#fff;
+  }
+  .day-badge{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.05rem;
+    background:var(--lane-yellow);color:var(--motorway);
+    border-radius:8px;padding:2px 12px;text-transform:uppercase;letter-spacing:.04em;
+    white-space:nowrap;
+  }
+  .day-head h3{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.35rem;
+    text-transform:uppercase;letter-spacing:.02em;line-height:1.15;
+  }
+  .day-meta{
+    width:100%;display:flex;gap:18px;flex-wrap:wrap;
+    font-size:.82rem;color:#C9D3EE;margin-top:2px;
+  }
+  .day-meta b{color:#fff;font-weight:600}
+  .day-body{padding:10px 22px 18px}
+
+  .stop{
+    display:grid;grid-template-columns:66px 26px 1fr;gap:0 10px;
+    position:relative;
+  }
+  .stop .t{
+    font-size:.8rem;color:var(--muted);padding-top:13px;text-align:right;
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .stop .dotcol{position:relative}
+  .stop .dotcol::before{           /* the route line */
+    content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;
+    transform:translateX(-50%);background:var(--line);
+  }
+  .stop:first-child .dotcol::before{top:18px}
+  .stop:last-child .dotcol::before{bottom:calc(100% - 22px)}
+  .stop .dot{
+    position:absolute;left:50%;top:16px;width:11px;height:11px;border-radius:50%;
+    transform:translateX(-50%);background:#fff;border:3px solid var(--motorway-2);
+  }
+  .stop.major .dot{
+    width:15px;height:15px;top:14px;background:var(--lane-yellow);
+    border-color:var(--motorway);
+  }
+  .stop .c{padding:10px 0 14px}
+  .stop .c .name{font-weight:600}
+  .stop .c .km{
+    font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--motorway-2);font-weight:600;margin-left:8px;white-space:nowrap;
+  }
+  .stop .c p{font-size:.9rem;color:var(--muted);margin-top:2px}
+  .tag{
+    display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;border-radius:6px;padding:2px 8px;margin-top:5px;margin-right:6px;
+  }
+  .tag.swap{background:#FFF3D1;color:#8A6400;border:1px solid #F0D488}
+  .tag.food{background:#E4F2E9;color:var(--sign-green);border:1px solid #BFDCCB}
+  .tag.night{background:#E4E9F7;color:var(--motorway-2);border:1px solid #C3CDEB}
+  .tag.border{background:#F0E4F7;color:#6B2E8C;border:1px solid #DCC3EB}
+
+  /* ---------- SLEEP CARDS ---------- */
+  .sleep{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:6px 0 22px}
+  .sleep .card{
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;
+    border-top:4px solid var(--sign-green);
+  }
+  .sleep .card.reco{border-top-color:var(--lane-yellow);background:#FFFDF4}
+  .sleep .kind{
+    font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  }
+  .sleep .nm{font-weight:600;margin:2px 0 1px}
+  .sleep .pl{font-size:.85rem;color:var(--muted)}
+  .sleep .pr{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.15rem;
+    color:var(--sign-green);margin-top:6px;
+  }
+  .sleep .card.reco .pr{color:#8A6400}
+  .sleep .note{font-size:.8rem;color:var(--muted);margin-top:4px}
+
+  /* ---------- BUDGET SPOT EXTRAS ---------- */
+  .tag.tent{background:#E4F2E9;color:var(--sign-green);border:1px solid #BFDCCB}
+  .tag.notent{background:#EEF0F4;color:#5B6270;border:1px solid #D8DCE6}
+  .tag.free{background:#FFF3D1;color:#8A6400;border:1px solid #F0D488}
+  .subgroup{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;
+    letter-spacing:.06em;font-size:1.02rem;color:var(--motorway-2);
+    margin:22px 0 10px;padding-bottom:5px;border-bottom:2px dashed var(--line);
+  }
+  .notice{
+    background:#FFF9E8;border:1px solid #F0D488;border-left:5px solid var(--lane-yellow);
+    border-radius:10px;padding:13px 16px;font-size:.9rem;color:#5b4a13;
+    margin:4px 0 20px;max-width:74ch;
+  }
+
+  /* ---------- CLICKABLE LINKS ---------- */
+  .stop .c .name a{color:inherit;text-decoration:none;border-bottom:1.5px dashed rgba(27,60,140,.45)}
+  .stop .c .name a:hover{color:var(--motorway-2);border-bottom-style:solid}
+  .sleep .nm a{color:inherit;text-decoration:none;border-bottom:1.5px dashed rgba(27,60,140,.45)}
+  .sleep .nm a:hover{color:var(--motorway-2);border-bottom-style:solid}
+  .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  a.lnk{
+    font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    text-decoration:none;padding:3px 10px;border-radius:20px;
+    background:var(--motorway-2);color:#fff;
+  }
+  a.lnk:hover{opacity:.85}
+  a.lnk.map{background:var(--sign-green)}
+  a.lnk.bnb{background:#FF385C}
+  a.lnk.web{background:#5B6270}
+
+
+  /* ---------- CHECKLIST ---------- */
+  .chk-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .chk-progress{flex:1 1 220px;height:12px;background:#E4E8F1;border-radius:8px;overflow:hidden;min-width:180px}
+  .chk-progress i{display:block;height:100%;width:0;background:var(--sign-green);transition:width .3s ease}
+  .chk-count{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--motorway-2)}
+  .chk-btn{
+    font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+    border:none;border-radius:8px;padding:7px 13px;cursor:pointer;background:var(--motorway-2);color:#fff;
+  }
+  .chk-btn.warn{background:#B3423A}
+  .chk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+  .chk-cat{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .chk-cat h4{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+    background:var(--motorway);color:#fff;padding:10px 14px;font-size:1rem;display:flex;justify-content:space-between;align-items:center;
+  }
+  .chk-cat h4 .done-count{font-size:.75rem;color:var(--lane-yellow);letter-spacing:.08em}
+  .chk-items{list-style:none;padding:6px 8px}
+  .chk-items li{
+    display:flex;align-items:flex-start;gap:9px;padding:7px 6px;border-bottom:1px dashed #EDEFF4;font-size:.9rem;
+  }
+  .chk-items li:last-child{border-bottom:none}
+  .chk-items input[type=checkbox]{width:18px;height:18px;margin-top:1px;accent-color:var(--sign-green);cursor:pointer;flex:none}
+  .chk-items li.done .txt{text-decoration:line-through;color:#9AA1AF}
+  .chk-items .txt{flex:1;cursor:pointer}
+  .chk-items .del{
+    border:none;background:none;color:#C3C9D4;cursor:pointer;font-size:1rem;padding:0 4px;flex:none;
+  }
+  .chk-items .del:hover{color:#B3423A}
+  .chk-add{display:flex;gap:6px;padding:8px;border-top:1px solid var(--line);background:#F7F8FB}
+  .chk-add input{
+    flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;font-size:.86rem;min-width:0;
+  }
+  .chk-add button{
+    border:none;border-radius:8px;background:var(--sign-green);color:#fff;font-weight:700;padding:0 13px;cursor:pointer;font-size:1.05rem;
+  }
+  .chk-note{font-size:.8rem;color:var(--muted);margin-top:12px}
+
+  /* ---------- BORDER NEWS ---------- */
+  .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .news-head{
+    background:var(--motorway);color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  }
+  .news-head h3{font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:1.15rem;flex:1}
+  .news-refresh{
+    border:none;border-radius:20px;background:var(--lane-yellow);color:var(--motorway);
+    font-weight:700;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;cursor:pointer;
+  }
+  .news-refresh:disabled{opacity:.6;cursor:wait}
+  .news-body{padding:16px 18px;font-size:.93rem;line-height:1.6;white-space:pre-wrap}
+  .news-body .muted{color:var(--muted)}
+  .news-stamp{font-size:.75rem;color:var(--muted);padding:0 18px 12px}
+  .news-links{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 16px}
+
+
+  /* ---------- STICKY QUICK NAV ---------- */
+  .qnav{
+    position:sticky;top:0;z-index:50;background:var(--motorway);
+    display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    padding:9px 14px;box-shadow:0 3px 12px rgba(16,33,75,.25);
+    scrollbar-width:none;
+  }
+  .qnav::-webkit-scrollbar{display:none}
+  .qnav a{
+    flex:none;color:#fff;text-decoration:none;font-size:.8rem;font-weight:600;
+    letter-spacing:.03em;padding:8px 13px;border-radius:20px;
+    background:rgba(255,255,255,.12);white-space:nowrap;min-height:36px;display:flex;align-items:center;
+  }
+  .qnav a:active{background:var(--lane-yellow);color:var(--motorway)}
+  section{scroll-margin-top:64px}
+
+  /* ---------- MOBILE UX ---------- */
+  @media (max-width:640px){
+    body{font-size:15px}
+    .wrap{padding:0 14px}
+    header{padding-top:34px}
+    .sign{padding:20px 16px 16px;border-radius:12px}
+    h1{font-size:clamp(2rem,10vw,2.9rem)}
+    .sign .sub{font-size:.9rem}
+    .statbar div{flex:1 1 30%;padding:10px 10px 8px}
+    .statbar b{font-size:1.35rem}
+    .road{margin-top:28px}
+    section{padding:36px 0 6px}
+    h2{font-size:1.4rem}
+    .lede{font-size:.92rem;margin-bottom:20px}
+    .day-head{padding:14px 14px 11px;gap:10px}
+    .day-head h3{font-size:1.12rem}
+    .day-meta{gap:10px;font-size:.78rem}
+    .day-body{padding:8px 12px 14px}
+    .stop{grid-template-columns:48px 20px 1fr;gap:0 8px}
+    .stop .t{font-size:.72rem;padding-top:14px}
+    .stop .c{padding:9px 0 12px}
+    .stop .c .name{font-size:.93rem}
+    .stop .c .km{display:block;margin-left:0;margin-top:1px}
+    .stop .c p{font-size:.85rem}
+    .sleep{grid-template-columns:1fr;gap:12px}
+    .tips{grid-template-columns:1fr}
+    .tolls{grid-template-columns:1fr 1fr}
+    .tag{font-size:.64rem;padding:3px 8px}
+    a.lnk{padding:7px 13px;min-height:34px;display:inline-flex;align-items:center;font-size:.7rem}
+    .links{gap:8px}
+    .chk-grid{grid-template-columns:1fr}
+    .chk-items li{padding:10px 6px}
+    .chk-items input[type=checkbox]{width:22px;height:22px}
+    .chk-items .txt{font-size:.92rem;line-height:1.4}
+    .chk-items .del{font-size:1.25rem;padding:0 8px}
+    .chk-add input{padding:11px 12px;font-size:16px} /* 16px stops iOS zoom-on-focus */
+    .chk-add button{min-width:48px;font-size:1.3rem}
+    .chk-btn{padding:11px 15px}
+    .chk-toolbar{position:sticky;top:56px;z-index:40;background:var(--paper);padding:8px 0;margin:0 0 12px}
+    .news-head{padding:12px 14px}
+    .news-refresh{width:100%;padding:13px;font-size:.9rem}
+    .news-body{padding:14px;font-size:.88rem;max-height:60vh;overflow-y:auto}
+    .subgroup{font-size:.95rem}
+    .notice{font-size:.85rem;padding:12px 13px}
+    footer{font-size:.8rem}
+  }
+  @media (max-width:380px){
+    .stop{grid-template-columns:42px 18px 1fr}
+    .statbar div{flex:1 1 45%}
+    .tolls{grid-template-columns:1fr}
+  }
+  /* comfortable tap targets everywhere */
+  @media (pointer:coarse){
+    .qnav a{min-height:40px}
+    .chk-items input[type=checkbox]{width:22px;height:22px}
+  }
+
+  /* ---------- TIP SIGNS ---------- */
+  .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:30px}
+  .tipsign{
+    border-radius:12px;padding:16px 18px;color:#fff;background:var(--sign-green);
+    font-size:.92rem;
+  }
+  .tipsign.blue{background:var(--motorway-2)}
+  .tipsign h4{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;
+    letter-spacing:.05em;font-size:1.02rem;margin-bottom:8px;
+    border-bottom:2px solid rgba(255,255,255,.35);padding-bottom:6px;
+  }
+  .tipsign ul{list-style:none}
+  .tipsign li{padding-left:18px;position:relative;margin-bottom:7px;line-height:1.45}
+  .tipsign li::before{content:"▸";position:absolute;left:0;color:var(--lane-yellow)}
+
+  /* ---------- TOLLS ---------- */
+  .tolls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:30px}
+  .toll{
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  }
+  .toll .flag{font-size:1.3rem}
+  .toll b{display:block;font-weight:600;margin:2px 0}
+  .toll p{font-size:.84rem;color:var(--muted)}
+
+  footer{
+    background:var(--motorway);color:#AEBBE0;text-align:center;
+    padding:30px 20px 36px;font-size:.85rem;margin-top:40px;
+  }
+  footer b{color:#fff}
+  @media (max-width:560px){
+    .stop{grid-template-columns:54px 22px 1fr}
+    .statbar div{flex:1 1 45%}
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .day{transition:transform .18s ease, box-shadow .18s ease}
+    .day:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(16,33,75,.10)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="sign">
+      <div class="eyebrow">Family Road Trip Plan · Toyota Corolla + Roof Box · Baby on Board</div>
+      <h1>Barcelona <span class="arrow">→</span> Minsk</h1>
+      <p class="sub">Five days across six countries — Barcelona to Warsaw (arrive 19 July), then the big border day: Warsaw → Terespol → Brest → Minsk on 20 July. Driving capped at ~6–7 h/day, driver swaps and baby breaks every 60–90 minutes. 2021 Toyota Corolla 1.8 Hybrid Touring Sports + roof box.</p>
+      <div class="statbar">
+        <div><b>≈2,940</b><span>km total</span></div>
+        <div><b>5</b><span>days</span></div>
+        <div><b>6</b><span>countries</span></div>
+        <div><b>16–20</b><span>july 2026</span></div>
+        <div><b>2</b><span>drivers</span></div>
+        <div><b>1</b><span>happy baby</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="road"></div>
+</header>
+
+<nav class="qnav" aria-label="Sections">
+  <a href="#route">🗺️ Route</a><a href="#tolls">💶 Tolls</a><a href="#p4n">⛺ Sleep spots</a><a href="#airbnb">🏠 Airbnb</a><a href="#rules">👶 Rules</a><a href="#belarus">🇧🇾 Belarus</a><a href="#checklist">✅ Checklist</a><a href="#bordernews">🛂 Border news</a>
+</nav>
+
+
+<div class="wrap">
+
+  <!-- ==================== DAY 1 ==================== -->
+  <section id="route">
+    <h2>The route, day by day</h2>
+    <p class="lede">Every stop below is a chance to fuel, feed, change, stretch — and swap drivers so nobody is at the wheel for more than about 90 minutes.</p>
+
+    <div class="day">
+      <div class="day-head">
+        <span class="day-badge">Day 1 · 16 Jul</span>
+        <h3>Barcelona → Villars-les-Dombes (Lyon area), France</h3>
+        <div class="day-meta">
+          <span><b>639 km</b> · ~6 h 15 m</span>
+          <span>Depart <b>07:30</b> → Arrive <b>~18:00</b></span>
+          <span>French autoroute tolls apply</span>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="stop major">
+          <div class="t">07:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Barcelona" target="_blank" rel="noopener">Barcelona — departure</a></span>
+            <p>Roof box strapped and checked. Baby kit, cooler bag and toys in the cabin — never in the roof box.</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">~09:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=La+Jonquera+services+area" target="_blank" rel="noopener">La Jonquera / Le Perthus services</a></span><span class="km">~155 km</span>
+            <p>Spain–France border. Fuel, baby change, snacks.</p>
+            <span class="tag swap">Switch driver</span><span class="tag border">Border</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~10:15</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Aire+de+Narbonne+Sud+A9" target="_blank" rel="noopener">Aire de Narbonne-Sud</a></span><span class="km">~290 km</span>
+            <p>Lunch break; small playground nearby in Narbonne.</p>
+            <span class="tag swap">Switch driver</span><span class="tag food">Lunch</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~12:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Aire+du+Septimanie+A9+Montpellier" target="_blank" rel="noopener">Aire du Septimanie (Montpellier)</a></span><span class="km">~380 km</span>
+            <p>Quick walk, feed the baby.</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">~13:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Aire+de+N%C3%AEmes-Caissargues+%2F+Orange" target="_blank" rel="noopener">Aire de Nîmes-Caissargues / Orange</a></span><span class="km">~460 km</span>
+            <span class="tag swap">Switch driver</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~15:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Aire+de+Mont%C3%A9limar" target="_blank" rel="noopener">Aire de Montélimar</a></span><span class="km">~560 km</span>
+            <p>Final short break before the Dombes.</p></div>
+        </div>
+        <div class="stop major">
+          <div class="t">~18:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Villars-les-Dombes" target="_blank" rel="noopener">Villars-les-Dombes — Night 1</a></span>
+            <p>Calm lake country 45 min from Lyon, next to the Parc des Oiseaux bird park.</p>
+            <span class="tag night">Overnight</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sleep">
+      <div class="card reco"><div class="kind">Camping · recommended</div><div class="nm"><a href="https://www.domainedeladombes.com" target="_blank" rel="noopener">Domaine de la Dombes ↗</a></div><div class="pl">Saint-Paul-de-Varax, France</div><div class="pr">€20–30 / night</div><div class="note">4-star family site, calm nature — domainedeladombes.com</div></div>
+      <div class="card"><div class="kind">Camping · alternative</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Camping+Paradis+des+Dombes+Sandrans" target="_blank" rel="noopener">Camping Paradis des Dombes ↗</a></div><div class="pl">Sandrans, France</div><div class="pr">€18–25 / night</div><div class="note">By a lake, family-run — via eurocampings.eu</div></div>
+      <div class="card"><div class="kind">Airbnb</div><div class="nm"><a href="https://www.airbnb.com/s/Villars-les-Dombes--France/homes" target="_blank" rel="noopener">Modern, quiet apartment ↗</a></div><div class="pl">Villars-les-Dombes</div><div class="pr">≈ €70 / night</div><div class="note">Superhost, 4.95★ (252 reviews)</div></div>
+      <div class="card"><div class="kind">Hotel · backup</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Wellin%27Ars+Ars-sur-Formans+hotel" target="_blank" rel="noopener">Wellin'Ars ↗</a></div><div class="pl">Ars-sur-Formans</div><div class="pr">≈ €80–100</div><div class="note">9.4 Superb (254 reviews) — booking.com</div></div>
+    </div>
+
+    <!-- ==================== DAY 2 ==================== -->
+    <div class="day">
+      <div class="day-head">
+        <span class="day-badge">Day 2 · 17 Jul</span>
+        <h3>Dombes → Bad Liebenzell (Black Forest), Germany</h3>
+        <div class="day-meta">
+          <span><b>~600 km</b> · ~6 h 15 m</span>
+          <span>Depart <b>08:00</b> → Arrive <b>~18:00</b></span>
+          <span>No more tolls after Freiburg</span>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="stop">
+          <div class="t">~09:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Aire+de+Bourg-en-Bresse+%2F+Louhans" target="_blank" rel="noopener">Aire de Bourg-en-Bresse / Louhans</a></span><span class="km">~80 km</span>
+            <p>Quick stop.</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">~10:45</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Aire+de+Besan%C3%A7on" target="_blank" rel="noopener">Aire de Besançon</a></span><span class="km">~180 km</span>
+            <p>Lunch with a playground.</p><span class="tag food">Lunch</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~12:15</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Aire+de+Belfort+%2F+Mulhouse" target="_blank" rel="noopener">Aire de Belfort / Mulhouse</a></span><span class="km">~280 km</span>
+            <p>Snacks.</p><span class="tag swap">Switch driver</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~13:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Freiburg+im+Breisgau+rest+area" target="_blank" rel="noopener">Freiburg im Breisgau rest area</a></span><span class="km">~360 km</span>
+            <p>Walk and coffee — no more tolls from here.</p><span class="tag border">Germany border</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~15:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Rastatt+%2F+Baden-Baden+services" target="_blank" rel="noopener">Rastatt / Baden-Baden services</a></span><span class="km">~440 km</span>
+            <span class="tag swap">Switch driver</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~16:15</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Pforzheim" target="_blank" rel="noopener">Karlsruhe / Pforzheim area</a></span><span class="km">~520 km</span>
+            <p>Final short stretch to Bad Liebenzell.</p></div>
+        </div>
+        <div class="stop major">
+          <div class="t">~18:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Bad+Liebenzell" target="_blank" rel="noopener">Bad Liebenzell — Night 2</a></span>
+            <p>Spa town in the Black Forest, Nagold valley.</p><span class="tag night">Overnight</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sleep">
+      <div class="card reco"><div class="kind">Camping · recommended</div><div class="nm"><a href="https://www.kleinenzhof.de" target="_blank" rel="noopener">Family-Resort Kleinenzhof ↗</a></div><div class="pl">Bad Wildbad, Germany</div><div class="pr">€25–35 / night</div><div class="note">Riverside, pool, 8.8/10 (773 reviews)</div></div>
+      <div class="card"><div class="kind">Camping · alternative</div><div class="nm"><a href="https://www.campingpark-bad-liebenzell.com/en/" target="_blank" rel="noopener">Campingpark Bad Liebenzell ↗</a></div><div class="pl">Bad Liebenzell</div><div class="pr">€20–28 / night</div><div class="note">Cosy, kitchen for tent campers</div></div>
+      <div class="card"><div class="kind">Airbnb</div><div class="nm"><a href="https://www.airbnb.com/s/Bad-Liebenzell--Germany/homes" target="_blank" rel="noopener">1-room apt, 35 m² (3 adults + child) ↗</a></div><div class="pl">Bad Liebenzell</div><div class="pr">≈ €34 / night</div><div class="note">4.56★ (82 reviews) — cheapest option found</div></div>
+      <div class="card"><div class="kind">Hotel · backup</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Hotel+Koch+Bad+Liebenzell" target="_blank" rel="noopener">Hotel Koch ↗</a></div><div class="pl">Bad Liebenzell</div><div class="pr">≈ €90–110</div><div class="note">Family-run, 8.8 Fabulous (739 reviews)</div></div>
+    </div>
+
+    <!-- ==================== DAY 3 ==================== -->
+    <div class="day">
+      <div class="day-head">
+        <span class="day-badge">Day 3 · 18 Jul</span>
+        <h3>Bad Liebenzell → Vrané nad Vltavou (south of Prague)</h3>
+        <div class="day-meta">
+          <span><b>~490 km</b> · ~5 h — the easy day</span>
+          <span>Depart <b>08:00</b> → Arrive <b>~16:30</b></span>
+          <span>Czech e-vignette required</span>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="stop">
+          <div class="t">~08:45</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Stuttgart" target="_blank" rel="noopener">Stuttgart ring services</a></span><span class="km">~50 km</span>
+            <p>Quick stop.</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">~09:45</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Nuremberg+Autohof" target="_blank" rel="noopener">Nuremberg Autohof</a></span><span class="km">~180 km</span>
+            <span class="tag swap">Switch driver</span><span class="tag food">Lunch</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~11:15</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Waidhaus" target="_blank" rel="noopener">Waidhaus</a></span><span class="km">~280 km</span>
+            <p>Confirm the Czech e-vignette is active; stretch break.</p>
+            <span class="tag border">Germany–Czech border</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~12:15</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Plze%C5%88" target="_blank" rel="noopener">Plzeň (Pilsen)</a></span><span class="km">~350 km</span>
+            <p>Walk in a park.</p><span class="tag swap">Switch driver</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~13:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Beroun+%2F+Prague+approach" target="_blank" rel="noopener">Beroun / Prague approach</a></span><span class="km">~440 km</span>
+            <p>Short break before arrival.</p></div>
+        </div>
+        <div class="stop major">
+          <div class="t">~16:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Vran%C3%A9+nad+Vltavou" target="_blank" rel="noopener">Vrané nad Vltavou — Night 3</a></span>
+            <p>Riverside village on the Vltava. Early arrival — the evening is free if you fancy a peek at Prague.</p>
+            <span class="tag night">Overnight</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sleep">
+      <div class="card reco"><div class="kind">Camping · recommended</div><div class="nm"><a href="https://park4night.com/en/place/39885" target="_blank" rel="noopener">Camp Matyáš ↗</a></div><div class="pl">Vrané nad Vltavou, Czechia</div><div class="pr">€15–22 / night</div><div class="note">Secure, peaceful family site on the Vltava, playground</div></div>
+      <div class="card"><div class="kind">Camping · alternative</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Camping+Oaza+Praha" target="_blank" rel="noopener">Camping Oáza Praha / Drusus ↗</a></div><div class="pl">Dolní Břežany / Prague 13</div><div class="pr">€15–20 / night</div><div class="note">Closer to the city, rated 4.5–4.6</div></div>
+      <div class="card"><div class="kind">Airbnb</div><div class="nm"><a href="https://www.airbnb.com/s/Vran%C3%A9-nad-Vltavou--Czechia/homes" target="_blank" rel="noopener">Cozy countryside flat ↗</a></div><div class="pl">Praha-západ district</div><div class="pr">≈ €75 / night</div><div class="note">Guest favourite, 4.97★ (29 reviews)</div></div>
+      <div class="card"><div class="kind">Hotel · backup</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Hotel+Restovna+Jiloviste" target="_blank" rel="noopener">Hotel Restovna ↗</a></div><div class="pl">Jíloviště, Czechia</div><div class="pr">≈ €85–100</div><div class="note">8.8 Fabulous (698 reviews), quiet, near the D1</div></div>
+    </div>
+
+    <!-- ==================== DAY 4 ==================== -->
+    <div class="day">
+      <div class="day-head">
+        <span class="day-badge">Day 4 · 19 Jul</span>
+        <h3>Vrané nad Vltavou → Warsaw (via Wrocław / Łódź)</h3>
+        <div class="day-meta">
+          <span><b>~650 km</b> · ~6 h 45 m — longest day, earliest start</span>
+          <span>Depart <b>07:00</b> → Arrive <b>~17:00</b></span>
+          <span>Polish S8 / A2 / A18 toll-free for cars</span>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="stop">
+          <div class="t">~07:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=D11+rest+area+Prague" target="_blank" rel="noopener">Prague ring / D11 rest area</a></span><span class="km">~40 km</span>
+            <p>Quick stop.</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">~08:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Hradec+Kr%C3%A1lov%C3%A9+area" target="_blank" rel="noopener">Hradec Králové area</a></span><span class="km">~150 km</span>
+            <span class="tag swap">Switch driver</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~10:15</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Wroc%C5%82aw+area" target="_blank" rel="noopener">Wrocław area</a></span><span class="km">~280 km</span>
+            <p>The big one — longer lunch break plus playground time.</p>
+            <span class="tag swap">Switch driver</span><span class="tag food">Long lunch</span><span class="tag border">Poland border</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">~13:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Kalisz+%2F+Konin" target="_blank" rel="noopener">Kalisz / Konin (A2)</a></span><span class="km">~420 km</span>
+            <p>Snack stop.</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">~14:15</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=%C5%81%C3%B3d%C5%BA+area" target="_blank" rel="noopener">Łódź area</a></span><span class="km">~500 km</span>
+            <span class="tag swap">Switch driver — final leg</span></div>
+        </div>
+        <div class="stop major">
+          <div class="t">~17:00</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Warsaw+Poland" target="_blank" rel="noopener">Warsaw — arrival! 🎉</a></span><span class="km">~650 km</span>
+            <p>Night 4 is arrival night — book your own place in the centre or your preferred district.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-head">
+        <span class="day-badge">Day 5 · 20 Jul</span>
+        <h3>Warsaw → Terespol → Brest → Minsk, Belarus</h3>
+        <div class="day-meta">
+          <span><b>~560 km driving</b> + border crossing (budget 3–10 h)</span>
+          <span>Depart <b>04:30</b> → Arrive Minsk <b>evening</b></span>
+          <span>Crossing: Terespol–Brest (backup: Bobrowniki)</span>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="stop major">
+          <div class="t">04:30</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Warsaw+Poland" target="_blank" rel="noopener">Warsaw — early departure</a></span>
+            <p>Fuel to full before leaving (fuel is cheap in Belarus, but arrive at the queue with a full tank + snacks + water). Documents pouch on the front seat.</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">~06:45</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Terespol+border+crossing+Poland" target="_blank" rel="noopener">Terespol border crossing</a></span><span class="km">~210 km</span>
+            <p>Join the car queue. Polish exit control: passports + car registration. Check live queues at granica.gov.pl before and during.</p>
+            <span class="tag border">Poland exit</span></div>
+        </div>
+        <div class="stop major">
+          <div class="t">buffer</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Brest+border+crossing+Belarus" target="_blank" rel="noopener">Brest — Belarus entry</a></span>
+            <p>Passport control + temporary import declaration for the car. Then two mandatory stops: buy <b>border car insurance</b> (~€25–35 / 15 days — your Spanish Green Card is NOT valid in Belarus) and get the <b>BelToll on-board unit</b> (required for foreign cars &lt;3.5 t, ~€25 deposit).</p>
+            <span class="tag border">Belarus entry</span><span class="tag swap">Insurance + BelToll</span></div>
+        </div>
+        <div class="stop">
+          <div class="t">+1h</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Kobryn+Belarus" target="_blank" rel="noopener">Kobryn (M1)</a></span><span class="km">~50 km</span>
+            <p>First stop in Belarus: stretch, feed the baby, buy a local SIM if not done in Brest (A1 / MTS, passport needed — EU roaming does not work).</p></div>
+        </div>
+        <div class="stop">
+          <div class="t">+2h45</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Baranavichy+Belarus" target="_blank" rel="noopener">Baranavichy area (M1)</a></span><span class="km">~200 km</span>
+            <p>Lunch + driver switch. M1 is smooth dual carriageway; keep to limits — speed cameras are common.</p>
+            <span class="tag swap">Switch driver</span><span class="tag food">Lunch</span></div>
+        </div>
+        <div class="stop major">
+          <div class="t">evening</div><div class="dotcol"><span class="dot"></span></div>
+          <div class="c"><span class="name"><a href="https://www.google.com/maps/search/?api=1&query=Minsk+Belarus" target="_blank" rel="noopener">Minsk — arrival! 🎉</a></span><span class="km">~560 km</span>
+            <p>If staying at a private address longer than 10 days, register your stay. Rest — you earned it.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice">🛂 <b>Border reality check:</b> only <b>Terespol–Brest</b> is consistently open for private cars (Bobrowniki also open as of late 2025; Połowce &amp; Sławatycze suspended in April 2026). Closures happen with little notice — check the live border-news panel below and granica.gov.pl / gpk.gov.by the evening before and the morning of 20 July. If Terespol is jammed or shut, reroute via Białystok → Bobrowniki (+~2 h driving).</div>
+  </section>
+
+  <!-- ==================== TOLLS ==================== -->
+  <section id="tolls">
+    <h2>Tolls &amp; vignettes</h2>
+    <p class="lede">The route sticks to motorways for safety and baby-friendly rest areas. A fully toll-free N-road route exists but adds ~2–3 h overall.</p>
+    <div class="tolls">
+      <div class="toll"><span class="flag">🇫🇷</span><b>France</b><p>Autoroute tolls ≈ €45–55 total across Days 1–2.</p></div>
+      <div class="toll"><span class="flag">🇩🇪</span><b>Germany</b><p>No tolls for cars. Enjoy.</p></div>
+      <div class="toll"><span class="flag">🇨🇿</span><b>Czechia</b><p>10-day motorway e-vignette ≈ €18 — buy in advance at edalnice.cz.</p></div>
+      <div class="toll"><span class="flag">🇵🇱</span><b>Poland</b><p>S8 / A2 / A18 are toll-free for cars.</p></div>
+    </div>
+  </section>
+
+  <!-- ==================== BUDGET SLEEP SPOTS (PARK4NIGHT) ==================== -->
+  <section id="p4n">
+    <h2>Budget sleep spots along the route (park4night)</h2>
+    <p class="lede">Free and cheap overnight options right off the motorway, from park4night listings and traveller reviews. Every card links straight to the park4night page and the exact spot on Google Maps.</p>
+    <div class="notice">⚠️ <b>Tent rule:</b> free aires and car parks are for sleeping <i>inside</i> the vehicle only. In Germany and France, pitching a tent outside a campsite is prohibited and can be fined. With a baby, use the campsites for tent nights and keep the free spots as backups. Prices and rules change — always check the latest park4night reviews before arriving.</div>
+    <div class="subgroup">Day 1 · Spain → France</div>
+    <div class="sleep">
+      <div class="card"><div class="kind">Free parking</div><div class="nm">Supermercat Escudero</div><div class="pl">La Jonquera, ES–FR border</div><div class="pr">FREE</div><div class="note">Guarded lot, gate closed at night with side access. Some truck noise.</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/550977" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Supermercat+Escudero+La+Jonquera" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Free parking</div><div class="nm">Carrer Nord 24h parking</div><div class="pl">La Jonquera</div><div class="pr">FREE</div><div class="note">Big lot beside a trucker cafeteria with cheap, generous meals. Basic but handy.</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/290691" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Carrer+Nord+1+La+Jonquera+parking" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Service area</div><div class="nm">OnTurtle Autos</div><div class="pl">La Jonquera</div><div class="pr">FREE–€3</div><div class="note">Showers, laundry, water, shop; hotel + supermarket next door.</div><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/38555" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=OnTurtle+La+Jonquera" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Free aire</div><div class="nm">Espace Liberté</div><div class="pl">Narbonne</div><div class="pr">FREE</div><div class="note">Quiet + safe, free water, free shuttle to the centre. Closed ~20 Sep–20 Oct (funfair).</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/536360" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Espace+Liberte+Narbonne+parking" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Free parking</div><div class="nm">Coubertin sports-centre parking</div><div class="pl">Narbonne</div><div class="pr">FREE</div><div class="note">Reviewers call it a safe, calm alternative to the A9 aires; 15 min walk to the old centre.</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/476899" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=1+Avenue+Pierre+de+Coubertin+Narbonne" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Paid aire</div><div class="nm">Aire de Narbonne-Plage</div><div class="pl">Narbonne-Plage (seaside detour)</div><div class="pr">€10 / 24h</div><div class="note">117 marked pitches between sea, vineyards and pines with direct beach access.</div><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/83062" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Aire+de+camping-car+Narbonne-Plage" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Paid aire</div><div class="nm">Aire de l'Épervière</div><div class="pl">Valence</div><div class="pr">≈ €12</div><div class="note">New, video surveillance, 15 min walk to the centre, next to the aquatic park.</div><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/430567" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Aire+camping-car+Epervier+Valence" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Free aire</div><div class="nm">Aire du Bois de Laud</div><div class="pl">Montélimar</div><div class="pr">FREE</div><div class="note">Shaded, free water + services, town walkable. Muddy after rain.</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/269855" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Aire+du+Domaine+du+Bois+de+Laud+Montelimar" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Free parking</div><div class="nm">Parc des Oiseaux parking</div><div class="pl">Villars-les-Dombes</div><div class="pr">FREE</div><div class="note">Flat shaded grass, very quiet; one-night stays tolerated (nicest if you visit the bird park).</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/73468" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Parc+des+Oiseaux+parking+Villars-les-Dombes" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Campsite</div><div class="nm">Camping Le Large</div><div class="pl">Villars-les-Dombes</div><div class="pr">≈ €15</div><div class="note">Pool + playground; ~€14.80 for vehicle, 2 people & electricity. Cheapest tent night in France.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/8565" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Camping+Le+Large+Villars-les-Dombes" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+    <div class="subgroup">Day 2 · France → Black Forest, Germany</div>
+    <div class="sleep">
+      <div class="card"><div class="kind">Free parking</div><div class="nm">Nagoldtal riverside car park</div><div class="pl">Bad Liebenzell</div><div class="pr">FREE</div><div class="note">Idyllic flat spot by the river, quiet from ~8pm. Discreet car-sleep only.</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/152609" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Im+Nagoldtal+Bad+Liebenzell+parking" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Free Stellplatz</div><div class="nm">Wohnmobilstellplatz Hirsau</div><div class="pl">Calw-Hirsau, 10 min away</div><div class="pr">FREE</div><div class="note">Municipal, well kept, cheap water, monastery a short walk away, quiet nights.</div><span class="tag free">Free</span><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/166298" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Wohnmobilstellplatz+Hirsau+Calw" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Paid Stellplatz</div><div class="nm">Stellplatz am Kurpark</div><div class="pl">Bad Wildbad</div><div class="pr">≈ €15 incl. tax</div><div class="note">Beside the spa park with a playground right there; ≈€8.60 after the included tourist tax.</div><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/33944" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Wohnmobilstellplatz+Kernerstrasse+126+Bad+Wildbad" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Paid Stellplatz</div><div class="nm">Stellplatz at Campingpark</div><div class="pl">Bad Liebenzell</div><div class="pr">€12–20</div><div class="note">Simple pitch beside the campsite; campsite sanitary facilities + pool access included.</div><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/111454" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Campingpark+Bad+Liebenzell" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Campsite</div><div class="nm">Campingpark Bad Liebenzell</div><div class="pl">Bad Liebenzell</div><div class="pr">€20–28</div><div class="note">Tent pitches, camper kitchen, playground + outdoor pool included, free regional bus/train card.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk web" href="https://www.campingpark-bad-liebenzell.com/en/" target="_blank" rel="noopener">Website</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Campingpark+Bad+Liebenzell" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Campsite</div><div class="nm">Family-Resort Kleinenzhof</div><div class="pl">Bad Wildbad</div><div class="pr">€25–35</div><div class="note">Riverside family resort with pool — the comfort pick for Night 2.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk web" href="https://www.kleinenzhof.de" target="_blank" rel="noopener">Website</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Family+Resort+Kleinenzhof+Bad+Wildbad" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+    <div class="subgroup">Day 3 · Germany → Czechia</div>
+    <div class="sleep">
+      <div class="card"><div class="kind">Campsite</div><div class="nm">RC Husárna</div><div class="pl">nr Plzeň, just off the D5</div><div class="pr">≈ €15–20</div><div class="note">Quiet, forest + pond edge, restaurant serves even late arrivals. Ideal DE→CZ stopover.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/173963" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Recreation+Center+Husarna+Plzen" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Campsite</div><div class="nm">Autocamp Ostende</div><div class="pl">Plzeň, Bolevec lake</div><div class="pr">≈ €12–18</div><div class="note">Shaded tent pitches under trees, lake swimming, clean daily-cleaned facilities. Cash only.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk web" href="https://www.czechcamping.com/camp/747" target="_blank" rel="noopener">Website</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Autocamp+Ostende+Plzen" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Campsite</div><div class="nm">Camp Matyáš</div><div class="pl">Vrané nad Vltavou</div><div class="pr">tent = budget</div><div class="note">Family camp: kitchen house, toys, free morning bread, great English. Camper rate ~1100 CZK & 2-night min — call to confirm the tent rate for 1 night.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/39885" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Camp+Matyas+Vrane+nad+Vltavou" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Campsite</div><div class="nm">Lávkapark Skochovice</div><div class="pl">Vrané nad Vltavou</div><div class="pr">cheap</div><div class="note">Relaxed riverside camp by the dam, kids' playroom + pool, open 24h. Fallback if Matyáš is full.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk web" href="https://camperguru.com/spot/lavkapark-skochovice-camp/" target="_blank" rel="noopener">Info</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Lavkapark+Skochovice+camp+Vrane+nad+Vltavou" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Campsite · best value</div><div class="nm">Camp Slivenec</div><div class="pl">Prague (orchard)</div><div class="pr">≈ €15–18 total</div><div class="note">Tent 200 CZK + 170/adult, kids 0–2 free, FREE hot showers, eat fruit from the trees, shop opposite.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Camp+Slivenec+Prague" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Campsite</div><div class="nm">Praguecamp</div><div class="pl">Prague, riverside (Smíchov)</div><div class="pr">≈ €24–45</div><div class="note">Closest to the centre; hot showers, bar, friendly owner, walk along the embankment into town.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/11100" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Praguecamp+Prague" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+    <div class="subgroup">Day 4 · Czechia → Poland</div>
+    <div class="sleep">
+      <div class="card"><div class="kind">Camper park</div><div class="nm">Kopalnia Camper Park</div><div class="pl">2 km from Wrocław</div><div class="pr">≈ €20–25</div><div class="note">Fenced + illuminated, beaches, big playground, water park. Perfect long Wrocław lunch stop — ask about tents.</div><span class="tag tent">Tent? ask</span><div class="links"><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Kopalnia+Camper+Park+Wroclaw" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Camper park</div><div class="nm">Q Hotel Plus Bielany</div><div class="pl">Wrocław-Bielany, on the A4</div><div class="pr">≈ €20</div><div class="note">Hotel-run camper spots: water, disposal, electricity; sauna + breakfast buffet optional.</div><span class="tag notent">No tent</span><div class="links"><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Q+Hotel+Plus+Wroclaw+Bielany" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Camper park</div><div class="nm">Kamper Park Łódź</div><div class="pl">Łódź, S-14 exit</div><div class="pr">≈ €25</div><div class="note">Fenced, well-lit, monitored, 24/7 — the most secure paid stop in Poland.</div><span class="tag notent">No tent</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/515097" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Kamper+Park+Lodz+Toeplitza+16" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Campsite</div><div class="nm">Letnisko Stara Wieś</div><div class="pl">Sulejów Reservoir, off the S8</div><div class="pr">cheap</div><div class="note">Lakeside kemping + tent field right on the reservoir shore, water-sports rental, bar 200 m away.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/516012" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Letnisko+Stara+Wies+kemping" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Campsite · cheapest Warsaw tent</div><div class="nm">WAWA Wake Camp</div><div class="pl">15 km from Warsaw centre</div><div class="pr">≈ €20 total</div><div class="note">Lakeside: small tent 39 PLN + 20 PLN/adult, beach, restaurant. Open May–Sep.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/270014" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Wawa+Wake+camp+Warsaw" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Campsite</div><div class="nm">Camping SUM</div><div class="pl">Warsaw, by the Vistula</div><div class="pr">≈ €23–40</div><div class="note">Small and simple, friendly staff, bus to the centre from the main road. Cheaper WOK alternative.</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/149493" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Camping+SUM+Warszawa" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Campsite · secure</div><div class="nm">Camping WOK</div><div class="pl">Warsaw (forest, SE)</div><div class="pr">≈ €40+</div><div class="note">Rated among the best in Poland — very safe, spotless facilities, kids' play area. Pricey for tents (~175 PLN).</div><span class="tag tent">Tent ✔</span><div class="links"><a class="lnk " href="https://park4night.com/en/place/18117" target="_blank" rel="noopener">park4night</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Camping+WOK+Warszawa" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+  </section>
+
+  <!-- ==================== CHEAP AIRBNB VILLAGES ==================== -->
+  <section id="airbnb">
+    <h2>Cheap Airbnb villages along the route</h2>
+    <p class="lede">Small towns and villages just off your motorway exits where Airbnb prices drop sharply — rural hosts nearly always include free private or gated parking. Each card links to the live Airbnb search for that village: set your dates, sort price low→high, filter "free parking on premises".</p>
+    <div class="subgroup">Day 1 · A9 / A7 → Dombes</div>
+    <div class="sleep">
+      <div class="card"><div class="kind">Village</div><div class="nm">Sigean / Port-la-Nouvelle</div><div class="pl">before Narbonne, France</div><div class="pr">≈ €45–65</div><div class="note">Lagoon & vineyard country, far cheaper than Narbonne, minutes off the A9.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Sigean--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Sigean%2C++France" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Bessan / Montagnac</div><div class="pl">nr Pézenas, A9/A75 junction</div><div class="pr">≈ €45–60</div><div class="note">Quiet wine villages, big gap below Montpellier prices.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Bessan--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Bessan%2C++A9%2FA75+junction" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Pézenas</div><div class="pl">20 min off the A9</div><div class="pr">≈ €50–70</div><div class="note">Molière's gorgeous old town — still cheaper than the coast.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Pezenas--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=P%C3%A9zenas%2C+20+min+off+the+A9" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Bollène / Mondragon</div><div class="pl">north of Orange, on the A7</div><div class="pr">≈ €45–65</div><div class="note">Provençal villages travellers skip; courtyards and gardens.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Bollene--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Boll%C3%A8ne%2C++on+the+A7" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Donzère / Châteauneuf-du-Rhône</div><div class="pl">5 min from the Montélimar exit</div><div class="pr">≈ €45–60</div><div class="note">Village houses with enclosed parking.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Donzere--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Donz%C3%A8re%2C+5+min+from+the+Mont%C3%A9limar+exit" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Meximieux / Pérouges</div><div class="pl">on the A42, 25 min from Villars</div><div class="pr">≈ €45–65</div><div class="note">Beside the stunning medieval walled village of Pérouges.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Meximieux--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Meximieux%2C++25+min+from+Villars" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Village · Night 1 zone</div><div class="nm">St-Paul-de-Varax / Marlieux</div><div class="pl">Dombes, 10 min from Villars</div><div class="pr">≈ €50–70</div><div class="note">Pond-country hamlets; whole gîtes cheaper than Villars itself.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Saint-Paul-de-Varax--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=St-Paul-de-Varax%2C++10+min+from+Villars" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Chalamont</div><div class="pl">15 min east of Villars</div><div class="pr">≈ €40–60</div><div class="note">Sleepy Dombes market village — often the cheapest roofs in the area.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Chalamont--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Chalamont%2C+15+min+east+of+Villars" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+    <div class="subgroup">Day 2 · Bresse → Franche-Comté → Black Forest</div>
+    <div class="sleep">
+      <div class="card reco"><div class="kind">Bargain zone</div><div class="nm">Louhans / St-Germain-du-Bois</div><div class="pl">Bresse, ~30 min off the A39</div><div class="pr">≈ €35–60</div><div class="note">Converted Bressan stables & farm cottages with enclosed land — best value of the French route.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Louhans--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Louhans%2C++~30+min+off+the+A39" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Bresse Vallons / Montrevel</div><div class="pl">off the A39, north of Bourg</div><div class="pr">≈ €40–60</div><div class="note">Rural farm gîtes + a lake/watersports base for the baby stop.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Montrevel-en-Bresse--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Bresse+Vallons%2C++north+of+Bourg" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Dole</div><div class="pl">on the A39, Jura</div><div class="pr">≈ €40–60</div><div class="note">Pasteur's canal-side old town, honest Jura prices.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Dole--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Dole%2C++Jura" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Baume-les-Dames</div><div class="pl">A36, Besançon → Belfort</div><div class="pr">≈ €45–60</div><div class="note">Doubs valley gorge setting, free riverside parking.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Baume-les-Dames--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Baume-les-Dames%2C++Besan%C3%A7on+%E2%86%92+Belfort" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">L'Isle-sur-le-Doubs / Clerval</div><div class="pl">same A36 stretch</div><div class="pr">≈ €40–55</div><div class="note">Riverside villages — regularly the cheapest before the German border.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/L%27Isle-sur-le-Doubs--France/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=L%27Isle-sur-le-Doubs%2C+same+A36+stretch" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Neuenburg am Rhein / Müllheim</div><div class="pl">off the A5, before Freiburg (DE)</div><div class="pr">≈ €50–70</div><div class="note">Markgräflerland wine villages, cheaper than Freiburg.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Neuenburg-am-Rhein--Germany/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Neuenburg+am+Rhein%2C++before+Freiburg+%28DE%29" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Nagold</div><div class="pl">15 min south of Bad Liebenzell</div><div class="pr">≈ €45–60</div><div class="note">Pretty half-timbered market town in the same valley.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Nagold--Germany/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Nagold%2C+15+min+south+of+Bad+Liebenzell" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Town · Night 2 zone</div><div class="nm">Calw / Hirsau</div><div class="pl">10 min from Bad Liebenzell</div><div class="pr">≈ €40–60</div><div class="note">Half-timbered Hermann Hesse town — cheaper than the spa towns. (Benchmark: the €34 flat in Bad Liebenzell.)</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Calw--Germany/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Calw%2C+10+min+from+Bad+Liebenzell" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+    <div class="subgroup">Day 3 · Swabia → Bavaria → Bohemia</div>
+    <div class="sleep">
+      <div class="card"><div class="kind">Town</div><div class="nm">Wernau / Kirchheim unter Teck</div><div class="pl">A8, east of Stuttgart</div><div class="pr">≈ €40–55</div><div class="note">Commuter-belt private rooms with easy A8 access.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Kirchheim-unter-Teck--Germany/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Wernau%2C++east+of+Stuttgart" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Feucht / Altdorf bei Nürnberg</div><div class="pl">off the A3/A6 by Nuremberg</div><div class="pr">≈ €40–60</div><div class="note">Forested small towns, well below Nuremberg-centre prices.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Altdorf-bei-Nurnberg--Germany/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Feucht%2C+off+the+A3%2FA6+by+Nuremberg" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Amberg</div><div class="pl">on the A6, 40 min before the border</div><div class="pr">≈ €40–60</div><div class="note">Beautifully preserved walled town most tourists never see.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Amberg--Germany/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Amberg%2C++40+min+before+the+border" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Vohenstrauß / Pleystein</div><div class="pl">last villages before Waidhaus</div><div class="pr">≈ €35–55</div><div class="note">Upper Palatinate forest country — very quiet and safe.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Vohenstrauss--Germany/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Vohenstrau%C3%9F%2C+last+villages+before+Waidhaus" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town · CZ prices begin</div><div class="nm">Rokycany / Zbiroh</div><div class="pl">D5, just east of Plzeň</div><div class="pr">≈ €30–50</div><div class="note">Whole apartments at Czech prices; castle-and-forest scenery.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Rokycany--Czechia/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Rokycany%2C++just+east+of+Plze%C5%88" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Beroun</div><div class="pl">D5, 20 min from Vrané</div><div class="pr">≈ €30–50</div><div class="note">Riverside town between two castles (Karlštejn + Křivoklát).</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Beroun--Czechia/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Beroun%2C++20+min+from+Vran%C3%A9" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Village · Night 3 zone</div><div class="nm">Dobřichovice / Řevnice</div><div class="pl">Berounka valley, 15 min from Vrané</div><div class="pr">≈ €35–55</div><div class="note">Leafy riverside villages on the Prague S-bahn line; river beach for the baby.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Dobrichovice--Czechia/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Dob%C5%99ichovice%2C++15+min+from+Vran%C3%A9" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Village</div><div class="nm">Černošice</div><div class="pl">Berounka valley, Prague edge</div><div class="pr">≈ €35–55</div><div class="note">Villa suburb in the woods, 20 min by train to Prague centre.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Cernosice--Czechia/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=%C4%8Cerno%C5%A1ice%2C++Prague+edge" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+    <div class="subgroup">Day 4 · Silesia → Mazovia</div>
+    <div class="sleep">
+      <div class="card"><div class="kind">Town</div><div class="nm">Oława / Jelcz-Laskowice</div><div class="pl">nr Wrocław, Poland</div><div class="pr">≈ €25–45</div><div class="note">Polish village prices for whole flats near your Wrocław break.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Olawa--Poland/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=O%C5%82awa%2C++Poland" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Brzeg</div><div class="pl">on the A4, 40 min from Wrocław</div><div class="pr">≈ €25–45</div><div class="note">Renaissance castle town, bargain whole apartments.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Brzeg--Poland/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Brzeg%2C++40+min+from+Wroc%C5%82aw" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Piotrków Trybunalski</div><div class="pl">right on the S8</div><div class="pr">≈ €25–45</div><div class="note">Historic old town at the S8/A1 crossroads — perfect fuel-and-sleep stop.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Piotrkow-Trybunalski--Poland/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Piotrk%C3%B3w+Trybunalski%2C+right+on+the+S8" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card reco"><div class="kind">Village · last night in nature</div><div class="nm">Sulejów / Smardzewice</div><div class="pl">Sulejów Reservoir, off the S8</div><div class="pr">≈ €30–50</div><div class="note">Lakeside forest resort villages ~1h45 before Warsaw.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Sulejow--Poland/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Sulej%C3%B3w%2C++off+the+S8" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Town</div><div class="nm">Rawa Mazowiecka</div><div class="pl">on the S8, 1h from Warsaw</div><div class="pr">≈ €25–45</div><div class="note">Small castle town, cheap flats, easy motorway access.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Rawa-Mazowiecka--Poland/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Rawa+Mazowiecka%2C++1h+from+Warsaw" target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Garden suburb</div><div class="nm">Konstancin-Jeziorna / Józefów</div><div class="pl">25 min south of Warsaw centre</div><div class="pr">≈ €40–60</div><div class="note">Villas in the pines with gated parking — sleep in the forest, drive in fresh.</div><div class="links"><a class="lnk bnb" href="https://www.airbnb.com/s/Konstancin-Jeziorna--Poland/homes" target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href="https://www.google.com/maps/search/?api=1&query=Konstancin-Jeziorna%2C+25+min+south+of+Warsaw+centre" target="_blank" rel="noopener">Map</a></div></div>
+    </div>
+    <div class="notice">💡 <b>Tent-in-the-garden trick:</b> rural hosts in Bresse, Bohemia and Silesia often sit on big riverside plots — message them and ask to pitch your tent in the garden for a lower price. It works surprisingly often. Prices are typical ranges, not live quotes — the Airbnb buttons open the live search for each village so you can check your exact dates.</div>
+  </section>
+
+  <!-- ==================== TIPS ==================== -->
+  <section id="rules">
+    <h2>On-board rules of the road</h2>
+    <p class="lede">The three checklists that keep the trip smooth: baby, roof box, and pacing.</p>
+    <div class="tips">
+      <div class="tipsign">
+        <h4>👶 Baby &amp; family</h4>
+        <ul>
+          <li>Stop every 60–90 min for feeding, nappy changes and a short walk out of the car seat.</li>
+          <li>Changing mat, wipes, spare outfits and toys within arm's reach in the cabin.</li>
+          <li>Drive during the normal nap window (e.g. after lunch) when possible.</li>
+          <li>Cooler bag with formula, snacks and water in the cabin — never left in a hot car.</li>
+          <li>Recheck the car-seat anchors after each overnight stop.</li>
+          <li>Basic first-aid kit: thermometer, infant paracetamol, rehydration sachets.</li>
+          <li>If sleeping in the car, pick a manned, well-lit service area — check park4night.com first.</li>
+        </ul>
+      </div>
+      <div class="tipsign blue">
+        <h4>📦 Roof box (Corolla)</h4>
+        <ul>
+          <li>Keep total roof load under the rack's and the car's roof limits (often ~50–75 kg incl. the box).</li>
+          <li>Light, bulky items up top; heavy or fragile items stay in the cabin or boot.</li>
+          <li>Cap speed at 100–120 km/h — even on the autobahn — for stability and fuel economy.</li>
+          <li>Re-tighten straps every morning and after each fuel stop.</li>
+          <li>Open net or basket? Waterproof cargo bag or tarp underneath.</li>
+        </ul>
+      </div>
+      <div class="tipsign">
+        <h4>🔁 Drivers &amp; pacing</h4>
+        <ul>
+          <li>Two drivers: swap at every rest stop, roughly every 1–1.5 h.</li>
+          <li>No one drives more than ~90 min at a stretch with the baby aboard.</li>
+          <li>Day 4 is the longest (~6 h 45 m) — start at 07:00 and take the extra-long break in Wrocław.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<div class="wrap">
+  <!-- ==================== BELARUS LEG ==================== -->
+  <section id="belarus">
+    <h2>The Belarus leg — what changes at the border</h2>
+    <p class="lede">From the Brest barrier onward, the EU rulebook stops. These are the must-knows for taking your Spanish-registered Corolla into Belarus.</p>
+    <div class="tips">
+      <div class="tipsign blue">
+        <h4>📄 Car papers &amp; insurance</h4>
+        <ul>
+          <li><b>Green Card is NOT valid</b> — Belarus was suspended from the Green Card system in 2023. Buy border insurance at Brest (~€25–35 / 15 days), cash.</li>
+          <li><b>BelToll</b>: foreign cars under 3.5 t must register and carry the on-board unit (deposit ~€25) — sold at the border. Return it when leaving to get the deposit back.</li>
+          <li>Bring the <b>original Permiso de Circulación + Ficha Técnica</b> (customs temporary-import declaration needs them) and the Aistren purchase invoice — the car changed owners only weeks ago.</li>
+          <li>International Driving Permit recommended alongside the Spanish licence.</li>
+        </ul>
+      </div>
+      <div class="tipsign">
+        <h4>💶 Money, SIM &amp; rules</h4>
+        <ul>
+          <li>EU roaming ends at the border — buy an <b>A1 or MTS SIM</b> (passport needed) in Brest or Kobryn. Download offline maps before crossing.</li>
+          <li>EU-issued cards are unreliable in Belarus — carry cash. Note EU sanctions restrict exporting euro banknotes to Belarus beyond personal use; USD is a safe alternative. Exchange to BYN locally.</li>
+          <li>Mandatory in the car in Belarus: <b>fire extinguisher, first aid kit, warning triangle</b>.</li>
+          <li>Do NOT bring drones or radio scanners; never photograph border posts. Watch speed — cameras are everywhere on the M1.</li>
+          <li>Staying over 10 days at a private address? Register your stay.</li>
+        </ul>
+      </div>
+      <div class="tipsign">
+        <h4>🗓️ Before 16 July — critical</h4>
+        <ul>
+          <li>⚠️ <b>Registration docs are in the post and the justificante expires 8 July</b> — chase the gestoría NOW; no original docs = no Belarus crossing.</li>
+          <li>⚠️ Get the <b>80–90 km/h vibration fixed</b> at Aistren + written report — that is your cruising speed for ~6,000 km round trip.</li>
+          <li>Confirm each passport's Belarus entry rules (visa / visa-free) with the embassy.</li>
+          <li>Book the DGT appointment for the <b>IDP</b> (~€10).</li>
+          <li>Buy the Czech e-vignette timed to cover 18 July (and the return date if driving back).</li>
+          <li>Check tyre pressures loaded (2.3–2.5 bar front / 2.1–2.3 rear) — rear tyres are from 2023, inspect tread before departure.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PACKING CHECKLIST ==================== -->
+  <section id="checklist">
+    <h2>Trip preparation checklist</h2>
+    <p class="lede">Tick things off as you pack — progress saves automatically on this device. Add your own items with the + field in each category, click an item's text to edit it, and use ✕ to remove it.</p>
+    <div class="chk-toolbar">
+      <span class="chk-count" id="chkCount">0 / 0 done</span>
+      <div class="chk-progress"><i id="chkBar"></i></div>
+      <button class="chk-btn" onclick="chkUncheckAll()">Uncheck all</button>
+      <button class="chk-btn warn" onclick="chkReset()">Reset to default list</button>
+    </div>
+    <div class="chk-grid" id="chkGrid"></div>
+    <p class="chk-note">Saving works in this browser/app session storage. If you open the file on another device, the list starts fresh — re-tick or re-add there.</p>
+  </section>
+
+  <!-- ==================== BORDER NEWS ==================== -->
+  <section id="bordernews">
+    <h2>Poland ↔ Belarus border — live news check</h2>
+    <p class="lede">Hit refresh and this panel searches the web for the latest Terespol–Brest / Bobrowniki status, queues and closures, and summarizes what it means for your crossing on 20 July.</p>
+    <div class="news-box">
+      <div class="news-head">
+        <h3>🛂 Border status &amp; news</h3>
+        <button class="news-refresh" id="newsBtn" onclick="refreshNews()">⟳ Refresh now</button>
+      </div>
+      <div class="news-body" id="newsBody"><span class="muted">No check run yet in this session. Click "Refresh now" to fetch and analyse the latest border news.
+
+Baseline (early July 2026): Terespol–Brest open for all passenger traffic incl. private cars; Bobrowniki–Berestovica open; Kuźnica cars-only; Połowce &amp; Sławatycze suspended since April 2026. Queues of several hours are normal; sudden closures happen.</span></div>
+      <div class="news-stamp" id="newsStamp"></div>
+      <div class="news-links">
+        <a class="lnk" href="https://granica.gov.pl" target="_blank" rel="noopener">granica.gov.pl (PL official)</a>
+        <a class="lnk" href="https://gpk.gov.by/en/situation-at-the-border/" target="_blank" rel="noopener">gpk.gov.by (BY official)</a>
+        <a class="lnk map" href="https://nakordoni.eu/en" target="_blank" rel="noopener">Live queues (nakordoni.eu)</a>
+      </div>
+    </div>
+    <div class="notice" style="margin-top:16px">If the refresh button reports an error (it needs to run inside Claude), use the three official links above — they show live queue lengths and closures directly.</div>
+  </section>
+</div>
+
+<script>
+/* ================= CHECKLIST ================= */
+const CHK_KEY = "bcn_minsk_checklist_v1";
+const CHK_DEFAULT = [
+ {c:"📄 Documents pouch", items:[
+  "Passports ×3 (+ paper copies)","Belarus visa / visa-free proof for each passport",
+  "Permiso de Circulación (ORIGINAL — chase gestoría, justificante expires 8 Jul!)",
+  "Ficha Técnica (original)","Aistren purchase invoice (ownership proof — car bought 08/06/2026)",
+  "Qualitas insurance policy + Green Card (PL/CZ/DE/FR)","International Driving Permit + Spanish licences ×2",
+  "Baby's birth certificate + EHIC cards","Cash: EUR for EU + USD for Belarus (EU€-banknote export to BY is restricted)",
+  "Czech e-vignette confirmation (edalnice.cz)","Booking confirmations printed/offline","Emergency numbers card (112 EU / 101·102·103 BY)"]},
+ {c:"🚗 Legal car kit", items:[
+  "Warning triangle","Hi-vis vests ×2 (in the cabin, not the boot)","First aid kit (DE/CZ/BY mandatory)",
+  "Fire extinguisher (PL + BY mandatory)","Spare bulb kit","Tyre repair kit / spare + jack",
+  "Pressure gauge — set 2.3–2.5 bar front / 2.1–2.3 rear loaded","Tow rope + jumper cables",
+  "Screenwash top-up + cloth","Vibration 80–90 km/h FIXED + written report from Aistren",
+  "Roof box straps re-tightened + spare strap","Empty fuel canister (respect border limits)"]},
+ {c:"👶 Baby (1 yr)", items:[
+  "Car seat installed + anchors rechecked","Nappies for 6 days + changing mat","Wipes ×4 packs",
+  "Formula / food cooler bag + ice packs","Bottles + travel sterilising bags","Spare outfits ×6",
+  "Window sun shades ×2","Infant paracetamol + thermometer + rehydration sachets",
+  "Favourite toys + white-noise app","Travel cot / co-sleep plan","Baby mosquito net (Belarus lakes in July!)","Sun hat + SPF50"]},
+ {c:"⛺ Camping", items:[
+  "Tent + footprint + pegs/mallet","Sleeping bags + mats + pillows","Headlamps ×2 + batteries",
+  "Camping stove + gas (buy gas locally)","Cook set + sponge + soap","Cool box","Water 10 L",
+  "Folding chairs","Duct tape + paracord","Trash bags","Mosquito repellent","Picnic blanket"]},
+ {c:"🔌 Tech & comfort", items:[
+  "Phone mounts + car chargers + 12V multi-socket","Power banks ×2 charged",
+  "Offline maps downloaded: Google offline PL/BY + maps.me","Dashcam + spare SD",
+  "USB cables ×4","Ear plugs + eye masks","Travel kettle","Snack box refilled daily","Sunglasses ×2 + umbrella"]},
+ {c:"🛂 Border-day kit (20 Jul, front seat)", items:[
+  "Full documents pouch within reach","Water + snacks for a 6-hour queue","Baby entertainment reserve (new toy!)",
+  "Cash ready: border insurance ~€30 + BelToll deposit ~€25","granica.gov.pl + gpk.gov.by bookmarked; check at 21:00 on 19 Jul and 04:00 on 20 Jul",
+  "Fuel tank FULL leaving Warsaw","Toilet stop right before the queue","Buy A1/MTS SIM in Brest/Kobryn (passport)","Return BelToll unit when leaving BY (deposit back)"]}
+];
+let chkData = null;
+
+async function chkSave(){
+  const s = JSON.stringify(chkData);
+  try{ if(window.storage){ await window.storage.set(CHK_KEY, s); return; } }catch(e){}
+  try{ localStorage.setItem(CHK_KEY, s); }catch(e){}
+}
+async function chkLoad(){
+  try{ if(window.storage){ const r = await window.storage.get(CHK_KEY); if(r && r.value) return JSON.parse(r.value); } }catch(e){}
+  try{ const v = localStorage.getItem(CHK_KEY); if(v) return JSON.parse(v); }catch(e){}
+  return null;
+}
+function chkFromDefault(){
+  return CHK_DEFAULT.map(cat => ({c:cat.c, items:cat.items.map(t => ({t:t, d:false}))}));
+}
+function chkRender(){
+  const grid = document.getElementById("chkGrid");
+  grid.innerHTML = "";
+  let total = 0, done = 0;
+  chkData.forEach((cat, ci) => {
+    const catDone = cat.items.filter(i=>i.d).length;
+    total += cat.items.length; done += catDone;
+    const box = document.createElement("div");
+    box.className = "chk-cat";
+    const h = document.createElement("h4");
+    h.innerHTML = cat.c + ' <span class="done-count">' + catDone + "/" + cat.items.length + "</span>";
+    box.appendChild(h);
+    const ul = document.createElement("ul");
+    ul.className = "chk-items";
+    cat.items.forEach((it, ii) => {
+      const li = document.createElement("li");
+      if(it.d) li.className = "done";
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.checked = it.d;
+      cb.onchange = () => { it.d = cb.checked; chkSave(); chkRender(); };
+      const span = document.createElement("span");
+      span.className = "txt"; span.textContent = it.t;
+      span.title = "Click to edit";
+      span.onclick = () => {
+        const nv = prompt("Edit item:", it.t);
+        if(nv !== null && nv.trim() !== ""){ it.t = nv.trim(); chkSave(); chkRender(); }
+      };
+      const del = document.createElement("button");
+      del.className = "del"; del.textContent = "✕"; del.title = "Remove item";
+      del.onclick = () => { if(confirm("Remove: " + it.t + "?")){ cat.items.splice(ii,1); chkSave(); chkRender(); } };
+      li.appendChild(cb); li.appendChild(span); li.appendChild(del);
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    const add = document.createElement("div");
+    add.className = "chk-add";
+    const inp = document.createElement("input");
+    inp.placeholder = "Add your own item…";
+    const btn = document.createElement("button");
+    btn.textContent = "+";
+    const doAdd = () => {
+      if(inp.value.trim() !== ""){ cat.items.push({t:inp.value.trim(), d:false}); inp.value=""; chkSave(); chkRender(); }
+    };
+    btn.onclick = doAdd;
+    inp.onkeydown = (e) => { if(e.key === "Enter") doAdd(); };
+    add.appendChild(inp); add.appendChild(btn);
+    box.appendChild(add);
+    grid.appendChild(box);
+  });
+  document.getElementById("chkCount").textContent = done + " / " + total + " done";
+  document.getElementById("chkBar").style.width = (total ? Math.round(done/total*100) : 0) + "%";
+}
+function chkUncheckAll(){ chkData.forEach(c => c.items.forEach(i => i.d = false)); chkSave(); chkRender(); }
+function chkReset(){ if(confirm("Reset the whole list to the default items? Your custom items will be lost.")){ chkData = chkFromDefault(); chkSave(); chkRender(); } }
+(async function(){
+  chkData = await chkLoad() || chkFromDefault();
+  chkRender();
+})();
+
+/* ================= BORDER NEWS ================= */
+async function refreshNews(){
+  const btn = document.getElementById("newsBtn");
+  const body = document.getElementById("newsBody");
+  const stamp = document.getElementById("newsStamp");
+  btn.disabled = true; btn.textContent = "⏳ Checking…";
+  body.innerHTML = '<span class="muted">Searching the latest Poland–Belarus border news and analysing it…</span>';
+  try{
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content:
+          "Search the web for the very latest news (today and the past 2 weeks) about the Poland-Belarus border crossings for passenger cars: Terespol-Brest, Bobrowniki-Berestovica, Kuznica-Bruzgi. I am crossing by private car from Poland into Belarus around 20 July 2026 with a baby. Report: 1) which crossings are currently OPEN or CLOSED for private cars, 2) current queue situation / typical waiting times, 3) any announced closures, restrictions or incidents, 4) a one-line recommendation for my crossing. Be factual and concise. Plain text only, short lines, no markdown symbols."
+        }],
+        tools: [{ type: "web_search_20250305", name: "web_search" }]
+      })
+    });
+    if(!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n").trim();
+    if(!text) throw new Error("Empty response");
+    body.textContent = text;
+    stamp.textContent = "Last checked: " + new Date().toLocaleString();
+  }catch(err){
+    body.innerHTML = '<span class="muted">Could not fetch live news here (' + err.message + '). This live check works when the page is opened inside Claude. Use the official links below — they show live queues and closures directly:\n\n• granica.gov.pl — Polish Border Guard live status\n• gpk.gov.by — Belarus State Border Committee\n• nakordoni.eu — live queue monitor, updates every few minutes</span>';
+    stamp.textContent = "Last attempt: " + new Date().toLocaleString();
+  }
+  btn.disabled = false; btn.textContent = "⟳ Refresh now";
+}
+</script>
+
+<footer>
+  <b>Barcelona → Minsk</b> · 5 days · ≈2,940 km · 6 countries · 16–20 July 2026 · budget sleep spots · cheap Airbnb villages · live border news<br>
+  Bon viatge · Bon voyage · Gute Fahrt · Šťastnou cestu · Szerokiej drogi · Шчаслівай дарогі!
+</footer>
+
+</body>
+</html>

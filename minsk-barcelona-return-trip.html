@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10214B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Minsk→BCN">
+<title>Minsk → Barcelona · Return Trip + 15 Days in Belarus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --motorway:#10214B;      /* deep European motorway blue */
+    --motorway-2:#1B3C8C;
+    --paper:#F5F6F9;
+    --ink:#171A22;
+    --lane-yellow:#FFC93C;   /* road-marking yellow */
+    --sign-green:#1E7A46;    /* exit-sign green */
+    --line:#D8DCE6;
+    --muted:#5B6270;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+
+  /* ---------- HERO: motorway sign ---------- */
+  header{
+    background:var(--motorway);
+    color:#fff;
+    padding:56px 0 0;
+    position:relative;
+    overflow:hidden;
+  }
+  .sign{
+    border:3px solid #fff;
+    border-radius:14px;
+    padding:28px 28px 24px;
+    background:linear-gradient(160deg,var(--motorway-2),var(--motorway) 70%);
+    box-shadow:0 12px 40px rgba(0,0,0,.35);
+    position:relative;
+  }
+  .sign .eyebrow{
+    font-family:'Saira Condensed',sans-serif;
+    font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+    font-size:.8rem;color:var(--lane-yellow);margin-bottom:10px;
+  }
+  h1{
+    font-family:'Saira Condensed',sans-serif;
+    font-weight:800;
+    font-size:clamp(2.4rem,7vw,4.4rem);
+    line-height:1.02;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+  }
+  h1 .arrow{color:var(--lane-yellow)}
+  .sign .sub{
+    margin-top:14px;font-size:1rem;color:#C9D3EE;max-width:56ch;
+  }
+  .statbar{
+    display:flex;flex-wrap:wrap;gap:0;margin-top:26px;
+    border-top:2px dashed rgba(255,255,255,.35);
+  }
+  .statbar div{
+    flex:1 1 130px;padding:14px 16px 12px;
+    border-right:2px dashed rgba(255,255,255,.35);
+  }
+  .statbar div:last-child{border-right:none}
+  .statbar b{
+    display:block;font-family:'Saira Condensed',sans-serif;
+    font-weight:800;font-size:1.7rem;line-height:1;
+  }
+  .statbar span{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:#AEBBE0}
+  /* road stripe under hero */
+  .road{
+    height:34px;margin-top:44px;background:#22242B;position:relative;
+  }
+  .road::before{
+    content:"";position:absolute;left:0;right:0;top:50%;height:4px;transform:translateY(-50%);
+    background:repeating-linear-gradient(90deg,var(--lane-yellow) 0 46px,transparent 46px 84px);
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:52px 0 8px}
+  h2{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;
+    text-transform:uppercase;letter-spacing:.03em;
+    font-size:1.7rem;margin-bottom:6px;
+  }
+  .lede{color:var(--muted);max-width:64ch;margin-bottom:28px}
+
+  /* ---------- DAY TIMELINE ---------- */
+  .day{
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    margin-bottom:26px;overflow:hidden;
+    box-shadow:0 2px 10px rgba(16,33,75,.05);
+  }
+  .day-head{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    padding:18px 22px 14px;background:var(--motorway);color:#fff;
+  }
+  .day-badge{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.05rem;
+    background:var(--lane-yellow);color:var(--motorway);
+    border-radius:8px;padding:2px 12px;text-transform:uppercase;letter-spacing:.04em;
+    white-space:nowrap;
+  }
+  .day-head h3{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.35rem;
+    text-transform:uppercase;letter-spacing:.02em;line-height:1.15;
+  }
+  .day-meta{
+    width:100%;display:flex;gap:18px;flex-wrap:wrap;
+    font-size:.82rem;color:#C9D3EE;margin-top:2px;
+  }
+  .day-meta b{color:#fff;font-weight:600}
+  .day-body{padding:10px 22px 18px}
+
+  .stop{
+    display:grid;grid-template-columns:66px 26px 1fr;gap:0 10px;
+    position:relative;
+  }
+  .stop .t{
+    font-size:.8rem;color:var(--muted);padding-top:13px;text-align:right;
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .stop .dotcol{position:relative}
+  .stop .dotcol::before{           /* the route line */
+    content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;
+    transform:translateX(-50%);background:var(--line);
+  }
+  .stop:first-child .dotcol::before{top:18px}
+  .stop:last-child .dotcol::before{bottom:calc(100% - 22px)}
+  .stop .dot{
+    position:absolute;left:50%;top:16px;width:11px;height:11px;border-radius:50%;
+    transform:translateX(-50%);background:#fff;border:3px solid var(--motorway-2);
+  }
+  .stop.major .dot{
+    width:15px;height:15px;top:14px;background:var(--lane-yellow);
+    border-color:var(--motorway);
+  }
+  .stop .c{padding:10px 0 14px}
+  .stop .c .name{font-weight:600}
+  .stop .c .km{
+    font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--motorway-2);font-weight:600;margin-left:8px;white-space:nowrap;
+  }
+  .stop .c p{font-size:.9rem;color:var(--muted);margin-top:2px}
+  .tag{
+    display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;border-radius:6px;padding:2px 8px;margin-top:5px;margin-right:6px;
+  }
+  .tag.swap{background:#FFF3D1;color:#8A6400;border:1px solid #F0D488}
+  .tag.food{background:#E4F2E9;color:var(--sign-green);border:1px solid #BFDCCB}
+  .tag.night{background:#E4E9F7;color:var(--motorway-2);border:1px solid #C3CDEB}
+  .tag.border{background:#F0E4F7;color:#6B2E8C;border:1px solid #DCC3EB}
+
+  /* ---------- SLEEP CARDS ---------- */
+  .sleep{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:6px 0 22px}
+  .sleep .card{
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;
+    border-top:4px solid var(--sign-green);
+  }
+  .sleep .card.reco{border-top-color:var(--lane-yellow);background:#FFFDF4}
+  .sleep .kind{
+    font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  }
+  .sleep .nm{font-weight:600;margin:2px 0 1px}
+  .sleep .pl{font-size:.85rem;color:var(--muted)}
+  .sleep .pr{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.15rem;
+    color:var(--sign-green);margin-top:6px;
+  }
+  .sleep .card.reco .pr{color:#8A6400}
+  .sleep .note{font-size:.8rem;color:var(--muted);margin-top:4px}
+
+  /* ---------- BUDGET SPOT EXTRAS ---------- */
+  .tag.tent{background:#E4F2E9;color:var(--sign-green);border:1px solid #BFDCCB}
+  .tag.notent{background:#EEF0F4;color:#5B6270;border:1px solid #D8DCE6}
+  .tag.free{background:#FFF3D1;color:#8A6400;border:1px solid #F0D488}
+  .subgroup{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;
+    letter-spacing:.06em;font-size:1.02rem;color:var(--motorway-2);
+    margin:22px 0 10px;padding-bottom:5px;border-bottom:2px dashed var(--line);
+  }
+  .notice{
+    background:#FFF9E8;border:1px solid #F0D488;border-left:5px solid var(--lane-yellow);
+    border-radius:10px;padding:13px 16px;font-size:.9rem;color:#5b4a13;
+    margin:4px 0 20px;max-width:74ch;
+  }
+
+  /* ---------- CLICKABLE LINKS ---------- */
+  .stop .c .name a{color:inherit;text-decoration:none;border-bottom:1.5px dashed rgba(27,60,140,.45)}
+  .stop .c .name a:hover{color:var(--motorway-2);border-bottom-style:solid}
+  .sleep .nm a{color:inherit;text-decoration:none;border-bottom:1.5px dashed rgba(27,60,140,.45)}
+  .sleep .nm a:hover{color:var(--motorway-2);border-bottom-style:solid}
+  .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  a.lnk{
+    font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    text-decoration:none;padding:3px 10px;border-radius:20px;
+    background:var(--motorway-2);color:#fff;
+  }
+  a.lnk:hover{opacity:.85}
+  a.lnk.map{background:var(--sign-green)}
+  a.lnk.bnb{background:#FF385C}
+  a.lnk.web{background:#5B6270}
+
+
+  /* ---------- CHECKLIST ---------- */
+  .chk-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .chk-progress{flex:1 1 220px;height:12px;background:#E4E8F1;border-radius:8px;overflow:hidden;min-width:180px}
+  .chk-progress i{display:block;height:100%;width:0;background:var(--sign-green);transition:width .3s ease}
+  .chk-count{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--motorway-2)}
+  .chk-btn{
+    font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+    border:none;border-radius:8px;padding:7px 13px;cursor:pointer;background:var(--motorway-2);color:#fff;
+  }
+  .chk-btn.warn{background:#B3423A}
+  .chk-btn.add{background:var(--sign-green)}
+  .chk-cat h4 .cat-name{cursor:pointer;flex:1}
+  .chk-cat h4 .cat-del{
+    border:none;background:none;color:#AEBBE0;cursor:pointer;font-size:1rem;padding:0 2px 0 8px;flex:none;
+  }
+  .chk-cat h4 .cat-del:hover{color:#FF9B94}
+  .chk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+  .chk-cat{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .chk-cat h4{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+    background:var(--motorway);color:#fff;padding:10px 14px;font-size:1rem;display:flex;justify-content:space-between;align-items:center;
+  }
+  .chk-cat h4 .done-count{font-size:.75rem;color:var(--lane-yellow);letter-spacing:.08em}
+  .chk-items{list-style:none;padding:6px 8px}
+  .chk-items li{
+    display:flex;align-items:flex-start;gap:9px;padding:7px 6px;border-bottom:1px dashed #EDEFF4;font-size:.9rem;
+  }
+  .chk-items li:last-child{border-bottom:none}
+  .chk-items input[type=checkbox]{width:18px;height:18px;margin-top:1px;accent-color:var(--sign-green);cursor:pointer;flex:none}
+  .chk-items li.done .txt{text-decoration:line-through;color:#9AA1AF}
+  .chk-items .txt{flex:1;cursor:pointer}
+  .chk-items .del{
+    border:none;background:none;color:#C3C9D4;cursor:pointer;font-size:1rem;padding:0 4px;flex:none;
+  }
+  .chk-items .del:hover{color:#B3423A}
+  .chk-add{display:flex;gap:6px;padding:8px;border-top:1px solid var(--line);background:#F7F8FB}
+  .chk-add input{
+    flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;font-size:.86rem;min-width:0;
+  }
+  .chk-add button{
+    border:none;border-radius:8px;background:var(--sign-green);color:#fff;font-weight:700;padding:0 13px;cursor:pointer;font-size:1.05rem;
+  }
+  .chk-note{font-size:.8rem;color:var(--muted);margin-top:12px}
+
+  /* ---------- BORDER NEWS ---------- */
+  .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .news-head{
+    background:var(--motorway);color:#fff;padding:14px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  }
+  .news-head h3{font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:1.15rem;flex:1}
+  .news-refresh{
+    border:none;border-radius:20px;background:var(--lane-yellow);color:var(--motorway);
+    font-weight:700;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;cursor:pointer;
+  }
+  .news-refresh:disabled{opacity:.6;cursor:wait}
+  .news-body{padding:16px 18px;font-size:.93rem;line-height:1.6;white-space:pre-wrap}
+  .news-body .muted{color:var(--muted)}
+  .news-stamp{font-size:.75rem;color:var(--muted);padding:0 18px 12px}
+  .news-links{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 16px}
+
+
+  /* ---------- STICKY QUICK NAV ---------- */
+  .qnav{
+    position:sticky;top:0;z-index:50;background:var(--motorway);
+    display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    padding:9px 14px;box-shadow:0 3px 12px rgba(16,33,75,.25);
+    scrollbar-width:none;
+  }
+  .qnav::-webkit-scrollbar{display:none}
+  .qnav a{
+    flex:none;color:#fff;text-decoration:none;font-size:.8rem;font-weight:600;
+    letter-spacing:.03em;padding:8px 13px;border-radius:20px;
+    background:rgba(255,255,255,.12);white-space:nowrap;min-height:36px;display:flex;align-items:center;
+  }
+  .qnav a:active{background:var(--lane-yellow);color:var(--motorway)}
+  section{scroll-margin-top:64px}
+
+  /* ---------- MOBILE UX ---------- */
+  @media (max-width:640px){
+    body{font-size:15px}
+    .wrap{padding:0 14px}
+    header{padding-top:34px}
+    .sign{padding:20px 16px 16px;border-radius:12px}
+    h1{font-size:clamp(2rem,10vw,2.9rem)}
+    .sign .sub{font-size:.9rem}
+    .statbar div{flex:1 1 30%;padding:10px 10px 8px}
+    .statbar b{font-size:1.35rem}
+    .road{margin-top:28px}
+    section{padding:36px 0 6px}
+    h2{font-size:1.4rem}
+    .lede{font-size:.92rem;margin-bottom:20px}
+    .day-head{padding:14px 14px 11px;gap:10px}
+    .day-head h3{font-size:1.12rem}
+    .day-meta{gap:10px;font-size:.78rem}
+    .day-body{padding:8px 12px 14px}
+    .stop{grid-template-columns:48px 20px 1fr;gap:0 8px}
+    .stop .t{font-size:.72rem;padding-top:14px}
+    .stop .c{padding:9px 0 12px}
+    .stop .c .name{font-size:.93rem}
+    .stop .c .km{display:block;margin-left:0;margin-top:1px}
+    .stop .c p{font-size:.85rem}
+    .sleep{grid-template-columns:1fr;gap:12px}
+    .tips{grid-template-columns:1fr}
+    .tolls{grid-template-columns:1fr 1fr}
+    .tag{font-size:.64rem;padding:3px 8px}
+    a.lnk{padding:7px 13px;min-height:34px;display:inline-flex;align-items:center;font-size:.7rem}
+    .links{gap:8px}
+    .chk-grid{grid-template-columns:1fr}
+    .chk-items li{padding:10px 6px}
+    .chk-items input[type=checkbox]{width:22px;height:22px}
+    .chk-items .txt{font-size:.92rem;line-height:1.4}
+    .chk-items .del{font-size:1.25rem;padding:0 8px}
+    .chk-add input{padding:11px 12px;font-size:16px} /* 16px stops iOS zoom-on-focus */
+    .chk-add button{min-width:48px;font-size:1.3rem}
+    .chk-btn{padding:11px 15px}
+    .chk-toolbar{position:sticky;top:56px;z-index:40;background:var(--paper);padding:8px 0;margin:0 0 12px}
+    .news-head{padding:12px 14px}
+    .news-refresh{width:100%;padding:13px;font-size:.9rem}
+    .news-body{padding:14px;font-size:.88rem;max-height:60vh;overflow-y:auto}
+    .subgroup{font-size:.95rem}
+    .notice{font-size:.85rem;padding:12px 13px}
+    footer{font-size:.8rem}
+  }
+  @media (max-width:380px){
+    .stop{grid-template-columns:42px 18px 1fr}
+    .statbar div{flex:1 1 45%}
+    .tolls{grid-template-columns:1fr}
+  }
+  /* comfortable tap targets everywhere */
+  @media (pointer:coarse){
+    .qnav a{min-height:40px}
+    .chk-items input[type=checkbox]{width:22px;height:22px}
+  }
+
+  /* ---------- TIP SIGNS ---------- */
+  .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:30px}
+  .tipsign{
+    border-radius:12px;padding:16px 18px;color:#fff;background:var(--sign-green);
+    font-size:.92rem;
+  }
+  .tipsign.blue{background:var(--motorway-2)}
+  .tipsign h4{
+    font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;
+    letter-spacing:.05em;font-size:1.02rem;margin-bottom:8px;
+    border-bottom:2px solid rgba(255,255,255,.35);padding-bottom:6px;
+  }
+  .tipsign ul{list-style:none}
+  .tipsign li{padding-left:18px;position:relative;margin-bottom:7px;line-height:1.45}
+  .tipsign li::before{content:"▸";position:absolute;left:0;color:var(--lane-yellow)}
+
+  /* ---------- TOLLS ---------- */
+  .tolls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:30px}
+  .toll{
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  }
+  .toll .flag{font-size:1.3rem}
+  .toll b{display:block;font-weight:600;margin:2px 0}
+  .toll p{font-size:.84rem;color:var(--muted)}
+
+  footer{
+    background:var(--motorway);color:#AEBBE0;text-align:center;
+    padding:30px 20px 36px;font-size:.85rem;margin-top:40px;
+  }
+  footer b{color:#fff}
+  @media (max-width:560px){
+    .stop{grid-template-columns:54px 22px 1fr}
+    .statbar div{flex:1 1 45%}
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .day{transition:transform .18s ease, box-shadow .18s ease}
+    .day:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(16,33,75,.10)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="sign">
+      <div class="eyebrow">Return Trip Plan · 15 Days in Belarus + The Way Home · Two Variants</div>
+      <h1>Minsk <span class="arrow">→</span> Barcelona</h1>
+      <p class="sub">Stay in Belarus 20 July – 4 August, then home two ways: <b>Variant A</b> — Warsaw, Berlin, Benelux, Switzerland, Italy and the GNV ferry Genoa → Barcelona; or <b>Variant B</b> — all-driving via Lyon. Both fully planned below; pick on the road.</p>
+      <div class="statbar">
+        <div><b>15</b><span>days in Belarus</span></div>
+        <div><b>≈2,350</b><span>km drive (var A)</span></div>
+        <div><b>~21 h</b><span>ferry (var A)</span></div>
+        <div><b>≈3,050</b><span>km drive (var B)</span></div>
+        <div><b>4–11</b><span>aug (flexible)</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="road"></div>
+</header>
+<nav class="qnav" aria-label="Sections">
+  <a href="barcelona-minsk-road-trip.html">⬅ Outbound plan</a><a href="#stay">🏠 Belarus stay</a><a href="#exit">🛂 Exit day</a><a href="#varA">⛴️ Variant A</a><a href="#varB">🛣️ Variant B</a><a href="#ferry">🚢 Ferry</a><a href="#sleep">⛺ Sleep stops</a><a href="#checklist">✅ Checklist</a><a href="#news">📰 Live news</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ============ BELARUS STAY ============ -->
+  <section id="stay">
+    <h2>15 days in Belarus — where to stay &amp; budget</h2>
+    <p class="lede">Airbnb and Booking.com don't operate in Belarus. The local system is better than it sounds — daily-rental apartments booked directly from owners, and Russian booking platforms for hotels, all pay-on-arrival in cash.</p>
+    <div class="sleep">
+      <div class="card reco"><div class="kind">Apartments · the local way</div><div class="nm"><a href="https://www.kufar.by" target="_blank" rel="noopener">Kufar.by ↗</a></div><div class="pl">«Снять квартиру на сутки» section</div><div class="pr">€25–40 / night (Minsk)</div><div class="note">Full 1-bed apartments, message owners directly (Russian), pay cash BYN. Regional cities €15–25.</div><div class="links"><a class="lnk" href="https://re.kufar.by/l/minsk/snyat/kvartiru/na-sutki" target="_blank" rel="noopener">Minsk daily rentals</a></div></div>
+      <div class="card"><div class="kind">Apartments · alternative</div><div class="nm"><a href="https://realt.by/rent/flat-for-day/" target="_blank" rel="noopener">Realt.by ↗</a></div><div class="pl">Daily-rent flats, all cities</div><div class="pr">€20–40 / night</div><div class="note">Filters by district and price; owners answer fast on Viber/Telegram.</div></div>
+      <div class="card"><div class="kind">Hotels · bookable online</div><div class="nm"><a href="https://ostrovok.ru" target="_blank" rel="noopener">Ostrovok.ru ↗</a></div><div class="pl">+ 101hotels.com, Yandex Travel</div><div class="pr">€35–60 / night 3★</div><div class="note">All cover Belarus, choose pay-at-property — EU cards are unreliable inside the country.</div><div class="links"><a class="lnk web" href="https://101hotels.com" target="_blank" rel="noopener">101hotels</a><a class="lnk web" href="https://travel.yandex.ru" target="_blank" rel="noopener">Yandex Travel</a></div></div>
+      <div class="card"><div class="kind">Nature break</div><div class="nm">Agro-usadby (country houses)</div><div class="pl">Lakes &amp; forests, e.g. Naroch, Braslav</div><div class="pr">€30–60 / night whole house</div><div class="note">Belarus' answer to rural Airbnb — search «агроусадьба» on Kufar or holiday.by. Perfect 2–3 night lake escape with the baby.</div><div class="links"><a class="lnk web" href="https://www.holiday.by/by/skarb" target="_blank" rel="noopener">holiday.by</a><a class="lnk map" href='https://www.google.com/maps/search/?api=1&query=Naroch+lake+Belarus' target="_blank" rel="noopener">Lake Naroch</a></div></div>
+    </div>
+
+    <div class="subgroup">Budget for the 15 days (family of 3)</div>
+    <div class="tolls">
+      <div class="toll"><span class="flag">🏠</span><b>Accommodation</b><p>€450–650 for 14 nights in apartments — much less if some nights are with family.</p></div>
+      <div class="toll"><span class="flag">🍲</span><b>Food</b><p>€300–375. Groceries &amp; eating out are cheap (mains €5–10).</p></div>
+      <div class="toll"><span class="flag">⛽</span><b>Fuel inside BY</b><p>€60–80. AI-95 ≈ 2.68 BYN/L (~€0.75) — half EU prices.</p></div>
+      <div class="toll"><span class="flag">🎟️</span><b>Activities</b><p>€100–150. Museums €2–5, parks mostly free.</p></div>
+      <div class="toll"><span class="flag">🛡️</span><b>Insurance &amp; fees</b><p>Car border policy 1 month ~€40–50 · medical insurance for the foreign visitor ~€1/day ≈ €15 · BelToll deposit €25 (refunded) · exit e-queue ~€7.</p></div>
+      <div class="toll"><span class="flag">💰</span><b>Total ≈ €1,000–1,350</b><p>Comfortably less with family stays. Bring cash (USD safest), exchange to BYN locally.</p></div>
+    </div>
+    <div class="notice">🛡️ <b>Insurance detail:</b> buy the <b>1-month</b> border car policy at Brest (not the 15-day one) — your stay is 15–16 days door-to-door and an expired policy inside Belarus is a fine. The 15-day policy is ~€25–35; the month ~€40–50. The foreign family member also needs the mandatory visitor medical insurance (sold at the same border desks).</div>
+  </section>
+
+  <!-- ============ EXIT DAY ============ -->
+  <section id="exit">
+    <h2>Exit day — leaving Belarus the smart way</h2>
+    <p class="lede">Since 1 Jan 2026, passenger cars register remotely in the electronic queue for all Belarus→EU crossings — you get notified when to drive to the checkpoint instead of camping in a line.</p>
+    <div class="tips">
+      <div class="tipsign blue">
+        <h4>📲 E-queue (do this from Minsk)</h4>
+        <ul>
+          <li>Register the car at <b>belarusborder.by</b> — remote registration for passenger cars, fee ~22.5 BYN (≈ €7), payable via ERIP/bank.</li>
+          <li>Brest's waiting area holds 235 cars with displays calling plates forward; you can monitor the live count on gpk.gov.by.</li>
+          <li>A paid fixed-date reservation exists but costs ~697 BYN (~€200) — skip it; plain registration + midweek timing is enough.</li>
+          <li>Best slots: weekday mornings. Avoid Friday/Sunday evenings.</li>
+        </ul>
+      </div>
+      <div class="tipsign">
+        <h4>🧾 Before the border</h4>
+        <ul>
+          <li><b>Pay all speeding fines</b> — unpaid ones surface at exit control and can hold you for hours.</li>
+          <li><b>Return the BelToll unit</b> → deposit back (~€25).</li>
+          <li>Keep the temporary-import customs paper from entry — it's checked on the way out.</li>
+          <li>EU duty-free limits going back in: alcohol/tobacco strictly enforced at Terespol.</li>
+          <li>Fill the tank — last cheap fuel before the EU.</li>
+        </ul>
+      </div>
+      <div class="tipsign">
+        <h4>🧭 Which border out?</h4>
+        <ul>
+          <li><b>Brest → Terespol (recommended)</b> — open for all passenger traffic, straight onto your known route to Warsaw.</li>
+          <li>Lithuania (Kamenny Log → Medininkai) and Latvia (Grigorovshchina → Pāternieki): possible but currently seeing delays up to several days — only worth it if live news says otherwise that week.</li>
+          <li>Check the live panels below + gpk.gov.by outbound queue the day before.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VARIANT A ============ -->
+  <section id="varA">
+    <h2>Variant A — the ferry route (recommended)</h2>
+    <p class="lede">Seven relaxed days: five countries you wanted to see, then a 21-hour Mediterranean cruise instead of the final 900 km of motorway. ~2,350 km of driving total.</p>
+
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R1 · ~4 Aug</span><h3>Minsk → Brest → Warsaw</h3>
+        <div class="day-meta"><span><b>~560 km</b> + border</span><span>E-queue slot morning → Warsaw by evening</span></div></div>
+      <div class="day-body">
+        <div class="stop major"><div class="t">early</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Brest+border+crossing' target="_blank" rel="noopener">Brest exit (e-queue)</a></span><p>BelToll returned, fines paid, temp-import paper ready.</p><span class="tag border">BY exit</span></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Warsaw' target="_blank" rel="noopener">Warsaw — sleep</a></span><p>Same bases as outbound: Camping WOK/SUM or a cheap flat.</p><span class="tag night">Overnight</span></div></div>
+      </div>
+    </div>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R2</span><h3>Warsaw → Berlin</h3><div class="day-meta"><span><b>~575 km</b> · ~5h30 on the A2/A12</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">midday</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Poznan' target="_blank" rel="noopener">Poznań</a></span><span class="km">~310 km</span><p>Lunch + driver switch in the old market square.</p><span class="tag swap">Switch driver</span></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Berlin' target="_blank" rel="noopener">Berlin — sleep</a></span><p>Evening walk: Brandenburg Gate is stroller-friendly.</p><span class="tag night">Overnight</span></div></div>
+      </div>
+    </div>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R3</span><h3>Berlin → Cologne</h3><div class="day-meta"><span><b>~575 km</b> · ~5h45, toll-free autobahn</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">midday</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Hannover' target="_blank" rel="noopener">Hannover area</a></span><span class="km">~290 km</span><span class="tag swap">Switch driver</span><span class="tag food">Lunch</span></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Cologne+cathedral' target="_blank" rel="noopener">Cologne — sleep</a></span><p>The Dom is 5 minutes from any centre parking.</p><span class="tag night">Overnight</span></div></div>
+      </div>
+    </div>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R4</span><h3>Cologne → Bruges/Brussels → Luxembourg</h3><div class="day-meta"><span><b>~420–520 km</b> depending on the Belgium detour</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">morning</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Bruges+Belgium' target="_blank" rel="noopener">Bruges (optional, +100 km)</a></span><p>Or Brussels Grand-Place for a shorter loop. Waffles are baby-approved.</p><span class="tag food">Belgium stop</span></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Luxembourg+city' target="_blank" rel="noopener">Luxembourg — sleep</a></span><p>Cheapest fuel in Western Europe — fill up here.</p><span class="tag night">Overnight</span></div></div>
+      </div>
+    </div>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R5</span><h3>Luxembourg → Lucerne, Switzerland</h3><div class="day-meta"><span><b>~350 km</b> · ~4h</span><span>Buy the Swiss vignette (CHF 40) at the border</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">border</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Basel' target="_blank" rel="noopener">Basel — CH entry</a></span><p>Vignette mandatory on motorways — e-vignette also works (via.admin.ch).</p><span class="tag border">Switzerland</span></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Lucerne' target="_blank" rel="noopener">Lucerne — sleep</a></span><p>Lake + Kapellbrücke evening walk. Switzerland is pricey — this is the one splurge night (or camp).</p><span class="tag night">Overnight</span></div></div>
+      </div>
+    </div>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R6</span><h3>Lucerne → Milan → Genoa</h3><div class="day-meta"><span><b>~330 km</b> · Gotthard tunnel + Italian tolls ~€25</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">midday</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Milan+Duomo' target="_blank" rel="noopener">Milan (optional stop)</a></span><p>Duomo photo + espresso, or skip straight to the sea.</p></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Genoa+old+town' target="_blank" rel="noopener">Genoa — sleep</a></span><p>Aquarium of Genoa the next morning is a superb baby-friendly wait-for-the-ferry activity.</p><span class="tag night">Overnight</span></div></div>
+      </div>
+    </div>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R7</span><h3>⛴️ GNV Ferry Genoa → Barcelona</h3><div class="day-meta"><span><b>~20–21 h</b> overnight crossing</span><span>Vehicle check-in opens 5 h before departure, closes 1 h before</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">-5h</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Genoa+ferry+terminal+GNV' target="_blank" rel="noopener">Genoa port — check-in</a></span><p>Bring: tickets (QR), passports/IDs, vehicle registration + insurance certificate.</p></div></div>
+        <div class="stop major"><div class="t">next day</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Barcelona+ferry+terminal+Moll+Sant+Bertran' target="_blank" rel="noopener">Barcelona — HOME 🎉</a></span><p>Moll de Sant Bertran. You live here.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VARIANT B ============ -->
+  <section id="varB">
+    <h2>Variant B — drive it all (no ferry)</h2>
+    <p class="lede">Identical through R5 (Lucerne). Then two driving days instead of the boat — cheaper if ferry prices spike, and you keep full date flexibility. ~3,050 km total.</p>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R6-alt</span><h3>Lucerne → Geneva → Lyon</h3><div class="day-meta"><span><b>~420 km</b> · ~4h30</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">midday</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Geneva+lake' target="_blank" rel="noopener">Geneva</a></span><p>Lakeside lunch, then into France.</p><span class="tag border">France</span></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Lyon' target="_blank" rel="noopener">Lyon — sleep</a></span><p>Or push to the Dombes — you know the good cheap beds there from the way out.</p><span class="tag night">Overnight</span></div></div>
+      </div>
+    </div>
+    <div class="day">
+      <div class="day-head"><span class="day-badge">R7-alt</span><h3>Lyon → Barcelona</h3><div class="day-meta"><span><b>~640 km</b> · ~6h + French tolls ~€60</span></div></div>
+      <div class="day-body">
+        <div class="stop"><div class="t">midday</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Aire+de+Narbonne+Sud' target="_blank" rel="noopener">Narbonne — the mirror of Day 1</a></span><span class="km">~390 km</span><span class="tag swap">Switch driver</span><span class="tag food">Lunch</span></div></div>
+        <div class="stop major"><div class="t">evening</div><div class="dotcol"><span class="dot"></span></div><div class="c"><span class="name"><a href='https://www.google.com/maps/search/?api=1&query=Barcelona' target="_blank" rel="noopener">Barcelona — HOME 🎉</a></span></div></div>
+      </div>
+    </div>
+    <div class="notice">💶 <b>Cost comparison:</b> Variant A ≈ €900–1,300 (fuel ~€200 + ferry car+cabin €250–450 + hotels €350–550 + CH vignette €42 + IT tolls ~€25). Variant B ≈ €750–1,100 (fuel ~€280 + hotels + CH vignette + FR/IT tolls ~€90, no ferry). A is less tiring and more fun; B is cheaper and fully flexible. Decide by R5 in Lucerne at the latest.</div>
+  </section>
+
+  <!-- ============ FERRY ============ -->
+  <section id="ferry">
+    <h2>The ferry — booking &amp; facts</h2>
+    <div class="sleep">
+      <div class="card reco"><div class="kind">Operator</div><div class="nm"><a href="https://www.gnv.it/en/ferries-destinations/spain" target="_blank" rel="noopener">GNV (Grandi Navi Veloci) ↗</a></div><div class="pl">Genoa ⇄ Barcelona, ~3×/week year-round</div><div class="pr">Car ≈ €150–280 · cabins from ~€80</div><div class="note">~20–21 h crossing. Infants up to 3 travel free (port taxes only). Book a 4-berth cabin — it's an overnight sailing.</div><div class="links"><a class="lnk" href="https://www.gnv.it/en" target="_blank" rel="noopener">Book on GNV</a></div></div>
+      <div class="card"><div class="kind">Compare prices</div><div class="nm">Ferry aggregators</div><div class="pl">Same sailings, sometimes cheaper</div><div class="pr">from ~€70 pp</div><div class="note">Check all three before booking; midweek sailings are cheapest. Book ~2 weeks ahead for August.</div><div class="links"><a class="lnk web" href="https://www.directferries.com/genoa_barcelona_ferry.htm" target="_blank" rel="noopener">Direct Ferries</a><a class="lnk web" href="https://www.ferryhopper.com/en/ferry-routes/direct/ferry-barcelona-genoa-traghetti" target="_blank" rel="noopener">Ferryhopper</a><a class="lnk web" href="https://www.aferry.com/genoa-barcelona/" target="_blank" rel="noopener">AFerry</a></div></div>
+      <div class="card"><div class="kind">Check-in rules</div><div class="nm">Genoa port, with a vehicle</div><div class="pl">Terminal Traghetti, Genoa</div><div class="pr">arrive 5 h early</div><div class="note">Vehicle check-in opens 5 h before departure and closes 1 h before. Show ticket QR, IDs for everyone, vehicle registration + insurance certificate.</div><div class="links"><a class="lnk map" href='https://www.google.com/maps/search/?api=1&query=Genoa+ferry+terminal' target="_blank" rel="noopener">Terminal map</a></div></div>
+    </div>
+  </section>
+
+  <!-- ============ SLEEP STOPS ============ -->
+  <section id="sleep">
+    <h2>Sleep stops on the way back</h2>
+    <p class="lede">One budget pick per overnight city — camping where it's good, cheap beds where camping isn't. Airbnb works again from Poland onward.</p>
+    <div class="sleep">
+      <div class="card"><div class="kind">R1 · Warsaw</div><div class="nm"><a href="https://park4night.com/en/place/18117" target="_blank" rel="noopener">Camping WOK / cheap flat ↗</a></div><div class="pl">Warsaw SE / centre</div><div class="pr">€20–45</div><div class="note">You know these from the outbound page.</div><div class="links"><a class="lnk bnb" href='https://www.airbnb.com/s/Warsaw--Poland/homes' target="_blank" rel="noopener">Airbnb</a></div></div>
+      <div class="card"><div class="kind">R2 · Berlin</div><div class="nm">Tentstation area / east-side flats</div><div class="pl">Berlin</div><div class="pr">€25–70</div><div class="note">City campsites exist but flats in Lichtenberg/Neukölln are often the same price.</div><div class="links"><a class="lnk bnb" href='https://www.airbnb.com/s/Berlin--Germany/homes' target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href='https://www.google.com/maps/search/?api=1&query=Campingplatz+Berlin' target="_blank" rel="noopener">Campsites</a></div></div>
+      <div class="card"><div class="kind">R3 · Cologne</div><div class="nm">Camping Berger (Rhine) / Deutz flats</div><div class="pl">Cologne</div><div class="pr">€25–65</div><div class="note">Riverside municipal camping south of the centre; tram to the Dom.</div><div class="links"><a class="lnk bnb" href='https://www.airbnb.com/s/Cologne--Germany/homes' target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href='https://www.google.com/maps/search/?api=1&query=Camping+Berger+Koln' target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">R4 · Luxembourg</div><div class="nm">Camping Kockelscheuer / cross-border FR flats</div><div class="pl">Luxembourg city edge</div><div class="pr">€20–60</div><div class="note">Kockelscheuer is 15 min from the centre; sleeping just over the French border (Thionville) is cheaper.</div><div class="links"><a class="lnk bnb" href='https://www.airbnb.com/s/Thionville--France/homes' target="_blank" rel="noopener">Airbnb Thionville</a><a class="lnk map" href='https://www.google.com/maps/search/?api=1&query=Camping+Kockelscheuer+Luxembourg' target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">R5 · Lucerne</div><div class="nm">Camping Lido Luzern</div><div class="pl">On the lake, next to the Transport Museum</div><div class="pr">€35–55 (tent) vs €150+ hotels</div><div class="note">The way to afford Switzerland — lakefront pitch, city bus at the gate.</div><div class="links"><a class="lnk web" href="https://www.camping-international.ch" target="_blank" rel="noopener">Website</a><a class="lnk map" href='https://www.google.com/maps/search/?api=1&query=Camping+Lido+Luzern' target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">R6 · Genoa</div><div class="nm">Cheap flats near the port / Camping Villa Doria</div><div class="pl">Genoa</div><div class="pr">€25–60</div><div class="note">Sleep close to the terminal — check-in is 5 h before sailing. Villa Doria (Pegli) is the nearest campsite.</div><div class="links"><a class="lnk bnb" href='https://www.airbnb.com/s/Genoa--Italy/homes' target="_blank" rel="noopener">Airbnb</a><a class="lnk map" href='https://www.google.com/maps/search/?api=1&query=Camping+Villa+Doria+Genova+Pegli' target="_blank" rel="noopener">Map</a></div></div>
+      <div class="card"><div class="kind">Var B · Lyon/Dombes</div><div class="nm">Your Day-1 bases in reverse</div><div class="pl">Villars-les-Dombes area</div><div class="pr">€15–70</div><div class="note">Camping Le Large, Domaine de la Dombes — all on the outbound page.</div><div class="links"><a class="lnk" href="barcelona-minsk-road-trip.html#p4n" target="_blank" rel="noopener">See outbound list</a></div></div>
+    </div>
+  </section>
+
+  <!-- ============ CHECKLIST ============ -->
+  <section id="checklist">
+    <h2>Return-trip checklist</h2>
+    <p class="lede">Same system as the outbound page: ticks save on this device, add items with +, click text to edit, ✕ to remove, ＋ New list for whole new lists.</p>
+    <div class="chk-toolbar">
+      <span class="chk-count" id="chkCount">0 / 0 done</span>
+      <div class="chk-progress"><i id="chkBar"></i></div>
+      <button class="chk-btn add" onclick="chkAddCategory()">＋ New list</button>
+      <button class="chk-btn" onclick="chkUncheckAll()">Uncheck all</button>
+      <button class="chk-btn warn" onclick="chkReset()">Reset to default list</button>
+    </div>
+    <div class="chk-grid" id="chkGrid"></div>
+    <p class="chk-note">This list is separate from the outbound page's list.</p>
+  </section>
+
+  <!-- ============ NEWS ============ -->
+  <section id="news">
+    <h2>Live checks for the way back</h2>
+    <div class="news-box">
+      <div class="news-head">
+        <h3>🛂 Belarus exit · queues · LT/LV/PL borders</h3>
+        <button class="news-refresh" id="newsBtnD" onclick="fetchPanel('D')">⟳ Refresh now</button>
+      </div>
+      <div class="news-body" id="newsBodyD"><span class="muted">Click refresh for the latest on leaving Belarus by car: Brest→Terespol outbound queues, e-queue system news, and whether the Lithuania (Medininkai) or Latvia (Pāternieki) exits are worth considering that week — cross-checked across official and independent sources, rated by impact.</span></div>
+      <div class="news-stamp" id="newsStampD"></div>
+      <div class="news-links">
+        <a class="lnk" href="https://gpk.gov.by/en/situation-at-the-border/" target="_blank" rel="noopener">gpk.gov.by queues</a>
+        <a class="lnk" href="https://belarusborder.by/?lang=en" target="_blank" rel="noopener">E-queue booking</a>
+        <a class="lnk map" href="https://granica.gov.pl" target="_blank" rel="noopener">granica.gov.pl</a>
+      </div>
+    </div>
+    <div class="news-box" style="margin-top:18px">
+      <div class="news-head">
+        <h3>🚢 Ferry &amp; route disruptions (strikes, closures)</h3>
+        <button class="news-refresh" id="newsBtnE" onclick="fetchPanel('E')">⟳ Refresh now</button>
+      </div>
+      <div class="news-body" id="newsBodyE"><span class="muted">Click refresh to scan for GNV Genoa–Barcelona schedule changes, Italian port or transport strikes (very much a thing in August), Gotthard tunnel closures, and anything on the German/Swiss/Italian legs that could affect the drive — rated calmly by impact.</span></div>
+      <div class="news-stamp" id="newsStampE"></div>
+      <div class="news-links">
+        <a class="lnk" href="https://www.gnv.it/en" target="_blank" rel="noopener">GNV</a>
+        <a class="lnk web" href="https://www.directferries.com/genoa_barcelona_ferry.htm" target="_blank" rel="noopener">Direct Ferries</a>
+        <a class="lnk map" href="https://www.gotthard-strassentunnel.ch" target="_blank" rel="noopener">Gotthard status</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <b>Minsk → Barcelona</b> · 15 days in Belarus · Variant A (ferry) or B (drive) · <a href="barcelona-minsk-road-trip.html" style="color:#fff">⬅ Outbound plan</a><br>
+  Шчаслівай дарогі · Szerokiej drogi · Gute Fahrt · Buon viaggio · Bon viatge — home!
+</footer>
+
+<script>
+/* ================= CHECKLIST (return) ================= */
+const CHK_KEY = "minsk_bcn_return_checklist_v1";
+const CHK_DEFAULT = [
+ {c:"🇧🇾 Before leaving Belarus", items:[
+  "Register e-queue at belarusborder.by (~22.5 BYN)","Pay ALL speeding fines (check via bank/ERIP)",
+  "Return BelToll unit → get €25 deposit back","Temporary-import customs paper ready for exit",
+  "Car border insurance still valid on exit date","Fill the tank (last cheap fuel)",
+  "Exchange leftover BYN (hard to change abroad)","Gifts/food within EU duty-free limits (alcohol/tobacco strict)",
+  "Check gpk.gov.by outbound queue the evening before"]},
+ {c:"📄 Route documents", items:[
+  "Swiss vignette CHF 40 (border or e-vignette via.admin.ch)","Ferry booking confirmed + QR ticket saved offline",
+  "Passports/IDs for ferry check-in ×3","Vehicle registration + insurance certificate for ferry check-in",
+  "Hotel/flat bookings R1–R6 saved offline","Green Card valid again from Poland onward"]},
+ {c:"⛴️ Ferry day (Variant A)", items:[
+  "Arrive Genoa port 5 h before departure","Cabin booked (overnight sailing, 4-berth)",
+  "Baby bag for 21 h: nappies, food, toys, sleep kit","Seasickness plan (bands/medication for adults)",
+  "Everything needed OUT of the car before boarding (no garage access at sea)","Power bank charged for the crossing"]},
+ {c:"🚗 Car care on the way back", items:[
+  "Tyre pressures re-checked loaded (2.3–2.5 / 2.1–2.3 bar)","Oil level check mid-trip (~180,000+ km on the clock)",
+  "Roof box straps re-tightened every morning","Screenwash topped up","Gotthard tunnel status checked before R6"]}
+];
+let chkData = null;
+async function chkSave(){ const s = JSON.stringify(chkData);
+  try{ if(window.storage){ await window.storage.set(CHK_KEY, s); return; } }catch(e){}
+  try{ localStorage.setItem(CHK_KEY, s); }catch(e){} }
+async function chkLoad(){
+  try{ if(window.storage){ const r = await window.storage.get(CHK_KEY); if(r && r.value) return JSON.parse(r.value); } }catch(e){}
+  try{ const v = localStorage.getItem(CHK_KEY); if(v) return JSON.parse(v); }catch(e){}
+  return null; }
+function chkFromDefault(){ return CHK_DEFAULT.map(cat => ({c:cat.c, items:cat.items.map(t => ({t:t, d:false}))})); }
+function chkRender(){
+  const grid = document.getElementById("chkGrid"); grid.innerHTML = "";
+  let total = 0, done = 0;
+  chkData.forEach((cat, ci) => {
+    const catDone = cat.items.filter(i=>i.d).length;
+    total += cat.items.length; done += catDone;
+    const box = document.createElement("div"); box.className = "chk-cat";
+    const h = document.createElement("h4");
+    const nameEl = document.createElement("span"); nameEl.className="cat-name"; nameEl.textContent = cat.c;
+    nameEl.title="Tap to rename this list";
+    nameEl.onclick = () => { const nv = prompt("Rename list:", cat.c);
+      if(nv !== null && nv.trim() !== ""){ cat.c = nv.trim(); chkSave(); chkRender(); } };
+    const cnt = document.createElement("span"); cnt.className="done-count"; cnt.textContent = catDone + "/" + cat.items.length;
+    const catDel = document.createElement("button"); catDel.className="cat-del"; catDel.textContent="✕"; catDel.title="Delete this whole list";
+    catDel.onclick = () => { if(confirm('Delete the whole list "' + cat.c + '"?')){ chkData.splice(ci,1); chkSave(); chkRender(); } };
+    h.appendChild(nameEl); h.appendChild(cnt); h.appendChild(catDel); box.appendChild(h);
+    const ul = document.createElement("ul"); ul.className = "chk-items";
+    cat.items.forEach((it, ii) => {
+      const li = document.createElement("li"); if(it.d) li.className="done";
+      const cb = document.createElement("input"); cb.type="checkbox"; cb.checked = it.d;
+      cb.onchange = () => { it.d = cb.checked; chkSave(); chkRender(); };
+      const span = document.createElement("span"); span.className="txt"; span.textContent = it.t; span.title="Click to edit";
+      span.onclick = () => { const nv = prompt("Edit item:", it.t);
+        if(nv !== null && nv.trim() !== ""){ it.t = nv.trim(); chkSave(); chkRender(); } };
+      const del = document.createElement("button"); del.className="del"; del.textContent="✕";
+      del.onclick = () => { if(confirm("Remove: " + it.t + "?")){ cat.items.splice(ii,1); chkSave(); chkRender(); } };
+      li.appendChild(cb); li.appendChild(span); li.appendChild(del); ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    const add = document.createElement("div"); add.className="chk-add";
+    const inp = document.createElement("input"); inp.placeholder="Add your own item…";
+    const btn = document.createElement("button"); btn.textContent="+";
+    const doAdd = () => { if(inp.value.trim() !== ""){ cat.items.push({t:inp.value.trim(), d:false}); inp.value=""; chkSave(); chkRender(); } };
+    btn.onclick = doAdd; inp.onkeydown = (e) => { if(e.key==="Enter") doAdd(); };
+    add.appendChild(inp); add.appendChild(btn); box.appendChild(add);
+    grid.appendChild(box);
+  });
+  document.getElementById("chkCount").textContent = done + " / " + total + " done";
+  document.getElementById("chkBar").style.width = (total ? Math.round(done/total*100) : 0) + "%";
+}
+function chkAddCategory(){
+  const nv = prompt("Name of the new list:");
+  if(nv !== null && nv.trim() !== ""){ chkData.push({c:nv.trim(), items:[]}); chkSave(); chkRender();
+    setTimeout(() => { const g=document.getElementById("chkGrid"); if(g.lastElementChild) g.lastElementChild.scrollIntoView({behavior:"smooth",block:"center"}); }, 50); }
+}
+function chkUncheckAll(){ chkData.forEach(c => c.items.forEach(i => i.d=false)); chkSave(); chkRender(); }
+function chkReset(){ if(confirm("Reset to the default return list?")){ chkData = chkFromDefault(); chkSave(); chkRender(); } }
+(async function(){ chkData = await chkLoad() || chkFromDefault(); chkRender(); })();
+
+/* ================= NEWS (return panels) ================= */
+const NEWS_PROMPTS = {
+  D: "Search the web widely (today and past 2 weeks) about EXITING Belarus by private passenger car into the EU. Sources: Belarusian official gpk.gov.by, gtk.gov.by, belarusborder.by, BelTA; independent Belarusian media zerkalo.io, nashaniva.com, pozirk.online, svaboda.org, onliner.by; Polish granica.gov.pl and media; Lithuanian and Latvian border services (vsat.lt, rs.gov.lv) and media. Report: 1) OUTBOUND queue situation at Brest to Terespol for cars (typical wait now). 2) E-QUEUE system news for passenger cars (fees, remote registration changes). 3) LITHUANIA (Kamenny Log-Medininkai) and LATVIA (Grigorovshchina-Paternieki) exits: open or not for cars, current waits - are they better or worse than Brest right now. 4) Any closures, incidents or relations news that could affect a family exiting Belarus by car in early August 2026, each rated [No impact]/[Low]/[Medium]/[High]. 5) BOTTOM LINE: which exit to use, two calm sentences. Cross-check official vs independent sources and note disagreements. Plain text only, short lines, no markdown.",
+  E: "Search the web (today and past 2 weeks) for anything affecting a family driving Warsaw-Berlin-Cologne-Luxembourg-Lucerne-Genoa in early August 2026 and taking the GNV ferry Genoa to Barcelona: 1) GNV Genoa-Barcelona schedule changes, cancellations or price news. 2) Italian port or transport STRIKES announced for August (very common - check Italian strike calendars and media). 3) Gotthard tunnel or Swiss/German motorway major closures or roadworks. 4) Any French or Spanish transport disruptions on the alternative all-driving route via Lyon. Rate each finding [No impact]/[Low]/[Medium]/[High] for the trip, translate non-English info, and end with BOTTOM LINE: two calm practical sentences including whether to prefer the ferry variant or the driving variant that week. Plain text only, short lines, no markdown."
+};
+async function fetchPanel(key){
+  const btn = document.getElementById("newsBtn" + key);
+  const body = document.getElementById("newsBody" + key);
+  const stamp = document.getElementById("newsStamp" + key);
+  btn.disabled = true; btn.textContent = "⏳ Checking…";
+  body.innerHTML = '<span class="muted">Searching sources, translating and analysing… this can take up to a minute.</span>';
+  try{
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: NEWS_PROMPTS[key] }],
+        tools: [{ type: "web_search_20250305", name: "web_search" }]
+      })
+    });
+    if(!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n").trim();
+    if(!text) throw new Error("Empty response");
+    body.textContent = text;
+    stamp.textContent = "Last checked: " + new Date().toLocaleString();
+  }catch(err){
+    body.innerHTML = '<span class="muted">Could not fetch live news here (' + err.message + '). This live check works when the page is opened inside Claude. Use the source buttons below the panel instead.</span>';
+    stamp.textContent = "Last attempt: " + new Date().toLocaleString();
+  }
+  btn.disabled = false; btn.textContent = "⟳ Refresh now";
+}
+</script>
+</body>
+</html>
