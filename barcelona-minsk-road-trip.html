@@ -341,6 +341,10 @@
   .p4rate small{color:var(--muted);font-weight:500;font-family:'IBM Plex Sans',sans-serif}
   .p4svc{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 6px}
   .p4svc .svc{font-size:.68rem;font-weight:600;background:#EEF1F7;color:var(--motorway-2);border-radius:20px;padding:2px 8px;white-space:nowrap}
+  .reg-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+  .reg-btn{display:inline-flex;align-items:center;gap:8px;background:var(--sign-green);color:#fff;text-decoration:none;font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1rem;padding:11px 20px;border-radius:10px;white-space:nowrap}
+  .reg-btn:hover{opacity:.9}
+  .reg-hint{font-size:.82rem;color:var(--muted)}
 
   /* ---------- BORDER NEWS ---------- */
   .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -520,6 +524,10 @@
         <span class="route-lbl">🛣️ On the road</span>
         <div class="route-mini"><i id="routeBar"></i></div>
         <span class="route-txt" id="routeTxt">Tap a stop below as you reach it</span>
+      </div>
+      <div class="reg-row">
+        <a class="reg-btn" href="#spend" onclick="setTimeout(function(){var e=document.getElementById('expAmt'); if(e){e.focus();}},450)">💸 Register an expense</a>
+        <span class="reg-hint">Log what you spend on the road — jumps to the tracker</span>
       </div>
     </div>
   </section>
@@ -1120,7 +1128,7 @@
       </div>
     </div>
 
-    <h3 class="acc-part" style="margin-top:28px">💸 What we're actually spending</h3>
+    <h3 class="acc-part" id="spend" style="margin-top:28px;scroll-margin-top:70px">💸 What we're actually spending</h3>
     <p class="lede" style="margin-bottom:12px">Log spends the moment they happen — type the amount, pick a category, tap Add. It tallies the real total and shows it against the proposed budget above, so you always know where you stand. Saves on this device. Tip: you can also click any accommodation card further up to log what you paid for that night.</p>
     <div class="exp">
       <div class="exp-add">
