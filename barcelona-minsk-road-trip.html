@@ -31,7 +31,7 @@
     color:var(--ink);
     line-height:1.55;
   }
-  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 32px}
 
   /* ---------- HERO: motorway sign ---------- */
   header{
@@ -225,6 +225,12 @@
     border:none;border-radius:8px;padding:7px 13px;cursor:pointer;background:var(--motorway-2);color:#fff;
   }
   .chk-btn.warn{background:#B3423A}
+  .chk-btn.add{background:var(--sign-green)}
+  .chk-cat h4 .cat-name{cursor:pointer;flex:1}
+  .chk-cat h4 .cat-del{
+    border:none;background:none;color:#AEBBE0;cursor:pointer;font-size:1rem;padding:0 2px 0 8px;flex:none;
+  }
+  .chk-cat h4 .cat-del:hover{color:#FF9B94}
   .chk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
   .chk-cat{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
   .chk-cat h4{
@@ -405,7 +411,7 @@
 </header>
 
 <nav class="qnav" aria-label="Sections">
-  <a href="index.html">🏠 Home</a><a href="minsk-barcelona-return-trip.html">↺ Return trip</a><a href="#route">🗺️ Route</a><a href="#tolls">💶 Tolls</a><a href="#p4n">⛺ Sleep spots</a><a href="#airbnb">🏠 Airbnb</a><a href="#rules">👶 Rules</a><a href="#belarus">🇧🇾 Belarus</a><a href="#checklist">✅ Checklist</a><a href="#bordernews">🛂 Border news</a>
+  <a href="index.html">🏠 Home</a><a href="minsk-barcelona-return-trip.html">↺ Return trip</a><a href="#route">🗺️ Route</a><a href="#tolls">💶 Tolls</a><a href="#p4n">⛺ Sleep spots</a><a href="#airbnb">🏠 Airbnb</a><a href="#rules">👶 Rules</a><a href="#belarus">🇧🇾 Belarus</a><a href="#gifts">🎁 Gifts</a><a href="#checklist">✅ Checklist</a><a href="#bordernews">🛂 Border news</a>
 </nav>
 
 
@@ -870,6 +876,37 @@
     </div>
   </section>
 
+  <!-- ==================== GIFTS TO BELARUS ==================== -->
+  <section id="gifts">
+    <h2>Gifts to bring to the family in Belarus 🎁</h2>
+    <p class="lede">A taste of Barcelona and Spain to arrive with. Light, non-perishable and hard-to-find-there items travel best in the roof box; keep anything fragile or edible in the cabin.</p>
+    <div class="tips">
+      <div class="tipsign">
+        <h4>🫒 From Spain — food &amp; drink</h4>
+        <ul>
+          <li>Extra-virgin olive oil (a Spanish staple, genuinely prized in Belarus).</li>
+          <li>Turrón, polvorones &amp; Spanish chocolate (Valor, Lacasa).</li>
+          <li>Marcona almonds + a tin of saffron (azafrán) — light and premium.</li>
+          <li>Quality tinned seafood — mussels, cockles, sardines (conservas).</li>
+          <li>A bottle of Rioja or cava (mind the border alcohol limit).</li>
+          <li>Vacuum-packed Manchego or hard cheese — see the customs note below.</li>
+        </ul>
+      </div>
+      <div class="tipsign blue">
+        <h4>💝 From Barcelona — keepsakes</h4>
+        <ul>
+          <li>An FC Barcelona shirt or scarf for the kids and football fans.</li>
+          <li>Catalan olive-wood kitchenware or hand-painted ceramics.</li>
+          <li>Spanish cosmetics &amp; perfume (well regarded, easy to pack).</li>
+          <li>Gaudí / Barcelona souvenirs, postcards, fridge magnets.</li>
+          <li>Colouring books + small toys for the youngest cousins.</li>
+          <li>A bag of good Spanish-roast coffee.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="notice">🛂 <b>Customs into Belarus:</b> Belarus is in the EAEU customs union, and EU counter-sanctions plus veterinary rules restrict meat and dairy imports — jamón and cheese can be questioned, so keep them sealed and clearly for personal use. Alcohol is roughly <b>3 L per adult</b> duty-free and tobacco is limited; declare anything above the allowances. When in doubt, favour sweets, oil, tinned goods and non-edible keepsakes.</div>
+  </section>
+
   <!-- ==================== PACKING CHECKLIST ==================== -->
   <section id="checklist">
     <h2>Trip preparation checklist</h2>
@@ -877,11 +914,12 @@
     <div class="chk-toolbar">
       <span class="chk-count" id="chkCount">0 / 0 done</span>
       <div class="chk-progress"><i id="chkBar"></i></div>
+      <button class="chk-btn add" onclick="chkAddCategory()">＋ New list</button>
       <button class="chk-btn" onclick="chkUncheckAll()">Uncheck all</button>
       <button class="chk-btn warn" onclick="chkReset()">Reset to default list</button>
     </div>
     <div class="chk-grid" id="chkGrid"></div>
-    <p class="chk-note">Saving works in this browser/app session storage. If you open the file on another device, the list starts fresh — re-tick or re-add there.</p>
+    <p class="chk-note">✅ Everything saves automatically in this browser — tick items, add your own, or make whole new lists, and they'll still be here after you refresh or reopen the page on this device. Tap a list's title to rename it, or ✕ to delete it.</p>
   </section>
 
   <!-- ==================== BORDER NEWS ==================== -->
@@ -944,14 +982,14 @@ const CHK_DEFAULT = [
 ];
 let chkData = null;
 
-async function chkSave(){
+function chkSave(){
   const s = JSON.stringify(chkData);
-  try{ if(window.storage){ await window.storage.set(CHK_KEY, s); return; } }catch(e){}
   try{ localStorage.setItem(CHK_KEY, s); }catch(e){}
+  try{ if(window.storage && window.storage.set) window.storage.set(CHK_KEY, s); }catch(e){}
 }
 async function chkLoad(){
-  try{ if(window.storage){ const r = await window.storage.get(CHK_KEY); if(r && r.value) return JSON.parse(r.value); } }catch(e){}
   try{ const v = localStorage.getItem(CHK_KEY); if(v) return JSON.parse(v); }catch(e){}
+  try{ if(window.storage && window.storage.get){ const r = await window.storage.get(CHK_KEY); if(r && r.value) return JSON.parse(r.value); } }catch(e){}
   return null;
 }
 function chkFromDefault(){
@@ -967,7 +1005,14 @@ function chkRender(){
     const box = document.createElement("div");
     box.className = "chk-cat";
     const h = document.createElement("h4");
-    h.innerHTML = cat.c + ' <span class="done-count">' + catDone + "/" + cat.items.length + "</span>";
+    const nameEl = document.createElement("span"); nameEl.className = "cat-name"; nameEl.textContent = cat.c;
+    nameEl.title = "Tap to rename this list";
+    nameEl.onclick = () => { const nv = prompt("Rename list:", cat.c);
+      if(nv !== null && nv.trim() !== ""){ cat.c = nv.trim(); chkSave(); chkRender(); } };
+    const cnt = document.createElement("span"); cnt.className = "done-count"; cnt.textContent = catDone + "/" + cat.items.length;
+    const catDel = document.createElement("button"); catDel.className = "cat-del"; catDel.textContent = "✕"; catDel.title = "Delete this whole list";
+    catDel.onclick = () => { if(confirm('Delete the whole list "' + cat.c + '"?')){ chkData.splice(ci,1); chkSave(); chkRender(); } };
+    h.appendChild(nameEl); h.appendChild(cnt); h.appendChild(catDel);
     box.appendChild(h);
     const ul = document.createElement("ul");
     ul.className = "chk-items";
@@ -1008,6 +1053,11 @@ function chkRender(){
   });
   document.getElementById("chkCount").textContent = done + " / " + total + " done";
   document.getElementById("chkBar").style.width = (total ? Math.round(done/total*100) : 0) + "%";
+}
+function chkAddCategory(){
+  const nv = prompt("Name of the new list:");
+  if(nv !== null && nv.trim() !== ""){ chkData.push({c:nv.trim(), items:[]}); chkSave(); chkRender();
+    setTimeout(() => { const g=document.getElementById("chkGrid"); if(g.lastElementChild) g.lastElementChild.scrollIntoView({behavior:"smooth",block:"center"}); }, 50); }
 }
 function chkUncheckAll(){ chkData.forEach(c => c.items.forEach(i => i.d = false)); chkSave(); chkRender(); }
 function chkReset(){ if(confirm("Reset the whole list to the default items? Your custom items will be lost.")){ chkData = chkFromDefault(); chkSave(); chkRender(); } }

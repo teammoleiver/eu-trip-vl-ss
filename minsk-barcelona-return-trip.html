@@ -31,7 +31,7 @@
     color:var(--ink);
     line-height:1.55;
   }
-  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 32px}
 
   /* ---------- HERO: motorway sign ---------- */
   header{
@@ -409,7 +409,7 @@
   <div class="road"></div>
 </header>
 <nav class="qnav" aria-label="Sections">
-  <a href="index.html">🏠 Home</a><a href="barcelona-minsk-road-trip.html">↺ Outbound plan</a><a href="#stay">🏠 Belarus stay</a><a href="#exit">🛂 Exit day</a><a href="#varA">⛴️ Variant A</a><a href="#varB">🛣️ Variant B</a><a href="#ferry">🚢 Ferry</a><a href="#sleep">⛺ Sleep stops</a><a href="#checklist">✅ Checklist</a><a href="#news">📰 Live news</a>
+  <a href="index.html">🏠 Home</a><a href="barcelona-minsk-road-trip.html">↺ Outbound plan</a><a href="#stay">🏠 Belarus stay</a><a href="#exit">🛂 Exit day</a><a href="#varA">⛴️ Variant A</a><a href="#varB">🛣️ Variant B</a><a href="#ferry">🚢 Ferry</a><a href="#sleep">⛺ Sleep stops</a><a href="#gifts">🎁 Gifts</a><a href="#checklist">✅ Checklist</a><a href="#news">📰 Live news</a>
 </nav>
 
 <div class="wrap">
@@ -575,6 +575,35 @@
     </div>
   </section>
 
+  <!-- ============ GIFTS BACK ============ -->
+  <section id="gifts">
+    <h2>Gifts to bring back to friends in Barcelona 🎁</h2>
+    <p class="lede">The best of Belarus to carry home. Buy these in Minsk before you leave — supermarkets (chocolate, sweets), GUM/TSUM department stores and craft shops (linen, straw, ceramics) have everything.</p>
+    <div class="tips">
+      <div class="tipsign">
+        <h4>🍫 Taste of Belarus</h4>
+        <ul>
+          <li>Belarusian chocolate &amp; sweets — Kommunarka, Spartak, zefir marshmallow.</li>
+          <li>Herbal balsam (bittersweet liqueur) and a good local vodka.</li>
+          <li>Sguschyonka (condensed milk) and honey cakes.</li>
+          <li>Forest honey, herbal teas and dried berries.</li>
+          <li>Kvass concentrate — a fun, very local taste to share.</li>
+        </ul>
+      </div>
+      <div class="tipsign blue">
+        <h4>🧵 Crafts &amp; goods</h4>
+        <ul>
+          <li>Belarusian linen — tablecloths, towels, shirts (world-famous flax).</li>
+          <li>Straw-weaving (salamka) and vytinanka paper cut-outs.</li>
+          <li>Belita-Vitex cosmetics — great-value skincare, easy to pack.</li>
+          <li>Wooden toys and hand-painted ceramics (Rakov pottery).</li>
+          <li>Vyshyvanka embroidery and amber jewellery.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="notice">🛂 <b>Customs back into the EU:</b> from a non-EU country, <b>meat, milk and dairy are banned</b> and honey/other animal products are limited — so favour chocolate, sweets, linen, crafts and cosmetics. Alcohol duty-free per adult: <b>1 L of spirits over 22%</b> (or 2 L up to 22%) plus <b>4 L wine</b>; tobacco 200 cigarettes; other goods up to about <b>€430 per adult</b> (€150 for under-15s). Keep receipts for anything valuable.</div>
+  </section>
+
   <!-- ============ CHECKLIST ============ -->
   <section id="checklist">
     <h2>Return-trip checklist</h2>
@@ -587,7 +616,7 @@
       <button class="chk-btn warn" onclick="chkReset()">Reset to default list</button>
     </div>
     <div class="chk-grid" id="chkGrid"></div>
-    <p class="chk-note">This list is separate from the outbound page's list.</p>
+    <p class="chk-note">✅ Everything saves automatically in this browser and stays after you refresh or reopen the page on this device. This list is kept separate from the outbound page's list.</p>
   </section>
 
   <!-- ============ NEWS ============ -->
@@ -650,12 +679,12 @@ const CHK_DEFAULT = [
   "Roof box straps re-tightened every morning","Screenwash topped up","Gotthard tunnel status checked before R6"]}
 ];
 let chkData = null;
-async function chkSave(){ const s = JSON.stringify(chkData);
-  try{ if(window.storage){ await window.storage.set(CHK_KEY, s); return; } }catch(e){}
-  try{ localStorage.setItem(CHK_KEY, s); }catch(e){} }
+function chkSave(){ const s = JSON.stringify(chkData);
+  try{ localStorage.setItem(CHK_KEY, s); }catch(e){}
+  try{ if(window.storage && window.storage.set) window.storage.set(CHK_KEY, s); }catch(e){} }
 async function chkLoad(){
-  try{ if(window.storage){ const r = await window.storage.get(CHK_KEY); if(r && r.value) return JSON.parse(r.value); } }catch(e){}
   try{ const v = localStorage.getItem(CHK_KEY); if(v) return JSON.parse(v); }catch(e){}
+  try{ if(window.storage && window.storage.get){ const r = await window.storage.get(CHK_KEY); if(r && r.value) return JSON.parse(r.value); } }catch(e){}
   return null; }
 function chkFromDefault(){ return CHK_DEFAULT.map(cat => ({c:cat.c, items:cat.items.map(t => ({t:t, d:false}))})); }
 function chkRender(){
