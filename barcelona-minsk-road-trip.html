@@ -21,7 +21,7 @@
     --lane-yellow:#FFC93C;   /* road-marking yellow */
     --sign-green:#1E7A46;    /* exit-sign green */
     --line:#D8DCE6;
-    --muted:#5B6270;
+    --muted:#464C5A;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -29,7 +29,8 @@
     font-family:'IBM Plex Sans',system-ui,sans-serif;
     background:var(--paper);
     color:var(--ink);
-    line-height:1.55;
+    line-height:1.62;
+    font-size:16.5px;
   }
   .wrap{max-width:1400px;margin:0 auto;padding:0 32px}
 
@@ -96,7 +97,7 @@
     text-transform:uppercase;letter-spacing:.03em;
     font-size:1.7rem;margin-bottom:6px;
   }
-  .lede{color:var(--muted);max-width:64ch;margin-bottom:28px}
+  .lede{color:var(--muted);max-width:70ch;margin-bottom:28px;font-size:1.06rem;line-height:1.6}
 
   /* ---------- DAY TIMELINE ---------- */
   .day{
@@ -258,6 +259,18 @@
     border:none;border-radius:8px;background:var(--sign-green);color:#fff;font-weight:700;padding:0 13px;cursor:pointer;font-size:1.05rem;
   }
   .chk-note{font-size:.8rem;color:var(--muted);margin-top:12px}
+  .gift-legend{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 14px;font-size:.8rem;color:var(--muted);align-items:center}
+  .gift-legend span{display:inline-flex;align-items:center;gap:6px}
+  .gift-legend i{width:13px;height:13px;border-radius:4px;display:inline-block;border:1px solid rgba(0,0,0,.12)}
+  .gift-legend i.g{background:#CDEBD6}
+  .gift-legend i.o{background:#FCE6B4}
+  .gift-legend i.r{background:#F6C9C4}
+  .gift-legend .gift-dir{font-weight:600;color:var(--motorway-2)}
+  .chk-items li.gift-ok{background:#EAF6EE}
+  .chk-items li.gift-warn{background:#FFF6E1}
+  .chk-items li.gift-bad{background:#FCE7E5}
+  .chk-items li.gift-ok,.chk-items li.gift-warn,.chk-items li.gift-bad{border-radius:7px;margin:2px 0;border-bottom:none}
+  .gift-flag{flex:none;font-size:.95rem;cursor:help;line-height:1;align-self:center}
 
   /* ---------- BORDER NEWS ---------- */
   .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -887,6 +900,12 @@
       <button class="chk-btn" onclick="giftList.uncheckAll()">Uncheck all</button>
       <button class="chk-btn warn" onclick="giftList.reset()">Reset to suggestions</button>
     </div>
+    <div class="gift-legend">
+      <span><i class="g"></i>Allowed</span>
+      <span><i class="o"></i>Allowed — mind the limit / keep receipts</span>
+      <span><i class="r"></i>Don't bring it this way</span>
+      <span class="gift-dir">Crossing: into Belarus 🇧🇾</span>
+    </div>
     <div class="chk-grid" id="giftGrid"></div>
     <div class="notice">🛂 <b>Customs into Belarus:</b> Belarus is in the EAEU customs union, and EU counter-sanctions plus veterinary rules restrict meat and dairy imports — jamón and cheese can be questioned, so keep them sealed and clearly for personal use. Alcohol is roughly <b>3 L per adult</b> duty-free and tobacco is limited; declare anything above the allowances. When in doubt, favour sweets, oil, tinned goods and non-edible keepsakes.</div>
   </section>
@@ -1077,14 +1096,18 @@ function makeChecklist(opts){
       h.appendChild(nameEl); h.appendChild(cnt); h.appendChild(catDel); box.appendChild(h);
       const ul = document.createElement("ul"); ul.className = "chk-items";
       cat.items.forEach((it, ii) => {
-        const li = document.createElement("li"); if(it.d) li.className = "done";
+        const li = document.createElement("li");
+        const st = opts.customsDir ? giftStatus(it.t, opts.customsDir) : null;
+        li.className = ((it.d ? "done" : "") + (st ? " " + st.cls : "")).trim();
         const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = it.d;
         cb.onchange = () => { it.d = cb.checked; save(); render(); };
         const span = document.createElement("span"); span.className = "txt"; span.textContent = it.t; span.title = "Click to edit";
         span.onclick = () => { const nv = prompt("Edit item:", it.t); if(nv !== null && nv.trim() !== ""){ it.t = nv.trim(); save(); render(); } };
         const del = document.createElement("button"); del.className = "del"; del.textContent = "✕"; del.title = "Remove item";
         del.onclick = () => { if(confirm("Remove: " + it.t + "?")){ cat.items.splice(ii,1); save(); render(); } };
-        li.appendChild(cb); li.appendChild(span); li.appendChild(del); ul.appendChild(li);
+        li.appendChild(cb); li.appendChild(span);
+        if(st){ const flag = document.createElement("span"); flag.className = "gift-flag"; flag.textContent = st.emoji; flag.title = st.note; li.appendChild(flag); }
+        li.appendChild(del); ul.appendChild(li);
       });
       box.appendChild(ul);
       const add = document.createElement("div"); add.className = "chk-add";
@@ -1108,6 +1131,40 @@ function makeChecklist(opts){
   return api;
 }
 
+/* ===== CUSTOMS COLOUR LOGIC (hidden backend; from the PL⇄BY border table) =====
+   dir "into" = crossing INTO Belarus; dir "back" = coming BACK into the EU. */
+const CUSTOMS_RULES = [
+  {kw:["chocolate","sweets","candy","zefir","marshmallow","polvor","biscuit","cake","nougat"], into:"green", back:"green", note:"Sweets — fine both directions."},
+  {kw:["tea","coffee"], into:"green", back:"green", note:"Tea/coffee — fine both directions."},
+  {kw:["kvass","juice","soft drink"], into:"green", back:"green", note:"Soft drinks — fine both directions."},
+  {kw:["olive oil","turrón","turron","saffron","azafr","almond","marcona"], into:"orange", back:"orange", note:"Fine, but keep receipts and within the goods allowance."},
+  {kw:["honey"], into:"green", back:"orange", note:"Honey back into the EU: about 2 kg per person maximum."},
+  {kw:["fish","seafood","sardine","mussel","cockle","anchov","tuna","conserva"], into:"green", back:"orange", note:"Fish/seafood: fine into Belarus; back into the EU there is a ~20 kg personal limit."},
+  {kw:["wine","cava","rioja","vodka","beer","spirit","liqueur","balsam","alcohol","champagne","brandy","whisky","cognac"], into:"orange", back:"orange", note:"Alcohol: into Belarus max 3 L/adult; back into the EU 1 L spirits + 4 L wine + 16 L beer per adult."},
+  {kw:["jamón","jamon","ham","meat","sausage","chorizo","fuet","salami","sobrasada"], into:"orange", back:"red", note:"Meat: OK sealed INTO Belarus, but NEVER back into the EU — it will be seized at the border."},
+  {kw:["cheese","manchego","dairy","condensed milk","sguschyonka","butter","milk"], into:"orange", back:"red", note:"Dairy: OK sealed INTO Belarus, but forbidden back into the EU."},
+  {kw:["shirt","scarf","clothes","clothing","linen","vyshyvanka","embroider","towel","tablecloth"], into:"orange", back:"orange", note:"New textiles/clothes as gifts count toward the goods allowance — keep receipts."},
+  {kw:["toy","colouring","coloring"], into:"orange", back:"orange", note:"New toys count toward the goods allowance."},
+  {kw:["perfume","cosmetic","skincare","belita","vitex"], into:"orange", back:"orange", note:"New cosmetics/perfume count toward the goods allowance."},
+  {kw:["electronic","phone","tablet","laptop","camera","console","headphone"], into:"orange", back:"orange", note:"New/boxed electronics as gifts: keep under ~€300/item; high-value boxed goods risk extra checks."},
+  {kw:["amber","gold","jewel","jewellery","jewelry"], into:"orange", back:"orange", note:"Worn jewelry is fine; buying amber/gold in Belarus to import can hit EU import limits."},
+  {kw:["ceramic","pottery","souvenir","straw","salamka","vytinanka","wooden","kitchenware","craft","magnet","postcard"], into:"orange", back:"orange", note:"Souvenirs & crafts count toward the goods allowance — keep receipts."},
+  {kw:["drone","walkie","jammer","satellite phone","night vision","thermal","firearm","ammunition","tactical knife","combat knife","pepper spray","stun gun","taser","body armor","body armour","firework","flare","narcotic","scanner"], into:"red", back:"red", note:"Prohibited / weapon / dual-use — do not carry across the border."},
+  {kw:["counterfeit","fake brand"], into:"red", back:"red", note:"Counterfeit goods are confiscated in both directions."}
+];
+function giftStatus(text, dir){
+  const t = (text || "").toLowerCase(); const rank = {green:1, orange:2, red:3}; let best = null;
+  for(const r of CUSTOMS_RULES){
+    if(r.kw.some(k => t.indexOf(k) !== -1)){
+      const lvl = r[dir] || r.into;
+      if(!best || rank[lvl] > rank[best.level]) best = {level:lvl, note:r.note};
+    }
+  }
+  if(!best) return null;
+  const map = {green:{cls:"gift-ok", emoji:"✅"}, orange:{cls:"gift-warn", emoji:"⚠️"}, red:{cls:"gift-bad", emoji:"❌"}};
+  return {cls:map[best.level].cls, emoji:map[best.level].emoji, note:best.note};
+}
+
 /* ================= GIFTS TO BELARUS (editable) ================= */
 const GIFT_DEFAULT = [
  {c:"🫒 From Spain — food & drink", items:[
@@ -1120,7 +1177,8 @@ const GIFT_DEFAULT = [
   "Colouring books + small toys for the cousins","A bag of good Spanish-roast coffee"]}
 ];
 window.giftList = makeChecklist({key:"bcn_minsk_gifts_v1", grid:"giftGrid", count:"giftCount", bar:"giftBar",
-  defaults:GIFT_DEFAULT, addPlaceholder:"Add a gift idea…", resetMsg:"Reset the gift list back to the suggestions? Your custom items will be lost."});
+  defaults:GIFT_DEFAULT, addPlaceholder:"Add a gift idea…", customsDir:"into",
+  resetMsg:"Reset the gift list back to the suggestions? Your custom items will be lost."});
 
 /* ================= BORDER NEWS ================= */
 async function refreshNews(){
