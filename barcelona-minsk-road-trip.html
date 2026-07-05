@@ -1240,7 +1240,16 @@ const CHK_DEFAULT = [
  {c:"🛂 Border-day kit (20 Jul, front seat)", items:[
   "Full documents pouch within reach","Water + snacks for a 6-hour queue","Baby entertainment reserve (new toy!)",
   "Cash ready: border insurance ~€30 + BelToll deposit ~€25","granica.gov.pl + gpk.gov.by bookmarked; check at 21:00 on 19 Jul and 04:00 on 20 Jul",
-  "Fuel tank FULL leaving Warsaw","Toilet stop right before the queue","Buy A1/MTS SIM in Brest/Kobryn (passport)","Return BelToll unit when leaving BY (deposit back)"]}
+  "Fuel tank FULL leaving Warsaw","Toilet stop right before the queue","Buy A1/MTS SIM in Brest/Kobryn (passport)","Return BelToll unit when leaving BY (deposit back)"]},
+ {c:"🛍️ Shopping & gifts", items:[
+  "Buy sweets for kids","Buy OBD scanner for the car ×2","Buy phone for Sweta","Buy spare wheel",
+  "Buy t-shirts for Ekimov","Buy presents for Mahmoud","Buy T-shirt for Kirill","Print photos for Ekimov family",
+  "Buy pillow for Dina + turróns — ? · VL","Bring €500 to Ekimov — ? · VB","Buy cacao from Poland","Buy turróns","Buy cosmetics from Spain"]},
+ {c:"✅ Preparation tasks", items:[
+  "Check car before the trip · SS","What is prohibited to cross into RB (Belarus border) · VB","Prepare my phone & laptop · VL",
+  "Collect needed docs to take · VL","Find apartment in BLR · VB","Learn how to change a wheel · SS","Check WhatsApp chats · VB",
+  "Take money with us — 2000?","Prepare for interview","Plan the way to go (build the route)","Read up on the route & the tools/apps we need",
+  "Pack everything in the car to see how it fits","Take keys from Belarus","Download Google Maps offline","Buy internet (SIM) in BLR"]}
 ];
 let chkData = null;
 
@@ -1324,8 +1333,27 @@ function chkAddCategory(){
 }
 function chkUncheckAll(){ chkData.forEach(c => c.items.forEach(i => i.d = false)); chkSave(); chkRender(); }
 function chkReset(){ if(confirm("Reset the whole list to the default items? Your custom items will be lost.")){ chkData = chkFromDefault(); chkSave(); chkRender(); } }
+/* one-time additive merge: bring NEW default categories to already-saved lists
+   without wiping ticks/custom items; deletions stick (tracked by seed list). */
+function chkSeedNewCategories(){
+  const SEED_KEY = CHK_KEY + "_seed";
+  let seeded=[]; try{ const v=localStorage.getItem(SEED_KEY); if(v) seeded=JSON.parse(v); }catch(e){}
+  let changed=false;
+  CHK_DEFAULT.forEach(def=>{
+    if(seeded.indexOf(def.c)===-1){
+      if(!chkData.some(cat=>cat.c===def.c)){
+        chkData.push({c:def.c, items:def.items.map(t=>({t:t, d:false}))});
+        changed=true;
+      }
+      seeded.push(def.c);
+    }
+  });
+  try{ localStorage.setItem(SEED_KEY, JSON.stringify(seeded)); }catch(e){}
+  if(changed) chkSave();
+}
 (async function(){
   chkData = await chkLoad() || chkFromDefault();
+  chkSeedNewCategories();
   chkRender();
 })();
 
