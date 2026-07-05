@@ -287,6 +287,21 @@
   .budget-total{background:var(--motorway);color:#fff;border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-top:8px}
   .budget-total span{font-family:'Saira Condensed',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:.95rem}
   .budget-total b{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.8rem;color:var(--lane-yellow)}
+  .ready-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:0 2px 12px rgba(16,33,75,.07);margin:10px 0 6px}
+  .ready-top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+  .ready-eyebrow{font-family:'Saira Condensed',sans-serif;font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:var(--muted);display:block;margin-bottom:3px}
+  .ready-pctline{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .ready-pct{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:2.8rem;line-height:1;color:#C0392B}
+  .ready-status{font-weight:600;font-size:1rem}
+  .ready-count{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.1rem;color:var(--motorway-2)}
+  .ready-bar{height:20px;background:#E4E8F1;border-radius:12px;overflow:hidden;margin:14px 0 2px}
+  .ready-bar i{display:block;height:100%;width:0;border-radius:12px;background:#C0392B;transition:width .45s ease,background .45s ease}
+  .count-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+  .count-lbl{font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .count-date{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:.95rem;color:var(--ink)}
+  .count-down{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.3rem;color:var(--motorway);margin-left:auto}
+  .count-down.urgent{color:#B3423A}
+  @media(max-width:640px){ .ready-pct{font-size:2.2rem} .count-down{margin-left:0;width:100%} }
 
   /* ---------- BORDER NEWS ---------- */
   .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -438,10 +453,29 @@
   <div class="road"></div>
 </header>
 <nav class="qnav" aria-label="Sections">
-  <a href="index.html">🏠 Home</a><a href="barcelona-minsk-road-trip.html">↺ Outbound plan</a><a href="#stay">🏠 Belarus stay</a><a href="#exit">🛂 Exit day</a><a href="#varA">⛴️ Variant A</a><a href="#varB">🛣️ Variant B</a><a href="#ferry">🚢 Ferry</a><a href="#sleep">🏨 Accommodation</a><a href="#fuel">⛽ Fuel</a><a href="#gifts">🎁 Gifts</a><a href="#checklist">✅ Checklist</a><a href="#news">📰 Live news</a>
+  <a href="index.html">🏠 Home</a><a href="barcelona-minsk-road-trip.html">↺ Outbound plan</a><a href="#ready">🚦 Ready?</a><a href="#stay">🏠 Belarus stay</a><a href="#exit">🛂 Exit day</a><a href="#varA">⛴️ Variant A</a><a href="#varB">🛣️ Variant B</a><a href="#ferry">🚢 Ferry</a><a href="#sleep">🏨 Accommodation</a><a href="#fuel">⛽ Fuel</a><a href="#gifts">🎁 Gifts</a><a href="#checklist">✅ Checklist</a><a href="#news">📰 Live news</a>
 </nav>
 
 <div class="wrap">
+
+  <!-- ============ READINESS + COUNTDOWN ============ -->
+  <section id="ready">
+    <div class="ready-panel">
+      <div class="ready-top">
+        <div>
+          <span class="ready-eyebrow">Return readiness · everything ticked across the lists below</span>
+          <div class="ready-pctline"><span class="ready-pct" id="readyPct">0%</span><span class="ready-status" id="readyStatus">—</span></div>
+        </div>
+        <div class="ready-count" id="readyCount">0 / 0 tasks done</div>
+      </div>
+      <div class="ready-bar"><i id="readyBar"></i></div>
+      <div class="count-row">
+        <label class="count-lbl" for="departDate">🚦 Homeward date</label>
+        <input type="date" id="departDate" class="count-date" value="2026-08-04">
+        <div class="count-down" id="countDown">—</div>
+      </div>
+    </div>
+  </section>
 
   <!-- ============ BELARUS STAY ============ -->
   <section id="stay">
@@ -708,6 +742,42 @@
 </footer>
 
 <script>
+/* ================= TRIP READINESS + COUNTDOWN ================= */
+window.READY = {parts:{}};
+function reportReady(key, done, total){ window.READY.parts[key] = {done:done, total:total}; renderReadiness(); }
+function renderReadiness(){
+  const bar = document.getElementById("readyBar"); if(!bar) return;
+  let done=0, total=0; for(const k in window.READY.parts){ done += window.READY.parts[k].done; total += window.READY.parts[k].total; }
+  const pct = total ? Math.round(done/total*100) : 0;
+  let color, status;
+  if(pct>=100){ color="#1E7A46"; status="🎉 Congrats — we're ready for the road home!"; }
+  else if(pct>=90){ color="#2E9E4F"; status="So close — final checks!"; }
+  else if(pct>=75){ color="#8BC34A"; status="Almost ready!"; }
+  else if(pct>=50){ color="#E08A1E"; status="Halfway there — keep going"; }
+  else { color="#C0392B"; status = pct===0 ? "Nothing ticked yet — let's get sorted" : "Just getting started — lots to do"; }
+  bar.style.width = pct+"%"; bar.style.background = color;
+  const p=document.getElementById("readyPct"); if(p){ p.textContent = pct+"%"; p.style.color = color; }
+  const s=document.getElementById("readyStatus"); if(s) s.textContent = status;
+  const c=document.getElementById("readyCount"); if(c) c.textContent = done+" / "+total+" tasks done";
+}
+const DEPART_KEY = "minsk_bcn_depart";
+function tickCountdown(){
+  const inp=document.getElementById("departDate"), el=document.getElementById("countDown"); if(!inp||!el) return;
+  if(!inp.value){ el.textContent="Set a date"; el.classList.remove("urgent"); return; }
+  const dep=new Date(inp.value+"T07:30:00"), now=new Date(); let diff=dep-now;
+  if(diff<=0){ el.textContent="🚗 On the road — safe travels home!"; el.classList.remove("urgent"); return; }
+  const days=Math.floor(diff/86400000); diff-=days*86400000; const hours=Math.floor(diff/3600000);
+  el.textContent="⏳ "+days+" day"+(days!==1?"s":"")+" "+hours+" h to the way home";
+  el.classList.toggle("urgent", days<=3);
+}
+function initCountdown(){
+  const inp=document.getElementById("departDate"); if(!inp) return;
+  try{ const sv=localStorage.getItem(DEPART_KEY); if(sv) inp.value=sv; }catch(e){}
+  inp.onchange=()=>{ try{localStorage.setItem(DEPART_KEY, inp.value);}catch(e){} tickCountdown(); };
+  tickCountdown(); setInterval(tickCountdown, 60000); renderReadiness();
+}
+initCountdown();
+
 /* ================= CHECKLIST (return) ================= */
 const CHK_KEY = "minsk_bcn_return_checklist_v1";
 const CHK_DEFAULT = [
@@ -777,6 +847,7 @@ function chkRender(){
   });
   document.getElementById("chkCount").textContent = done + " / " + total + " done";
   document.getElementById("chkBar").style.width = (total ? Math.round(done/total*100) : 0) + "%";
+  reportReady("checklist", done, total);
 }
 function chkAddCategory(){
   const nv = prompt("Name of the new list:");
@@ -838,6 +909,7 @@ function makeChecklist(opts){
     });
     const c = document.getElementById(opts.count); if(c) c.textContent = done + " / " + total + " done";
     const b = document.getElementById(opts.bar); if(b) b.style.width = (total ? Math.round(done/total*100) : 0) + "%";
+    if(opts.readyKey) reportReady(opts.readyKey, done, total);
   }
   const api = {
     addCategory(){ const nv = prompt("Name of the new list:"); if(nv !== null && nv.trim() !== ""){ data.push({c:nv.trim(), items:[]}); save(); render();
@@ -895,7 +967,7 @@ const GIFT_DEFAULT = [
   "Vyshyvanka embroidery + amber jewellery"]}
 ];
 window.giftList = makeChecklist({key:"minsk_bcn_gifts_v1", grid:"giftGrid", count:"giftCount", bar:"giftBar",
-  defaults:GIFT_DEFAULT, addPlaceholder:"Add a gift idea…", customsDir:"back",
+  defaults:GIFT_DEFAULT, addPlaceholder:"Add a gift idea…", customsDir:"back", readyKey:"gifts",
   resetMsg:"Reset the gift list back to the suggestions? Your custom items will be lost."});
 
 /* ================= NEWS (return panels) ================= */
