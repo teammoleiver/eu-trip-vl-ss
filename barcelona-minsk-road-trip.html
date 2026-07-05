@@ -329,6 +329,10 @@
   .exp-empty{color:var(--muted);font-size:.9rem;padding:6px 0;border-bottom:none}
   .card.sleepable{cursor:pointer}
   .card .paid-badge{display:inline-block;margin-top:8px;font-size:.72rem;font-weight:700;color:var(--sign-green);background:#EAF6EE;border:1px solid #BFDCCB;border-radius:6px;padding:2px 8px}
+  .route-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+  .route-col{min-width:0}
+  .route-col .sleep{grid-template-columns:1fr}
+  @media(max-width:900px){ .route-grid{grid-template-columns:1fr} }
 
   /* ---------- BORDER NEWS ---------- */
   .news-box{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -512,10 +516,48 @@
     </div>
   </section>
 
+  <!-- ==================== PACKING CHECKLIST ==================== -->
+  <section id="checklist">
+    <h2>Trip preparation checklist</h2>
+    <p class="lede">Tick things off as you pack — progress saves automatically on this device. Add your own items with the + field in each category, click an item's text to edit it, and use ✕ to remove it.</p>
+    <div class="chk-toolbar">
+      <span class="chk-count" id="chkCount">0 / 0 done</span>
+      <div class="chk-progress"><i id="chkBar"></i></div>
+      <button class="chk-btn add" onclick="chkAddCategory()">＋ New list</button>
+      <button class="chk-btn" onclick="chkUncheckAll()">Uncheck all</button>
+      <button class="chk-btn warn" onclick="chkReset()">Reset to default list</button>
+    </div>
+    <div class="chk-grid" id="chkGrid"></div>
+    <p class="chk-note">✅ Everything saves automatically in this browser — tick items, add your own, or make whole new lists, and they'll still be here after you refresh or reopen the page on this device. Tap a list's title to rename it, or ✕ to delete it.</p>
+  </section>
+
+  <!-- ==================== GIFTS TO BELARUS ==================== -->
+  <section id="gifts">
+    <h2>Gifts to bring to the family in Belarus 🎁</h2>
+    <p class="lede">A taste of Barcelona and Spain to arrive with. The suggestions below are pre-filled — tick off what you've bought or packed, click any line to edit it, add your own ideas with the + field, or make a whole new list. Everything saves automatically on this device.</p>
+    <div class="chk-toolbar">
+      <span class="chk-count" id="giftCount">0 / 0 done</span>
+      <div class="chk-progress"><i id="giftBar"></i></div>
+      <button class="chk-btn add" onclick="giftList.addCategory()">＋ New list</button>
+      <button class="chk-btn" onclick="giftList.uncheckAll()">Uncheck all</button>
+      <button class="chk-btn warn" onclick="giftList.reset()">Reset to suggestions</button>
+    </div>
+    <div class="gift-legend">
+      <span><i class="g"></i>Allowed</span>
+      <span><i class="o"></i>Allowed — mind the limit / keep receipts</span>
+      <span><i class="r"></i>Don't bring it this way</span>
+      <span class="gift-dir">Crossing: into Belarus 🇧🇾</span>
+    </div>
+    <div class="chk-grid" id="giftGrid"></div>
+    <div class="notice">🛂 <b>Customs into Belarus:</b> Belarus is in the EAEU customs union, and EU counter-sanctions plus veterinary rules restrict meat and dairy imports — jamón and cheese can be questioned, so keep them sealed and clearly for personal use. Alcohol is roughly <b>3 L per adult</b> duty-free and tobacco is limited; declare anything above the allowances. When in doubt, favour sweets, oil, tinned goods and non-edible keepsakes.</div>
+  </section>
+
   <!-- ==================== DAY 1 ==================== -->
   <section id="route">
     <h2>The route, day by day</h2>
     <p class="lede">Every stop below is a chance to fuel, feed, change, stretch — and swap drivers so nobody is at the wheel for more than about 90 minutes.</p>
+    <div class="route-grid">
+      <div class="route-col">
 
     <div class="day">
       <div class="day-head">
@@ -574,7 +616,8 @@
       <div class="card"><div class="kind">Camping · alternative</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Camping+Paradis+des+Dombes+Sandrans" target="_blank" rel="noopener">Camping Paradis des Dombes ↗</a></div><div class="pl">Sandrans, France</div><div class="pr">€18–25 / night</div><div class="note">By a lake, family-run — via eurocampings.eu</div></div>
       <div class="card"><div class="kind">Airbnb</div><div class="nm"><a href="https://www.airbnb.com/s/Villars-les-Dombes--France/homes" target="_blank" rel="noopener">Modern, quiet apartment ↗</a></div><div class="pl">Villars-les-Dombes</div><div class="pr">≈ €70 / night</div><div class="note">Superhost, 4.95★ (252 reviews)</div></div>
       <div class="card"><div class="kind">Hotel · backup</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Wellin%27Ars+Ars-sur-Formans+hotel" target="_blank" rel="noopener">Wellin'Ars ↗</a></div><div class="pl">Ars-sur-Formans</div><div class="pr">≈ €80–100</div><div class="note">9.4 Superb (254 reviews) — booking.com</div></div>
-    </div>
+    </div></div>
+      <div class="route-col">
 
     <!-- ==================== DAY 2 ==================== -->
     <div class="day">
@@ -631,7 +674,8 @@
       <div class="card"><div class="kind">Camping · alternative</div><div class="nm"><a href="https://www.campingpark-bad-liebenzell.com/en/" target="_blank" rel="noopener">Campingpark Bad Liebenzell ↗</a></div><div class="pl">Bad Liebenzell</div><div class="pr">€20–28 / night</div><div class="note">Cosy, kitchen for tent campers</div></div>
       <div class="card"><div class="kind">Airbnb</div><div class="nm"><a href="https://www.airbnb.com/s/Bad-Liebenzell--Germany/homes" target="_blank" rel="noopener">1-room apt, 35 m² (3 adults + child) ↗</a></div><div class="pl">Bad Liebenzell</div><div class="pr">≈ €34 / night</div><div class="note">4.56★ (82 reviews) — cheapest option found</div></div>
       <div class="card"><div class="kind">Hotel · backup</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Hotel+Koch+Bad+Liebenzell" target="_blank" rel="noopener">Hotel Koch ↗</a></div><div class="pl">Bad Liebenzell</div><div class="pr">≈ €90–110</div><div class="note">Family-run, 8.8 Fabulous (739 reviews)</div></div>
-    </div>
+    </div></div>
+      <div class="route-col">
 
     <!-- ==================== DAY 3 ==================== -->
     <div class="day">
@@ -685,7 +729,8 @@
       <div class="card"><div class="kind">Camping · alternative</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Camping+Oaza+Praha" target="_blank" rel="noopener">Camping Oáza Praha / Drusus ↗</a></div><div class="pl">Dolní Břežany / Prague 13</div><div class="pr">€15–20 / night</div><div class="note">Closer to the city, rated 4.5–4.6</div></div>
       <div class="card"><div class="kind">Airbnb</div><div class="nm"><a href="https://www.airbnb.com/s/Vran%C3%A9-nad-Vltavou--Czechia/homes" target="_blank" rel="noopener">Cozy countryside flat ↗</a></div><div class="pl">Praha-západ district</div><div class="pr">≈ €75 / night</div><div class="note">Guest favourite, 4.97★ (29 reviews)</div></div>
       <div class="card"><div class="kind">Hotel · backup</div><div class="nm"><a href="https://www.google.com/maps/search/?api=1&query=Hotel+Restovna+Jiloviste" target="_blank" rel="noopener">Hotel Restovna ↗</a></div><div class="pl">Jíloviště, Czechia</div><div class="pr">≈ €85–100</div><div class="note">8.8 Fabulous (698 reviews), quiet, near the D1</div></div>
-    </div>
+    </div></div>
+      <div class="route-col">
 
     <!-- ==================== DAY 4 ==================== -->
     <div class="day">
@@ -731,7 +776,8 @@
             <p>Night 4 is arrival night — book your own place in the centre or your preferred district.</p></div>
         </div>
       </div>
-    </div>
+    </div></div>
+      <div class="route-col">
 
     <div class="day">
       <div class="day-head">
@@ -778,8 +824,8 @@
             <p>If staying at a private address longer than 10 days, register your stay. Rest — you earned it.</p></div>
         </div>
       </div>
+    </div></div>
     </div>
-
     <div class="notice">🛂 <b>Border reality check:</b> only <b>Terespol–Brest</b> is consistently open for private cars (Bobrowniki also open as of late 2025; Połowce &amp; Sławatycze suspended in April 2026). Closures happen with little notice — check the live border-news panel below and granica.gov.pl / gpk.gov.by the evening before and the morning of 20 July. If Terespol is jammed or shut, reroute via Białystok → Bobrowniki (+~2 h driving).</div>
   </section>
 
@@ -1021,26 +1067,8 @@
     </div>
   </section>
 
-  <!-- ==================== GIFTS TO BELARUS ==================== -->
-  <section id="gifts">
-    <h2>Gifts to bring to the family in Belarus 🎁</h2>
-    <p class="lede">A taste of Barcelona and Spain to arrive with. The suggestions below are pre-filled — tick off what you've bought or packed, click any line to edit it, add your own ideas with the + field, or make a whole new list. Everything saves automatically on this device.</p>
-    <div class="chk-toolbar">
-      <span class="chk-count" id="giftCount">0 / 0 done</span>
-      <div class="chk-progress"><i id="giftBar"></i></div>
-      <button class="chk-btn add" onclick="giftList.addCategory()">＋ New list</button>
-      <button class="chk-btn" onclick="giftList.uncheckAll()">Uncheck all</button>
-      <button class="chk-btn warn" onclick="giftList.reset()">Reset to suggestions</button>
-    </div>
-    <div class="gift-legend">
-      <span><i class="g"></i>Allowed</span>
-      <span><i class="o"></i>Allowed — mind the limit / keep receipts</span>
-      <span><i class="r"></i>Don't bring it this way</span>
-      <span class="gift-dir">Crossing: into Belarus 🇧🇾</span>
-    </div>
-    <div class="chk-grid" id="giftGrid"></div>
-    <div class="notice">🛂 <b>Customs into Belarus:</b> Belarus is in the EAEU customs union, and EU counter-sanctions plus veterinary rules restrict meat and dairy imports — jamón and cheese can be questioned, so keep them sealed and clearly for personal use. Alcohol is roughly <b>3 L per adult</b> duty-free and tobacco is limited; declare anything above the allowances. When in doubt, favour sweets, oil, tinned goods and non-edible keepsakes.</div>
-  </section>
+  
+  
 
   <!-- ==================== BUDGET ==================== -->
   <section id="budget">
@@ -1101,20 +1129,8 @@
     </div>
   </section>
 
-  <!-- ==================== PACKING CHECKLIST ==================== -->
-  <section id="checklist">
-    <h2>Trip preparation checklist</h2>
-    <p class="lede">Tick things off as you pack — progress saves automatically on this device. Add your own items with the + field in each category, click an item's text to edit it, and use ✕ to remove it.</p>
-    <div class="chk-toolbar">
-      <span class="chk-count" id="chkCount">0 / 0 done</span>
-      <div class="chk-progress"><i id="chkBar"></i></div>
-      <button class="chk-btn add" onclick="chkAddCategory()">＋ New list</button>
-      <button class="chk-btn" onclick="chkUncheckAll()">Uncheck all</button>
-      <button class="chk-btn warn" onclick="chkReset()">Reset to default list</button>
-    </div>
-    <div class="chk-grid" id="chkGrid"></div>
-    <p class="chk-note">✅ Everything saves automatically in this browser — tick items, add your own, or make whole new lists, and they'll still be here after you refresh or reopen the page on this device. Tap a list's title to rename it, or ✕ to delete it.</p>
-  </section>
+  
+  
 
   <!-- ==================== BORDER NEWS ==================== -->
   <section id="bordernews">
