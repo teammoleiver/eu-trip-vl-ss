@@ -34,6 +34,7 @@
   .dthumb .pdf{font-size:3.2rem}
   .dmeta{padding:10px 12px 4px}
   .dtype{font-weight:700;font-size:.88rem;color:var(--motorway)}
+  .dtype-sel{width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-weight:700;font-size:.85rem;color:var(--motorway);background:#fff;cursor:pointer}
   .dname{font-size:.72rem;color:var(--muted);word-break:break-word;margin-top:2px}
   .dact{display:flex;gap:6px;padding:8px 10px 12px;margin-top:auto}
   .dact button{flex:1;border:none;border-radius:8px;padding:8px;font-size:.78rem;font-weight:700;cursor:pointer}
@@ -120,6 +121,7 @@ function vaultDB(){ return new Promise(function(res,rej){ var r=indexedDB.open("
   r.onupgradeneeded=function(){ var db=r.result; if(!db.objectStoreNames.contains("docs")) db.createObjectStore("docs",{keyPath:"id",autoIncrement:true}); };
   r.onsuccess=function(){res(r.result);}; r.onerror=function(){rej(r.error);}; }); }
 function docAdd(rec){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readwrite"); tx.objectStore("docs").add(rec); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
+function docPut(rec){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readwrite"); tx.objectStore("docs").put(rec); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
 function docAll(){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readonly"); var rq=tx.objectStore("docs").getAll(); rq.onsuccess=function(){res(rq.result||[]);}; rq.onerror=function(){rej(rq.error);}; }); }); }
 function docDel(id){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readwrite"); tx.objectStore("docs").delete(id); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
 
@@ -137,7 +139,12 @@ function render(){
       else { var pdf=document.createElement("div"); pdf.className="pdf"; pdf.textContent="📄"; thumb.appendChild(pdf); }
       thumb.onclick=function(){ var url=URL.createObjectURL(d.blob); window.open(url,"_blank"); setTimeout(function(){URL.revokeObjectURL(url);},120000); };
       var meta=document.createElement("div"); meta.className="dmeta";
-      meta.innerHTML='<div class="dtype">'+d.type+'</div><div class="dname">'+(d.name||"")+'</div>';
+      var tsel=document.createElement("select"); tsel.className="dtype-sel"; tsel.title="Change document type";
+      var opts=META.types.slice(); if(opts.indexOf(d.type)===-1) opts.unshift(d.type);
+      opts.forEach(function(t){ var o=document.createElement("option"); o.textContent=t; if(t===d.type) o.selected=true; tsel.appendChild(o); });
+      tsel.onchange=function(){ var rec={}; for(var k in d) rec[k]=d[k]; rec.type=tsel.value; docPut(rec).then(render); };
+      var nm=document.createElement("div"); nm.className="dname"; nm.textContent=d.name||"";
+      meta.appendChild(tsel); meta.appendChild(nm);
       var act=document.createElement("div"); act.className="dact";
       var vb=document.createElement("button"); vb.className="dview"; vb.textContent="View"; vb.onclick=thumb.onclick;
       var db2=document.createElement("button"); db2.className="ddl"; db2.textContent="Download";
