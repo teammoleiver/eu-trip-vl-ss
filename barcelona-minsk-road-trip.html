@@ -477,6 +477,35 @@
 </style>
 </head>
 <body>
+<div id="authGate" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#1B3C8C,#10214B 70%);display:flex;align-items:center;justify-content:center;padding:20px;font-family:'IBM Plex Sans',system-ui,sans-serif">
+  <form id="authForm" style="background:#10214B;border:3px solid #fff;border-radius:14px;padding:26px 24px;max-width:360px;width:100%;color:#fff;box-shadow:0 12px 40px rgba(0,0,0,.45)">
+    <div style="font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.55rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.1">🔒 Private family plan</div>
+    <p style="color:#C9D3EE;font-size:.9rem;margin:8px 0 16px">Enter your login to open the trip.</p>
+    <input id="authUser" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:none;margin-bottom:10px;font-size:16px">
+    <input id="authPass" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:none;margin-bottom:12px;font-size:16px">
+    <button type="submit" style="width:100%;padding:12px;border:none;border-radius:8px;background:#FFC93C;color:#10214B;font-weight:800;font-family:'Saira Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;cursor:pointer">Enter</button>
+    <div id="authErr" style="color:#FFB3AD;font-size:.85rem;margin-top:10px;min-height:1.1em"></div>
+  </form>
+</div>
+<script>
+(function(){
+  var KEY="eu_auth_v1", HASH="323905b683a1fd194c24b26c2f3808b74d7515fb7910f1842aeea3660bcbb09d";
+  var gate=document.getElementById("authGate");
+  function reveal(){ if(gate&&gate.parentNode) gate.parentNode.removeChild(gate); document.documentElement.style.overflow=""; }
+  try{ if(localStorage.getItem(KEY)==="1"){ reveal(); return; } }catch(e){}
+  document.documentElement.style.overflow="hidden";
+  function sha(s){ if(!(window.crypto&&crypto.subtle)) return Promise.resolve(""); return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function(b){ return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join(""); }); }
+  document.getElementById("authForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var u=document.getElementById("authUser").value.trim().toLowerCase();
+    var p=document.getElementById("authPass").value;
+    sha(u+":"+p).then(function(h){
+      if(h===HASH){ try{localStorage.setItem(KEY,"1");}catch(e){} reveal(); }
+      else { document.getElementById("authErr").textContent = h ? "Wrong username or password." : "Open this page over https:// or localhost to log in."; }
+    });
+  });
+})();
+</script>
 
 <header>
   <div class="wrap">
