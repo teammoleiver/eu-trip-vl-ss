@@ -1180,11 +1180,11 @@
   <!-- ==================== BORDER NEWS ==================== -->
   <section id="bordernews">
     <h2>Poland ↔ Belarus border — live news check</h2>
-    <p class="lede">Hit refresh and this panel searches the web for the latest Terespol–Brest / Bobrowniki status, queues and closures, and summarizes what it means for your crossing on 20 July.</p>
+    <p class="lede">An analysed, dated summary of the Terespol–Brest / Bobrowniki situation is below. For <b>real-time</b> queue lengths, tap <b>Open live queues</b> — it opens the official monitors (which update every few minutes) in new tabs. A live in-page fetch can't run on a public website, so this is the safe, free way.</p>
     <div class="news-box">
       <div class="news-head">
         <h3>🛂 Border status &amp; news</h3>
-        <button class="news-refresh" id="newsBtn" onclick="refreshNews()">⟳ Refresh now</button>
+        <button class="news-refresh" id="newsBtn" onclick="refreshNews()">🔴 Open live queues</button>
       </div>
       <div class="news-body" id="newsBody"><span class="muted"><b>Border status — checked 6 July 2026</b> (official + monitor sources; verify again the day before you cross):
 
@@ -1207,7 +1207,7 @@ Bottom line: plan for Terespol–Brest with a full tank, food + water and a 3–
         <a class="lnk map" href="https://nakordoni.eu/en" target="_blank" rel="noopener">Live queues (nakordoni.eu)</a>
       </div>
     </div>
-    <div class="notice" style="margin-top:16px">If the refresh button reports an error (it needs to run inside Claude), use the three official links above — they show live queue lengths and closures directly.</div>
+    <div class="notice" style="margin-top:16px">The <b>Open live queues</b> button and the three links above show live queue lengths and closures directly (updated every few minutes). Ask Claude to refresh the dated summary in the days before you cross, or say "go" to set up a live auto-refresh backend.</div>
   </section>
 </div>
 
@@ -1521,36 +1521,17 @@ window.giftList = makeChecklist({key:"bcn_minsk_gifts_v1", grid:"giftGrid", coun
   resetMsg:"Reset the gift list back to the suggestions? Your custom items will be lost."});
 
 /* ================= BORDER NEWS ================= */
-async function refreshNews(){
-  const btn = document.getElementById("newsBtn");
-  const body = document.getElementById("newsBody");
-  const stamp = document.getElementById("newsStamp");
-  btn.disabled = true; btn.textContent = "⏳ Checking…";
-  body.innerHTML = '<span class="muted">Searching the latest Poland–Belarus border news and analysing it…</span>';
-  try{
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [{ role: "user", content:
-          "Search the web for the very latest news (today and the past 2 weeks) about the Poland-Belarus border crossings for passenger cars: Terespol-Brest, Bobrowniki-Berestovica, Kuznica-Bruzgi. I am crossing by private car from Poland into Belarus around 20 July 2026 with a baby. Report: 1) which crossings are currently OPEN or CLOSED for private cars, 2) current queue situation / typical waiting times, 3) any announced closures, restrictions or incidents, 4) a one-line recommendation for my crossing. Be factual and concise. Plain text only, short lines, no markdown symbols."
-        }],
-        tools: [{ type: "web_search_20250305", name: "web_search" }]
-      })
-    });
-    if(!resp.ok) throw new Error("HTTP " + resp.status);
-    const data = await resp.json();
-    const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n").trim();
-    if(!text) throw new Error("Empty response");
-    body.textContent = text;
-    stamp.textContent = "Last checked: " + new Date().toLocaleString();
-  }catch(err){
-    body.innerHTML = '<span class="muted">Could not fetch live news here (' + err.message + '). This live check works when the page is opened inside Claude. Use the official links below — they show live queues and closures directly:\n\n• granica.gov.pl — Polish Border Guard live status\n• gpk.gov.by — Belarus State Border Committee\n• nakordoni.eu — live queue monitor, updates every few minutes</span>';
-    stamp.textContent = "Last attempt: " + new Date().toLocaleString();
-  }
-  btn.disabled = false; btn.textContent = "⟳ Refresh now";
+/* The dated analysed summary is baked into #newsBody. A live LLM fetch can't run
+   from a public static page (browser can't hold an API key / CORS-blocked), so the
+   button keeps the summary and opens the real live queue monitors in new tabs. */
+var BORDER_BASE = null;
+(function(){ var b=document.getElementById("newsBody"); if(b) BORDER_BASE=b.innerHTML; })();
+function refreshNews(){
+  var body=document.getElementById("newsBody"), stamp=document.getElementById("newsStamp");
+  if(BORDER_BASE!==null) body.innerHTML = BORDER_BASE;
+  window.open("https://nakordoni.eu/en/id/id_271", "_blank", "noopener");
+  window.open("https://gpk.gov.by/en/situation-at-the-border/", "_blank", "noopener");
+  if(stamp) stamp.textContent = "Opened the live queue monitors in new tabs · analysed summary above is dated 6 Jul 2026 · " + new Date().toLocaleString();
 }
 
 /* ================= ACTUAL SPEND TRACKER ================= */
