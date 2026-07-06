@@ -25,6 +25,10 @@
   .upbar select{border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:16px;flex:1 1 180px;min-width:0}
   .up-btn{display:inline-flex;align-items:center;gap:8px;background:var(--sign-green);color:#fff;font-weight:700;border-radius:8px;padding:11px 20px;cursor:pointer;white-space:nowrap}
   .up-btn:hover{opacity:.9}
+  .bkbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:-8px 0 18px}
+  .bk-btn{display:inline-flex;align-items:center;gap:6px;background:var(--motorway-2);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-weight:700;font-size:.85rem;cursor:pointer}
+  .bk-btn:hover{opacity:.9}
+  .bkbar .hint{flex-basis:100%;margin:0}
   .hint{font-size:.82rem;color:var(--muted);flex-basis:100%}
   .empty{text-align:center;color:var(--muted);padding:40px 10px;background:#fff;border:1px dashed var(--line);border-radius:12px}
   .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
@@ -99,6 +103,11 @@
       <label class="up-btn">＋ Upload document<input type="file" id="fileInput" accept="image/*,application/pdf" multiple hidden></label>
       <div class="hint">🔒 Files stay only in this browser on this device — nothing is uploaded to the internet or GitHub. You can pick several at once.</div>
       <div class="hint" id="storeInfo" style="color:var(--motorway-2);font-weight:600"></div>
+    </div>
+    <div class="bkbar">
+      <button class="bk-btn" id="expBtn" type="button">⬇ Export backup (all folders)</button>
+      <label class="bk-btn">⬆ Restore from backup<input type="file" id="impInput" accept="application/json,.json" hidden></label>
+      <span class="hint">💾 Storage here can be cleared by your browser. Export a backup file after uploading — keep it somewhere private (not the public repo), and Restore it anytime or on another device/phone.</span>
     </div>
     <div id="gallery"></div>
   </main>
@@ -197,8 +206,44 @@ if(navigator.storage && navigator.storage.persist){ try{ navigator.storage.persi
 function updateStoreInfo(count){
   var el=document.getElementById("storeInfo"); if(!el) return;
   var host=location.host || "this page";
-  el.textContent="📁 "+count+" file(s) saved in this browser at "+host+". Upload and view on the SAME address, or they won't match.";
+  var base="📁 "+count+" file(s) saved in this browser at "+host+". Upload and view on the SAME address, or they won't match.";
+  el.textContent=base;
+  if(navigator.storage && navigator.storage.persisted){ navigator.storage.persisted().then(function(p){ el.textContent=base+(p?" ✓ storage is persistent." : " ⚠️ storage is best-effort — export a backup!"); }); }
 }
+
+/* ===== Backup / Restore (portable, survives storage clearing) ===== */
+function blobToDataURL(blob){ return new Promise(function(res){ var r=new FileReader(); r.onload=function(){res(r.result);}; r.readAsDataURL(blob); }); }
+function exportAll(){
+  docAll().then(function(all){
+    if(!all.length){ alert("Nothing to back up yet — upload some documents first."); return; }
+    Promise.all(all.map(function(d){ return blobToDataURL(d.blob).then(function(u){ return {person:d.person,type:d.type,name:d.name,mime:d.mime,exp:d.exp||null,data:u}; }); }))
+    .then(function(items){
+      var blob=new Blob([JSON.stringify({app:"eu-vault",v:1,items:items})],{type:"application/json"});
+      var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="eu-vault-backup.json"; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){URL.revokeObjectURL(a.href);},3000);
+      alert("Backed up "+items.length+" file(s) to eu-vault-backup.json. Keep it somewhere private.");
+    });
+  });
+}
+function importFile(file){
+  var r=new FileReader();
+  r.onload=function(){
+    var obj; try{ obj=JSON.parse(r.result); }catch(e){ alert("That doesn't look like a valid backup file."); return; }
+    var items=(obj&&obj.items)||[]; if(!items.length){ alert("No documents found in that backup."); return; }
+    var chain=Promise.resolve(), n=0, fail=0;
+    items.forEach(function(it){
+      chain=chain.then(function(){
+        return fetch(it.data).then(function(res){return res.blob();}).then(function(blob){
+          return docAdd({person:it.person,type:it.type,name:it.name,mime:it.mime,exp:it.exp||null,blob:blob});
+        }).then(function(){n++;}, function(){fail++;});
+      });
+    });
+    chain.then(function(){ render(); alert("Restored "+n+" file(s)"+(fail?(", "+fail+" failed"):"")+"."); });
+  };
+  r.readAsText(file);
+}
+document.getElementById("expBtn").onclick=exportAll;
+document.getElementById("impInput").onchange=function(){ if(this.files&&this.files[0]) importFile(this.files[0]); this.value=""; };
 
 var fi=document.getElementById("fileInput");
 fi.onchange=function(){
