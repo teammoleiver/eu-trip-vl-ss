@@ -145,6 +145,10 @@
   .royal-add select{flex:1 1 120px;border:1px solid var(--line);border-radius:8px;padding:8px 9px;font:inherit;font-size:15px;background:#fff;min-width:0}
   .up-btn{display:inline-flex;align-items:center;gap:6px;background:var(--sign-green);color:#fff;font-weight:700;font-size:.85rem;border-radius:8px;padding:9px 14px;cursor:pointer;white-space:nowrap}
   .up-btn:hover{opacity:.9}
+  .bkbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .bk-btn{display:inline-flex;align-items:center;gap:6px;background:var(--motorway-2);color:#fff;border:none;border-radius:10px;padding:12px 20px;font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:.95rem;cursor:pointer}
+  .bk-btn:hover{opacity:.9}
+  .bk-status{font-size:.85rem;color:var(--sign-green);font-weight:600;flex-basis:100%}
 </style>
 </head>
 <body>
@@ -264,6 +268,16 @@
         </a>
       </div>
     </section>
+
+    <section id="backup" style="margin-top:40px">
+      <h2 class="pick">Backup &amp; restore everything 💾</h2>
+      <p class="lede">Because everything is saved only in this browser, it can be lost if the browser clears its data. <b>Export a backup after you make changes</b> — one file holds all your checklists, gifts, expenses, route progress <i>and</i> every uploaded document. Keep it somewhere private (Google Drive, your phone), and Restore it anytime or on another device.</p>
+      <div class="bkbar">
+        <button class="bk-btn" id="expAll" type="button">⬇ Export full backup</button>
+        <label class="bk-btn">⬆ Restore from backup<input type="file" id="impAll" accept="application/json,.json" hidden></label>
+        <span class="bk-status" id="bkStatus"></span>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -276,15 +290,48 @@ function vaultDB(){
     r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
   });
 }
+function docAll(){ return vaultDB().then(db=>new Promise((res,rej)=>{ const tx=db.transaction("docs","readonly"); const rq=tx.objectStore("docs").getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); })); }
+function docAdd(rec){ return vaultDB().then(db=>new Promise((res,rej)=>{ const tx=db.transaction("docs","readwrite"); tx.objectStore("docs").add(rec); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
 async function vaultCounts(){
-  let all=[];
-  try{ const db=await vaultDB(); all=await new Promise((res,rej)=>{ const tx=db.transaction("docs","readonly"); const rq=tx.objectStore("docs").getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); }); }catch(e){}
+  let all=[]; try{ all=await docAll(); }catch(e){}
   document.querySelectorAll(".royal-hint[data-person]").forEach(h=>{
     const p=h.getAttribute("data-person"); const n=all.filter(d=>d.person===p).length;
     h.textContent = n ? ("📁 "+n+" file"+(n!==1?"s":"")+" — tap to open") : "no files yet — tap to add";
   });
 }
 vaultCounts();
+
+/* ===== FULL BACKUP / RESTORE (checklists + expenses + route + documents) ===== */
+if(navigator.storage && navigator.storage.persist){ try{ navigator.storage.persist(); }catch(e){} }
+function blobToDataURL(blob){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(blob); }); }
+function setStatus(t){ const el=document.getElementById("bkStatus"); if(el) el.textContent=t; }
+async function exportAll(){
+  setStatus("Preparing backup…");
+  const ls={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k==="eu_auth_v1") continue; ls[k]=localStorage.getItem(k); }
+  let docs=[]; try{ docs=await docAll(); }catch(e){}
+  const items=[];
+  for(const d of docs){ try{ items.push({person:d.person,type:d.type,name:d.name,mime:d.mime,exp:d.exp||null,data:await blobToDataURL(d.blob)}); }catch(e){} }
+  const bundle={app:"eu-trip",v:2,localStorage:ls,items:items};
+  const blob=new Blob([JSON.stringify(bundle)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="eu-trip-backup.json"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  setStatus("✓ Backed up "+Object.keys(ls).length+" settings + "+items.length+" document(s). Keep the file safe & private.");
+}
+function importAll(file){
+  const r=new FileReader();
+  r.onload=async()=>{
+    let obj; try{ obj=JSON.parse(r.result); }catch(e){ setStatus("✗ That file isn't a valid backup."); return; }
+    const ls=obj.localStorage||{}; let nls=0;
+    for(const k in ls){ try{ localStorage.setItem(k, ls[k]); nls++; }catch(e){} }
+    const items=obj.items||[]; let nd=0;
+    for(const it of items){ try{ const blob=await fetch(it.data).then(x=>x.blob()); await docAdd({person:it.person,type:it.type,name:it.name,mime:it.mime,exp:it.exp||null,blob:blob}); nd++; }catch(e){} }
+    setStatus("✓ Restored "+nls+" settings + "+nd+" document(s). Reloading…");
+    setTimeout(()=>location.reload(), 1200);
+  };
+  r.readAsText(file);
+}
+document.getElementById("expAll").onclick=exportAll;
+document.getElementById("impAll").onchange=function(){ if(this.files&&this.files[0]) importAll(this.files[0]); this.value=""; };
 </script>
 
 <footer>
