@@ -1,0 +1,98 @@
+{
+ "v": 1,
+ "kdf": {
+  "salt": "lbj/l8d3KHcFKISOWBv3hg==",
+  "iters": 250000,
+  "hash": "SHA-256"
+ },
+ "items": [
+  {
+   "id": "car-01",
+   "person": "car",
+   "type": "Insurance policy (signed)",
+   "name": "CCPP_AU025686499_1781245623492.pdf",
+   "mime": "application/pdf",
+   "iv": "sBwZBx9lLi0ILkdN"
+  },
+  {
+   "id": "car-02",
+   "person": "car",
+   "type": "No-claims certificate",
+   "name": "259de607-c20c-4042-a88c-2e91683b6c77.pdf",
+   "mime": "application/pdf",
+   "iv": "Bb59Mdc5HPb7r+4A"
+  },
+  {
+   "id": "car-03",
+   "person": "car",
+   "type": "Claims history",
+   "name": "documentoAntecedentes5095LNW.pdf",
+   "mime": "application/pdf",
+   "iv": "sB+z0hCi0oWwxObh"
+  },
+  {
+   "id": "car-04",
+   "person": "car",
+   "type": "Insurance — general conditions",
+   "name": "QualitasAuto_Condiciones_Generales_ADM2602.pdf",
+   "mime": "application/pdf",
+   "iv": "DQ3lBk3f/Kb8zOaM"
+  },
+  {
+   "id": "car-05",
+   "person": "car",
+   "type": "Accident statement (blank)",
+   "name": "Parte-Amistoso-Accidentes.pdf",
+   "mime": "application/pdf",
+   "iv": "ugB7ftWe/XXViV35"
+  },
+  {
+   "id": "car-06",
+   "person": "car",
+   "type": "Hybrid battery certificate",
+   "name": "Battery certificate  (3).pdf",
+   "mime": "application/pdf",
+   "iv": "HOift1lo5xnhuUPp"
+  },
+  {
+   "id": "car-07",
+   "person": "car",
+   "type": "Service & tyre history",
+   "name": "679248f77750f9a02b2ceee4-ZCq7-CKeiDTsxY1arDuVixCYYkU=.pdf",
+   "mime": "application/pdf",
+   "iv": "Wof/VWCDburkmFuS"
+  },
+  {
+   "id": "car-08",
+   "person": "car",
+   "type": "DGT tax fee receipt",
+   "name": "7915020880286SN2R3723D.pdf",
+   "mime": "application/pdf",
+   "iv": "d5QZd+8S85EvOO9O"
+  },
+  {
+   "id": "car-09",
+   "person": "car",
+   "type": "Ownership justificante (temporary)",
+   "name": "WhatsApp Image 2026-06-11 at 8.06.06 PM.jpeg",
+   "mime": "image/jpeg",
+   "iv": "sGIrzxgk4AaQsWmm"
+  },
+  {
+   "id": "car-10",
+   "person": "car",
+   "type": "Insurance — payment receipt",
+   "name": "ReciboFisico_AU025686499_1781245622657.pdf",
+   "mime": "application/pdf",
+   "iv": "HLdc+lrcBPO1Xw84"
+  },
+  {
+   "id": "car-11",
+   "person": "car",
+   "type": "Insurance — product info (IPID)",
+   "name": "Hojas de Información de Producto_AU0256864991781245623984.pdf",
+   "mime": "application/pdf",
+   "iv": "yJCMPH81UGAstK2w"
+  }
+ ]
+}

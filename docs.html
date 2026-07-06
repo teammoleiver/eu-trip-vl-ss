@@ -109,6 +109,8 @@
       <label class="bk-btn">⬆ Restore from backup<input type="file" id="impInput" accept="application/json,.json" hidden></label>
       <span class="hint">💾 Storage here can be cleared by your browser. Export a backup file after uploading — keep it somewhere private (not the public repo), and Restore it anytime or on another device/phone.</span>
     </div>
+    <div id="secureBar" class="bkbar" style="margin-top:2px"></div>
+    <div id="secureGrid" style="margin-bottom:20px"></div>
     <div id="gallery"></div>
   </main>
 </div>
@@ -244,6 +246,56 @@ function importFile(file){
 }
 document.getElementById("expBtn").onclick=exportAll;
 document.getElementById("impInput").onchange=function(){ if(this.files&&this.files[0]) importFile(this.files[0]); this.value=""; };
+
+/* ===== SECURE (encrypted, committed-in-app) DOCUMENTS ===== */
+var MANIFEST=null, SECUREKEY=null;
+function b64ToBytes(b){ b=(b||"").trim(); var bin=atob(b); var u=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return u; }
+function deriveKey(pw){
+  var salt=b64ToBytes(MANIFEST.kdf.salt);
+  return crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"])
+    .then(function(km){ return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:MANIFEST.kdf.iters,hash:MANIFEST.kdf.hash||"SHA-256"}, km, {name:"AES-GCM",length:256}, false, ["decrypt"]); });
+}
+function decItem(item){
+  return fetch("vault/"+item.id+".enc").then(function(r){ if(!r.ok) throw new Error("missing"); return r.text(); })
+    .then(function(t){ return crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(item.iv)}, SECUREKEY, b64ToBytes(t)); })
+    .then(function(buf){ return new Blob([buf],{type:item.mime}); });
+}
+function secureMine(){ return (MANIFEST&&MANIFEST.items?MANIFEST.items:[]).filter(function(i){return i.person===PERSON;}); }
+function renderSecure(){
+  var mine=secureMine(), bar=document.getElementById("secureBar"), grid=document.getElementById("secureGrid");
+  bar.innerHTML=""; grid.innerHTML="";
+  if(!mine.length) return;
+  if(!SECUREKEY){
+    var b=document.createElement("button"); b.className="bk-btn"; b.textContent="🔓 Unlock "+mine.length+" secure document(s)"; b.onclick=unlockSecure;
+    var note=document.createElement("span"); note.className="hint"; note.textContent="These are encrypted and stored inside the app itself, so they're on every device. Enter your documents password to view them.";
+    bar.appendChild(b); bar.appendChild(note); return;
+  }
+  var head=document.createElement("span"); head.className="hint"; head.style.flexBasis="100%"; head.style.color="var(--sign-green)"; head.textContent="🔒 Secure documents (encrypted, always in the app — view/download only):"; bar.appendChild(head);
+  var g=document.createElement("div"); g.className="dgrid"; grid.appendChild(g);
+  mine.forEach(function(item){
+    decItem(item).then(function(blob){
+      var tile=document.createElement("div"); tile.className="dtile";
+      var thumb=document.createElement("div"); thumb.className="dthumb"; thumb.title="View "+item.name;
+      if(item.mime&&item.mime.indexOf("image")!==-1){ var img=document.createElement("img"); img.src=URL.createObjectURL(blob); thumb.appendChild(img); }
+      else { var pf=document.createElement("div"); pf.className="pdf"; pf.textContent="📄"; thumb.appendChild(pf); }
+      thumb.onclick=function(){ var url=URL.createObjectURL(blob); window.open(url,"_blank"); setTimeout(function(){URL.revokeObjectURL(url);},120000); };
+      var meta=document.createElement("div"); meta.className="dmeta"; meta.innerHTML='<div class="dtype">🔒 '+item.type+'</div><div class="dname">'+(item.name||"")+'</div>';
+      var act=document.createElement("div"); act.className="dact";
+      var vb=document.createElement("button"); vb.className="dview"; vb.textContent="View"; vb.onclick=thumb.onclick;
+      var dl=document.createElement("button"); dl.className="ddl"; dl.textContent="Download"; dl.onclick=function(){ var url=URL.createObjectURL(blob); var a=document.createElement("a"); a.href=url; a.download=item.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url);},2000); };
+      act.appendChild(vb); act.appendChild(dl);
+      tile.appendChild(thumb); tile.appendChild(meta); tile.appendChild(act); g.appendChild(tile);
+    }).catch(function(){});
+  });
+}
+function unlockSecure(){
+  var pw=sessionStorage.getItem("vault_pw") || prompt("Enter your documents password:");
+  if(!pw) return;
+  deriveKey(pw).then(function(key){ SECUREKEY=key; return decItem(secureMine()[0]); })
+    .then(function(){ try{sessionStorage.setItem("vault_pw",pw);}catch(e){} renderSecure(); })
+    .catch(function(){ SECUREKEY=null; try{sessionStorage.removeItem("vault_pw");}catch(e){} alert("Wrong documents password (or a file is missing)."); });
+}
+fetch("vault/manifest.json").then(function(r){ return r.ok?r.json():null; }).then(function(m){ MANIFEST=m; if(m && sessionStorage.getItem("vault_pw")) unlockSecure(); else renderSecure(); }).catch(function(){});
 
 var fi=document.getElementById("fileInput");
 fi.onchange=function(){
