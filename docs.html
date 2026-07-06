@@ -101,13 +101,14 @@
     <div class="upbar">
       <select id="docType"></select>
       <label class="up-btn">＋ Upload document<input type="file" id="fileInput" accept="image/*,application/pdf" multiple hidden></label>
-      <div class="hint">🔒 Files stay only in this browser on this device — nothing is uploaded to the internet or GitHub. You can pick several at once.</div>
+      <div class="hint">🔒 New photos are <b>encrypted with your documents password</b> and saved on this device (nothing goes to the internet or GitHub). Unlock first, then pick one or several.</div>
       <div class="hint" id="storeInfo" style="color:var(--motorway-2);font-weight:600"></div>
     </div>
     <div class="bkbar">
+      <button class="bk-btn" id="expAdds" type="button">📤 Export new secure docs → send to Claude</button>
       <button class="bk-btn" id="expBtn" type="button">⬇ Export backup (all folders)</button>
       <label class="bk-btn">⬆ Restore from backup<input type="file" id="impInput" accept="application/json,.json" hidden></label>
-      <span class="hint">💾 Storage here can be cleared by your browser. Export a backup file after uploading — keep it somewhere private (not the public repo), and Restore it anytime or on another device/phone.</span>
+      <span class="hint">📤 <b>Export new secure docs</b> makes an already-encrypted file of what you uploaded here — send it to Claude to bake into the app on every device. 💾 <b>Export backup</b> is your personal safety copy of everything.</span>
     </div>
     <div id="secureBar" class="bkbar" style="margin-top:2px"></div>
     <div id="secureGrid" style="margin-bottom:20px"></div>
@@ -172,9 +173,10 @@ function render(){
       var tile=document.createElement("div"); tile.className="dtile";
       var thumb=document.createElement("div"); thumb.className="dthumb"; thumb.title="View "+d.name;
       var isImg=d.mime&&d.mime.indexOf("image")!==-1;
-      if(isImg){ var img=document.createElement("img"); img.src=URL.createObjectURL(d.blob); img.alt=d.type; thumb.appendChild(img); }
-      else { var pdf=document.createElement("div"); pdf.className="pdf"; pdf.textContent="📄"; thumb.appendChild(pdf); }
-      thumb.onclick=function(){ var url=URL.createObjectURL(d.blob); window.open(url,"_blank"); setTimeout(function(){URL.revokeObjectURL(url);},120000); };
+      var ph=document.createElement("div"); ph.className="pdf"; ph.textContent=isImg?(d.enc&&!SECUREKEY?"🔒":"🖼️"):"📄"; thumb.appendChild(ph);
+      if(isImg){ dispBlob(d).then(function(b){ thumb.innerHTML=""; var img=document.createElement("img"); img.src=URL.createObjectURL(b); img.alt=d.type; thumb.appendChild(img); }).catch(function(){}); }
+      function openDoc(){ dispBlob(d).then(function(b){ var url=URL.createObjectURL(b); window.open(url,"_blank"); setTimeout(function(){URL.revokeObjectURL(url);},120000); }).catch(function(){ ensureUnlocked().then(function(ok){ if(ok) render(); }); }); }
+      thumb.onclick=openDoc;
       var meta=document.createElement("div"); meta.className="dmeta";
       var tsel=document.createElement("select"); tsel.className="dtype-sel"; tsel.title="Change document type";
       var opts=META.types.slice(); if(opts.indexOf(d.type)===-1) opts.unshift(d.type);
@@ -190,9 +192,9 @@ function render(){
       var bd=expBadge(d.exp); var bs=document.createElement("span"); bs.className="badge "+bd.cls; bs.textContent=bd.txt;
       lab.appendChild(di); expWrap.appendChild(lab); expWrap.appendChild(bs);
       var act=document.createElement("div"); act.className="dact";
-      var vb=document.createElement("button"); vb.className="dview"; vb.textContent="View"; vb.onclick=thumb.onclick;
+      var vb=document.createElement("button"); vb.className="dview"; vb.textContent="View"; vb.onclick=openDoc;
       var db2=document.createElement("button"); db2.className="ddl"; db2.textContent="Download";
-      db2.onclick=function(){ var url=URL.createObjectURL(d.blob); var a=document.createElement("a"); a.href=url; a.download=d.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url);},2000); };
+      db2.onclick=function(){ dispBlob(d).then(function(b){ var url=URL.createObjectURL(b); var a=document.createElement("a"); a.href=url; a.download=d.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url);},2000); }).catch(function(){ ensureUnlocked().then(function(ok){ if(ok) render(); }); }); };
       var xb=document.createElement("button"); xb.className="ddel"; xb.textContent="✕"; xb.title="Delete";
       xb.onclick=function(){ if(confirm("Delete "+d.type+" ("+d.name+")?")){ docDel(d.id).then(render); } };
       act.appendChild(vb); act.appendChild(db2); act.appendChild(xb);
@@ -253,7 +255,26 @@ function b64ToBytes(b){ b=(b||"").trim(); var bin=atob(b); var u=new Uint8Array(
 function deriveKey(pw){
   var salt=b64ToBytes(MANIFEST.kdf.salt);
   return crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"])
-    .then(function(km){ return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:MANIFEST.kdf.iters,hash:MANIFEST.kdf.hash||"SHA-256"}, km, {name:"AES-GCM",length:256}, false, ["decrypt"]); });
+    .then(function(km){ return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:MANIFEST.kdf.iters,hash:MANIFEST.kdf.hash||"SHA-256"}, km, {name:"AES-GCM",length:256}, false, ["encrypt","decrypt"]); });
+}
+function bytesToB64(u){ var s=""; for(var i=0;i<u.length;i++) s+=String.fromCharCode(u[i]); return btoa(s); }
+function bufToB64(buf){ var u=new Uint8Array(buf), s="", CH=0x8000; for(var i=0;i<u.length;i+=CH){ s+=String.fromCharCode.apply(null,u.subarray(i,i+CH)); } return btoa(s); }
+/* returns a viewable Blob: decrypts on the fly if the doc is encrypted */
+function dispBlob(d){
+  if(!d.enc) return Promise.resolve(d.blob);
+  if(!SECUREKEY) return Promise.reject(new Error("locked"));
+  return d.blob.arrayBuffer().then(function(buf){ return crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(d.iv)}, SECUREKEY, buf); }).then(function(pt){ return new Blob([pt],{type:d.mime}); });
+}
+function ensureUnlocked(){
+  if(SECUREKEY) return Promise.resolve(true);
+  if(!MANIFEST){ return Promise.resolve(false); }
+  var pw=sessionStorage.getItem("vault_pw") || prompt("Enter your documents password:");
+  if(!pw) return Promise.resolve(false);
+  return deriveKey(pw).then(function(key){
+    SECUREKEY=key;
+    if(MANIFEST.items && MANIFEST.items.length){ return decItem(MANIFEST.items[0]).then(function(){ try{sessionStorage.setItem("vault_pw",pw);}catch(e){} renderSecure(); return true; }); }
+    try{sessionStorage.setItem("vault_pw",pw);}catch(e){} return true;
+  }).catch(function(){ SECUREKEY=null; try{sessionStorage.removeItem("vault_pw");}catch(e){} alert("Wrong documents password."); return false; });
 }
 function decItem(item){
   return fetch("vault/"+item.id+".enc").then(function(r){ if(!r.ok) throw new Error("missing"); return r.text(); })
@@ -288,36 +309,54 @@ function renderSecure(){
     }).catch(function(){});
   });
 }
-function unlockSecure(){
-  var pw=sessionStorage.getItem("vault_pw") || prompt("Enter your documents password:");
-  if(!pw) return;
-  deriveKey(pw).then(function(key){ SECUREKEY=key; return decItem(secureMine()[0]); })
-    .then(function(){ try{sessionStorage.setItem("vault_pw",pw);}catch(e){} renderSecure(); })
-    .catch(function(){ SECUREKEY=null; try{sessionStorage.removeItem("vault_pw");}catch(e){} alert("Wrong documents password (or a file is missing)."); });
-}
+function unlockSecure(){ ensureUnlocked().then(function(ok){ if(ok){ renderSecure(); render(); } }); }
 fetch("vault/manifest.json").then(function(r){ return r.ok?r.json():null; }).then(function(m){ MANIFEST=m; if(m && sessionStorage.getItem("vault_pw")) unlockSecure(); else renderSecure(); }).catch(function(){});
 
 var fi=document.getElementById("fileInput");
 fi.onchange=function(){
   var files=fi.files?Array.prototype.slice.call(fi.files):[]; if(!files.length) return;
-  var type=sel.value, saved=0, failed=0, skipped=0, chain=Promise.resolve();
-  files.forEach(function(f){
-    if(f.size>25*1024*1024){ skipped++; return; }
-    chain=chain.then(function(){
-      return docAdd({person:PERSON,type:type,name:f.name,mime:f.type,blob:f})
-        .then(function(){ saved++; }, function(){ failed++; });
+  ensureUnlocked().then(function(ok){
+    if(!ok){ fi.value=""; alert("Enter your documents password first — your new photos are saved encrypted with it."); return; }
+    var type=sel.value, saved=0, failed=0, skipped=0, chain=Promise.resolve();
+    files.forEach(function(f){
+      if(f.size>25*1024*1024){ skipped++; return; }
+      chain=chain.then(function(){
+        return f.arrayBuffer().then(function(buf){
+          var iv=crypto.getRandomValues(new Uint8Array(12));
+          return crypto.subtle.encrypt({name:"AES-GCM",iv:iv}, SECUREKEY, buf).then(function(ct){
+            return docAdd({person:PERSON,type:type,name:f.name,mime:f.type,enc:1,iv:bytesToB64(iv),blob:new Blob([ct])});
+          });
+        }).then(function(){ saved++; }, function(){ failed++; });
+      });
+    });
+    chain.then(function(){
+      fi.value=""; render();
+      if(skipped||failed){
+        var msg="Saved "+saved+" encrypted file(s).";
+        if(skipped) msg+="\n"+skipped+" skipped (over 25 MB — use a smaller photo/scan).";
+        if(failed) msg+="\n"+failed+" could NOT be saved — storage may be full or blocked (private window or 'clear data on close').";
+        alert(msg);
+      }
     });
   });
-  chain.then(function(){
-    fi.value=""; render();
-    if(skipped||failed){
-      var msg="Saved "+saved+" file(s).";
-      if(skipped) msg+="\n"+skipped+" skipped (over 25 MB — use a smaller photo/scan).";
-      if(failed) msg+="\n"+failed+" could NOT be saved — your browser storage may be full or blocked (private/incognito mode, or 'clear data on close'). Try a normal window.";
-      alert(msg);
-    }
-  });
 };
+
+/* Export self-uploaded encrypted docs to hand over for baking into the app */
+function exportSecureAdditions(){
+  docAll().then(function(all){
+    var enc=all.filter(function(d){ return d.enc && d.person===PERSON ? true : d.enc; });
+    if(!enc.length){ alert("No self-uploaded documents yet. Use ＋ Upload document (after unlocking) to add some, then export here."); return; }
+    Promise.all(enc.map(function(d){ return d.blob.arrayBuffer().then(function(buf){ return {person:d.person,type:d.type,name:d.name,mime:d.mime,iv:d.iv,exp:d.exp||null,data:bufToB64(buf)}; }); }))
+    .then(function(items){
+      var bundle={app:"eu-vault-add",v:1,salt:MANIFEST.kdf.salt,iters:MANIFEST.kdf.iters,items:items};
+      var blob=new Blob([JSON.stringify(bundle)],{type:"application/json"});
+      var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="eu-vault-additions.json"; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){URL.revokeObjectURL(a.href);},3000);
+      alert("Exported "+items.length+" encrypted document(s) to eu-vault-additions.json.\nSend that file to Claude and it will bake them into the app for every device (no password needed — they're already encrypted).");
+    });
+  });
+}
+var addBtn=document.getElementById("expAdds"); if(addBtn) addBtn.onclick=exportSecureAdditions;
 render();
 </script>
 </body>
