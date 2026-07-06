@@ -35,7 +35,15 @@
   .dmeta{padding:10px 12px 4px}
   .dtype{font-weight:700;font-size:.88rem;color:var(--motorway)}
   .dtype-sel{width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-weight:700;font-size:.85rem;color:var(--motorway);background:#fff;cursor:pointer}
-  .dname{font-size:.72rem;color:var(--muted);word-break:break-word;margin-top:2px}
+  .dname{font-size:.72rem;color:var(--muted);word-break:break-word;margin-top:4px;cursor:text}
+  .dname:hover{text-decoration:underline}
+  .dexp{padding:6px 12px 2px;display:flex;flex-direction:column;gap:4px}
+  .dexp label{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+  .dexp input{border:1px solid var(--line);border-radius:6px;padding:5px 7px;font:inherit;font-size:.8rem;color:var(--ink)}
+  .badge{font-weight:800;font-size:.72rem}
+  .exp-bad{color:#B3423A} .exp-warn{color:#B07A12} .exp-ok{color:var(--sign-green)}
+  .fold-alert{background:#FFF6E1;border:1px solid #F0D488;border-left:5px solid var(--lane-yellow);border-radius:10px;padding:11px 14px;font-size:.9rem;color:#5b4a13;margin-bottom:16px}
+  .fold-alert.bad{background:#FCE7E5;border-color:#E7B0AA;border-left-color:#B3423A;color:#7a2b25}
   .dact{display:flex;gap:6px;padding:8px 10px 12px;margin-top:auto}
   .dact button{flex:1;border:none;border-radius:8px;padding:8px;font-size:.78rem;font-weight:700;cursor:pointer}
   .dview{background:var(--motorway-2);color:#fff}
@@ -125,11 +133,27 @@ function docPut(rec){ return vaultDB().then(function(db){ return new Promise(fun
 function docAll(){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readonly"); var rq=tx.objectStore("docs").getAll(); rq.onsuccess=function(){res(rq.result||[]);}; rq.onerror=function(){rej(rq.error);}; }); }); }
 function docDel(id){ return vaultDB().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("docs","readwrite"); tx.objectStore("docs").delete(id); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
 
+function expBadge(exp){
+  if(!exp) return {txt:"", cls:""};
+  var d=new Date(exp+"T00:00:00"), now=new Date(); now.setHours(0,0,0,0);
+  var days=Math.round((d-now)/86400000);
+  if(days<0) return {txt:"⛔ Expired "+(-days)+" d ago", cls:"exp-bad", sev:2};
+  if(days<=60) return {txt:"⚠️ expires in "+days+" d", cls:"exp-warn", sev:1};
+  return {txt:"✓ valid ("+days+" d)", cls:"exp-ok", sev:0};
+}
 function render(){
   docAll().then(function(all){
     var mine=all.filter(function(d){return d.person===PERSON;});
     var g=document.getElementById("gallery"); g.innerHTML="";
     if(!mine.length){ var e=document.createElement("div"); e.className="empty"; e.textContent="No documents here yet — use ＋ Upload document above to add photos or PDFs."; g.appendChild(e); return; }
+    var expired=0, soon=0;
+    mine.forEach(function(d){ var b=expBadge(d.exp); if(b.sev===2)expired++; else if(b.sev===1)soon++; });
+    if(expired||soon){
+      var al=document.createElement("div"); al.className="fold-alert"+(expired?" bad":"");
+      al.innerHTML=(expired?("⛔ <b>"+expired+"</b> document"+(expired!==1?"s":"")+" expired"):"")
+        +((expired&&soon)?" · ":"")+(soon?("⚠️ <b>"+soon+"</b> expiring within 60 days"):"");
+      g.appendChild(al);
+    }
     var grid=document.createElement("div"); grid.className="dgrid";
     mine.forEach(function(d){
       var tile=document.createElement("div"); tile.className="dtile";
@@ -143,8 +167,15 @@ function render(){
       var opts=META.types.slice(); if(opts.indexOf(d.type)===-1) opts.unshift(d.type);
       opts.forEach(function(t){ var o=document.createElement("option"); o.textContent=t; if(t===d.type) o.selected=true; tsel.appendChild(o); });
       tsel.onchange=function(){ var rec={}; for(var k in d) rec[k]=d[k]; rec.type=tsel.value; docPut(rec).then(render); };
-      var nm=document.createElement("div"); nm.className="dname"; nm.textContent=d.name||"";
+      var nm=document.createElement("div"); nm.className="dname"; nm.textContent=d.name||""; nm.title="Click to rename this file label";
+      nm.onclick=function(){ var nv=prompt("Rename this document label:", d.name||""); if(nv!==null && nv.trim()!==""){ var rec={}; for(var k in d) rec[k]=d[k]; rec.name=nv.trim(); docPut(rec).then(render); } };
       meta.appendChild(tsel); meta.appendChild(nm);
+      var expWrap=document.createElement("div"); expWrap.className="dexp";
+      var lab=document.createElement("label"); lab.textContent="Expiry date";
+      var di=document.createElement("input"); di.type="date"; if(d.exp) di.value=d.exp;
+      di.onchange=function(){ var rec={}; for(var k in d) rec[k]=d[k]; rec.exp=di.value||null; docPut(rec).then(render); };
+      var bd=expBadge(d.exp); var bs=document.createElement("span"); bs.className="badge "+bd.cls; bs.textContent=bd.txt;
+      lab.appendChild(di); expWrap.appendChild(lab); expWrap.appendChild(bs);
       var act=document.createElement("div"); act.className="dact";
       var vb=document.createElement("button"); vb.className="dview"; vb.textContent="View"; vb.onclick=thumb.onclick;
       var db2=document.createElement("button"); db2.className="ddl"; db2.textContent="Download";
@@ -152,7 +183,7 @@ function render(){
       var xb=document.createElement("button"); xb.className="ddel"; xb.textContent="✕"; xb.title="Delete";
       xb.onclick=function(){ if(confirm("Delete "+d.type+" ("+d.name+")?")){ docDel(d.id).then(render); } };
       act.appendChild(vb); act.appendChild(db2); act.appendChild(xb);
-      tile.appendChild(thumb); tile.appendChild(meta); tile.appendChild(act);
+      tile.appendChild(thumb); tile.appendChild(meta); tile.appendChild(expWrap); tile.appendChild(act);
       grid.appendChild(tile);
     });
     g.appendChild(grid);
