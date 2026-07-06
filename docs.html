@@ -97,7 +97,8 @@
     <div class="upbar">
       <select id="docType"></select>
       <label class="up-btn">＋ Upload document<input type="file" id="fileInput" accept="image/*,application/pdf" multiple hidden></label>
-      <div class="hint">🔒 Files stay only in this browser on this device — nothing is uploaded to the internet. You can pick several at once.</div>
+      <div class="hint">🔒 Files stay only in this browser on this device — nothing is uploaded to the internet or GitHub. You can pick several at once.</div>
+      <div class="hint" id="storeInfo" style="color:var(--motorway-2);font-weight:600"></div>
     </div>
     <div id="gallery"></div>
   </main>
@@ -144,6 +145,7 @@ function expBadge(exp){
 function render(){
   docAll().then(function(all){
     var mine=all.filter(function(d){return d.person===PERSON;});
+    updateStoreInfo(mine.length);
     var g=document.getElementById("gallery"); g.innerHTML="";
     if(!mine.length){ var e=document.createElement("div"); e.className="empty"; e.textContent="No documents here yet — use ＋ Upload document above to add photos or PDFs."; g.appendChild(e); return; }
     var expired=0, soon=0;
@@ -189,15 +191,35 @@ function render(){
     g.appendChild(grid);
   });
 }
+/* Ask the browser to keep this storage (prevents auto-eviction) */
+if(navigator.storage && navigator.storage.persist){ try{ navigator.storage.persist(); }catch(e){} }
+
+function updateStoreInfo(count){
+  var el=document.getElementById("storeInfo"); if(!el) return;
+  var host=location.host || "this page";
+  el.textContent="📁 "+count+" file(s) saved in this browser at "+host+". Upload and view on the SAME address, or they won't match.";
+}
+
 var fi=document.getElementById("fileInput");
 fi.onchange=function(){
   var files=fi.files?Array.prototype.slice.call(fi.files):[]; if(!files.length) return;
-  var type=sel.value, skipped=0, chain=Promise.resolve();
+  var type=sel.value, saved=0, failed=0, skipped=0, chain=Promise.resolve();
   files.forEach(function(f){
     if(f.size>25*1024*1024){ skipped++; return; }
-    chain=chain.then(function(){ return docAdd({person:PERSON,type:type,name:f.name,mime:f.type,blob:f}); }).catch(function(){});
+    chain=chain.then(function(){
+      return docAdd({person:PERSON,type:type,name:f.name,mime:f.type,blob:f})
+        .then(function(){ saved++; }, function(){ failed++; });
+    });
   });
-  chain.then(function(){ fi.value=""; render(); if(skipped) alert(skipped+" file(s) were over 25 MB and were skipped — please use smaller scans."); });
+  chain.then(function(){
+    fi.value=""; render();
+    if(skipped||failed){
+      var msg="Saved "+saved+" file(s).";
+      if(skipped) msg+="\n"+skipped+" skipped (over 25 MB — use a smaller photo/scan).";
+      if(failed) msg+="\n"+failed+" could NOT be saved — your browser storage may be full or blocked (private/incognito mode, or 'clear data on close'). Try a normal window.";
+      alert(msg);
+    }
+  });
 };
 render();
 </script>
