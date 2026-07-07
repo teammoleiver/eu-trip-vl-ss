@@ -149,6 +149,8 @@
   .bk-btn{display:inline-flex;align-items:center;gap:6px;background:var(--motorway-2);color:#fff;border:none;border-radius:10px;padding:12px 20px;font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:.95rem;cursor:pointer}
   .bk-btn:hover{opacity:.9}
   .bk-status{font-size:.85rem;color:var(--sign-green);font-weight:600;flex-basis:100%}
+  .border-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(160deg,var(--sign-green),#155C34);color:#fff;text-decoration:none;border-radius:12px;padding:14px 24px;font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.05rem;box-shadow:0 3px 12px rgba(30,122,70,.28);transition:transform .15s ease,box-shadow .15s ease}
+  .border-cta:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(30,122,70,.34)}
 </style>
 </head>
 <body>
@@ -277,6 +279,12 @@
         <label class="bk-btn">⬆ Restore from backup<input type="file" id="impAll" accept="application/json,.json" hidden></label>
         <span class="bk-status" id="bkStatus"></span>
       </div>
+    </section>
+
+    <section id="borderchats" style="margin-top:40px">
+      <h2 class="pick">Border chats — ask real travellers 🛂</h2>
+      <p class="lede">A private, searchable archive of <b>216,000+ real Telegram messages</b> from the Belarus ⇄ EU border groups (Sep 2025 – Jul 2026). Ask a plain question — <i>“Can I take olive oil?”</i>, <i>“cigarettes limit”</i>, <i>“how long is the queue in Brest?”</i> — and see what people actually said, newest first, with a translate link on every message. Encrypted with your documents password.</p>
+      <a class="border-cta" href="border.html">🛂 Open border chat search →</a>
     </section>
   </main>
 </div>
