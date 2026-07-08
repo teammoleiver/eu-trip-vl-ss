@@ -466,6 +466,37 @@ function verifyKey(){
 function clearAIKey(){ try{ localStorage.removeItem("border_ai_key"); }catch(e){} AI_KEY=null; aiSetStatus(); alert("AI key removed from this device."); }
 function aiEsc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function aiMarkdown(s){ return aiEsc(s).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/^#{1,4}\s*(.*)$/gm,"<b>$1</b>").replace(/^\s*[-*]\s+/gm,"• "); }
+function scanTerms(terms, cross, whenD, limit){
+  var hits=[];
+  if(!terms.length) return hits;
+  for(var i=0;i<CORP.length;i++){
+    var m=CORP[i];
+    if(cross && cross!=="all" && CHATS[m.c].cross!==cross) continue;
+    var da=daysAgo(m.d);
+    if(whenD && da>whenD) continue;
+    var txt=m._, score=0, matched=0;
+    for(var t=0;t<terms.length;t++){ if(txt.indexOf(terms[t])!==-1){ matched++; score+=10; } }
+    if(!matched) continue;
+    score+=recencyBoost(da)+matched*3;
+    hits.push({m:m,score:score,matched:matched,da:da});
+  }
+  hits.sort(function(a,b){ return b.score-a.score || (a.m.d<b.m.d?1:-1); });
+  return limit?hits.slice(0,limit):hits;
+}
+/* Phase 1: let the model expand the question into RU+EN keyword stems so retrieval covers the whole archive */
+function aiExpandKeywords(q){
+  var sys="Expand a traveller's question into search keywords for a Russian-language Belarus–EU border-crossing chat archive. Reply with ONLY a JSON array (no prose) of 8-18 short lowercase keyword STEMS/roots that would literally appear in chat messages on the topic. Mostly RUSSIAN stems, plus a few English. Example for a weight question: [\"вес\",\"кг\",\"перевес\",\"лимит\",\"норма ввоз\",\"беспошлин\",\"300 евро\",\"weight\",\"kg\"].";
+  return fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+AI_KEY},
+    body:JSON.stringify({model:AI_MODEL,temperature:0,messages:[{role:"system",content:sys},{role:"user",content:q}]})
+  }).then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error("HTTP "+r.status+": "+t.slice(0,300)); }); return r.json(); })
+    .then(function(j){
+      var txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||"";
+      var a=txt.indexOf("["), b=txt.lastIndexOf("]"); var arr=[];
+      try{ arr=JSON.parse(txt.slice(a,b+1)); }catch(e){}
+      return (arr||[]).filter(function(x){return typeof x==="string";}).map(function(x){return x.toLowerCase().trim();}).filter(function(x){return x.length>=2;});
+    });
+}
 function askAI(){
   if(AI_BUSY) return;
   var q=document.getElementById("q").value.trim();
@@ -473,17 +504,24 @@ function askAI(){
   if(!AI_KEY){ document.getElementById("aiPanel").classList.add("open"); var ki=document.getElementById("aiKey"); if(ki) ki.focus(); alert("Add your OpenAI API key first (in 🤖 AI assistant settings)."); return; }
   var cross=document.getElementById("fCross").value;
   var whenD=parseInt(document.getElementById("fWhen").value,10);
-  var r=collectHits(q,cross,whenD);
-  if(r.hits.length<8){ var r2=collectHits(q,"all",whenD); if(r2.hits.length>r.hits.length) r=r2; }
-  var top=r.hits.slice(0,70);
   var ans=document.getElementById("aiAnswer");
-  if(!top.length){ ans.innerHTML='<div class="ai-answer"><h3>🤖 AI answer</h3><div class="ai-body">I couldn\'t find messages about that in the archive, so I won\'t guess. Try different words or widen the When / Crossing filters.</div></div>'; return; }
-  var ctx=top.map(function(h,i){ var m=h.m; var txt=(m.e&&m.e!==m.t)?m.e:m.t; return "["+(i+1)+"] "+m.d.slice(0,10)+" ("+CHATS[m.c].cross+"): "+txt.replace(/\s+/g," ").slice(0,320); }).join("\n");
-  var sys="You are a practical border-crossing assistant for a family (2 adults + a baby) driving a Spanish-registered Toyota from Barcelona to Minsk in July–August 2026, most likely crossing Belarus⇄EU via POLAND. Answer ONLY from the real Telegram messages provided (traveller experiences from the Belarus–EU border groups, Sep 2025–Jul 2026).\nRules:\n- Base every claim on the messages; do NOT invent facts or use outside knowledge.\n- Prefer RECENT reports; note when reports conflict or look outdated.\n- Lead with a clear direct answer, then details and any numbers (fees, wait times, limits).\n- Cite the dates you rely on, e.g. (2026-06-14).\n- If the messages don't answer it, say so honestly.\n- These are traveller experiences, not official law — tell the user to verify anything critical.\n- Reply in the SAME language as the question (English or Russian). Be concise but complete.";
-  var user="Question: "+q+"\n\nRelevant real messages (newest-weighted):\n"+ctx;
-  ans.innerHTML='<div class="ai-answer"><h3>🤖 AI answer <span class="ai-spin"></span></h3><div class="ai-body" id="aiBody"></div><div class="ai-meta" id="aiMeta">Reading '+top.length+' relevant messages…</div></div>';
-  var body=document.getElementById("aiBody");
-  AI_BUSY=true; var acc="";
+  ans.innerHTML='<div class="ai-answer"><h3>🤖 AI answer <span class="ai-spin"></span></h3><div class="ai-body" id="aiBody"></div><div class="ai-meta" id="aiMeta">Searching all '+(CORP?CORP.length.toLocaleString():"")+' messages for the most relevant reports…</div></div>';
+  AI_BUSY=true;
+  aiExpandKeywords(q).catch(function(){ return []; }).then(function(kw){
+    var seen={}, terms=[];
+    buildTerms(q).concat(kw).forEach(function(t){ t=(t||"").toLowerCase().trim(); if(t.length>=2 && !seen[t]){ seen[t]=1; terms.push(t); } });
+    var top=scanTerms(terms, cross, whenD, 140);
+    if(top.length<25){ var all=scanTerms(terms,"all",whenD,140); if(all.length>top.length){ top=all; cross="all"; } }
+    if(!top.length){ AI_BUSY=false; ans.innerHTML='<div class="ai-answer"><h3>🤖 AI answer</h3><div class="ai-body">I searched the whole archive but found no messages about that, so I won\'t guess. Try rephrasing, or widen the When / Crossing filters.</div></div>'; return; }
+    var mt=document.getElementById("aiMeta"); if(mt) mt.textContent="Reading the "+top.length+" most relevant of "+CORP.length.toLocaleString()+" messages…";
+    streamAnswer(top,q);
+  });
+}
+function streamAnswer(top,q){
+  var body=document.getElementById("aiBody"); var acc="";
+  var ctx=top.map(function(h,i){ var m=h.m; var txt=(m.e&&m.e!==m.t)?m.e:m.t; return "["+(i+1)+"] "+m.d.slice(0,10)+" ("+CHATS[m.c].cross+"): "+txt.replace(/\s+/g," ").slice(0,300); }).join("\n");
+  var sys="You are a practical border-crossing assistant for a family (2 adults + a baby) driving a Spanish-registered Toyota from Barcelona to Minsk in July–August 2026, most likely crossing Belarus⇄EU via POLAND. Answer ONLY from the real Telegram messages provided (traveller experiences from the Belarus–EU border groups, Sep 2025–Jul 2026), which were retrieved as the most relevant out of the whole 216,000-message archive.\nRules:\n- Base every claim on the messages; do NOT invent facts or use outside knowledge.\n- Prefer RECENT reports; note when reports conflict or look outdated.\n- Lead with a clear direct answer, then details and any numbers (fees, wait times, weight/goods limits).\n- Cite the dates you rely on, e.g. (2026-06-14).\n- If the messages genuinely don't address it, say so honestly and suggest what to search instead.\n- These are traveller experiences, not official law — tell the user to verify anything critical.\n- Reply in the SAME language as the question (English or Russian). Be concise but complete.";
+  var user="Question: "+q+"\n\nRelevant real messages (searched across the whole archive, newest-weighted):\n"+ctx;
   fetch("https://api.openai.com/v1/chat/completions",{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+AI_KEY},
@@ -524,7 +562,7 @@ function finishAI(top,acc){
   var meta=document.getElementById("aiMeta");
   if(meta){
     var src=top.slice(0,12).map(function(h){ var m=h.m; var txt=(m.e&&m.e!==m.t)?m.e:m.t; return '<div class="msg" style="margin-top:8px"><div class="m-top"><span class="m-date">'+m.d.slice(0,10)+'</span><span class="m-flag">'+CHATS[m.c].flag+' '+esc(CHATS[m.c].short)+'</span></div><div class="m-en">'+esc(txt.slice(0,400))+'</div></div>'; }).join("");
-    meta.innerHTML='Written by '+aiEsc(AI_MODEL)+' from '+top.length+' real messages · machine-assisted, verify anything critical. <details class="ai-src" style="margin-top:8px"><summary>Show top sources used</summary>'+src+'</details>';
+    meta.innerHTML='Written by '+aiEsc(AI_MODEL)+' from the '+top.length+' most relevant of '+(CORP?CORP.length.toLocaleString():"216,854")+' messages · machine-assisted, verify anything critical. <details class="ai-src" style="margin-top:8px"><summary>Show top sources used</summary>'+src+'</details>';
   }
   search(); // show the full quote list below the AI answer
 }
