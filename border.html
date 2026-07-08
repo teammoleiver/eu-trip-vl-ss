@@ -62,6 +62,27 @@
   .m-tr a:hover{background:#EEF1F7}
   .more{text-align:center;margin-top:6px}
   .empty{text-align:center;color:var(--muted);padding:36px 10px;background:#fff;border:1px dashed var(--line);border-radius:12px}
+  .btn-ai{background:linear-gradient(160deg,#6D28D9,#4C1D95);color:#fff}
+  .ai-set-toggle{background:none;border:none;color:var(--motorway-2);font-weight:700;font-size:.82rem;cursor:pointer;padding:0;text-decoration:underline}
+  .ai-panel{margin-top:12px;background:#F3EEFB;border:1px solid #D9C9F5;border-radius:12px;padding:14px 16px;display:none}
+  .ai-panel.open{display:block}
+  .ai-panel h4{font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:1rem;color:#4C1D95;margin-bottom:6px}
+  .ai-panel .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+  .ai-panel input{border:1px solid #C9B6EC;border-radius:8px;padding:9px 11px;font:inherit;font-size:15px;flex:1 1 260px;min-width:0}
+  .ai-panel .mini{flex:0 1 150px}
+  .ai-panel button{border:none;border-radius:8px;padding:9px 15px;font-weight:700;cursor:pointer}
+  .ai-save{background:#4C1D95;color:#fff} .ai-clear{background:#EADFF9;color:#4C1D95}
+  .ai-note{font-size:.78rem;color:#5b4a7a;margin-top:8px}
+  .ai-status{font-size:.8rem;font-weight:700;margin-top:6px}
+  .ai-status.on{color:var(--sign-green)} .ai-status.off{color:#8a6d1a}
+  .ai-answer{background:linear-gradient(160deg,#F6F1FE,#EDE4FB);border:1px solid #D9C9F5;border-left:5px solid #6D28D9;border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .ai-answer h3{font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:1.1rem;color:#4C1D95;display:flex;align-items:center;gap:8px}
+  .ai-answer .ai-body{margin-top:8px;white-space:pre-wrap;word-break:break-word;font-size:1rem;line-height:1.65}
+  .ai-answer .ai-body b,.ai-answer .ai-body strong{color:#3b1876}
+  .ai-answer .ai-meta{font-size:.76rem;color:#6b5a8a;margin-top:10px;border-top:1px dashed #D9C9F5;padding-top:8px}
+  .ai-spin{display:inline-block;width:14px;height:14px;border:2px solid #C9B6EC;border-top-color:#6D28D9;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .ai-src summary{cursor:pointer;font-weight:700;color:#4C1D95;font-size:.82rem}
   .prog{height:8px;background:#E4E8F1;border-radius:999px;overflow:hidden;margin-top:14px}
   .prog>i{display:block;height:100%;width:0;background:var(--sign-green);transition:width .2s ease}
   .foothint{font-size:.8rem;color:var(--muted);margin-top:18px}
@@ -129,8 +150,21 @@
         <div class="askrow">
           <input type="text" id="q" placeholder="Ask in English or Russian… e.g. Can I take olive oil? / сколько стоит очередь?" autocomplete="off">
           <button class="btn btn-g" id="goBtn">Search</button>
+          <button class="btn btn-ai" id="aiBtn" title="Let AI read the relevant messages and write a full answer">🤖 Ask AI</button>
         </div>
         <div class="chips" id="chips"></div>
+        <div style="margin-top:10px"><button class="ai-set-toggle" id="aiSetToggle" type="button">🤖 AI assistant settings</button> <span class="ai-status off" id="aiStatus">— no AI key set</span></div>
+        <div class="ai-panel" id="aiPanel">
+          <h4>🤖 AI assistant (OpenAI)</h4>
+          <p class="ai-note">Add your own OpenAI API key. It's <b>encrypted with your documents password and saved only on this device</b> (never uploaded to GitHub). When you <b>🤖 Ask AI</b>, the app finds the most relevant real messages and OpenAI reads them to write a full answer with dates.</p>
+          <div class="row">
+            <input type="password" id="aiKey" placeholder="sk-… your OpenAI API key" autocomplete="off">
+            <input type="text" id="aiModel" class="mini" placeholder="gpt-4o-mini" autocomplete="off">
+            <button class="ai-save" id="aiSave" type="button">Save key</button>
+            <button class="ai-clear" id="aiClear" type="button">Clear</button>
+          </div>
+          <p class="ai-note">Model: use <b>gpt-4o-mini</b> (cheap, fast) or <b>gpt-4o</b> (deeper answers). Your key stays on this device — enter it again on other devices. Get a key at platform.openai.com.</p>
+        </div>
         <div class="filters">
           <label>Crossing
             <select id="fCross"></select>
@@ -153,6 +187,7 @@
         <div class="warn">🌍 Each message is shown in <b>English</b> (auto-translated) with the <b>Russian original</b> below, and search matches <b>both languages</b>. This is a <b>search of real quotes</b> — not an AI that invents answers; machine translation can be imperfect, so check the Russian (or the 🌐 Google link) for anything critical. Treat rules as travellers' experience, not official law.</div>
       </div>
 
+      <div id="aiAnswer"></div>
       <div id="results"></div>
       <div class="foothint" id="foot"></div>
     </div>
@@ -237,18 +272,13 @@ function buildTerms(q){
 function daysAgo(iso){ var t=Date.parse(iso+"Z"); if(isNaN(t)) return 9999; return Math.floor((BUILT_MS - t)/86400000); }
 function recencyBoost(da){ if(da<=30) return 40; if(da<=90) return 26; if(da<=180) return 16; return 8; }
 
-function search(){
-  var q=document.getElementById("q").value.trim();
+function collectHits(q, cross, whenD){
   var terms=buildTerms(q);
-  var cross=document.getElementById("fCross").value;
-  var whenD=parseInt(document.getElementById("fWhen").value,10);
-  var sortMode=document.getElementById("fSort").value;
-  var res=document.getElementById("results");
-  if(!terms.length){ res.innerHTML='<div class="empty">Type a topic above — e.g. <b>olive oil</b>, <b>cigarettes</b>, <b>fuel canister</b>, <b>queue time</b>, or a Russian word.</div>'; document.getElementById("foot").textContent=""; return; }
-  var hits=[];
+  var hits=[], byCross={}, newest=null, last30=0;
+  if(!terms.length) return {terms:terms,hits:hits,byCross:byCross,newest:newest,last30:0};
   for(var i=0;i<CORP.length;i++){
     var m=CORP[i];
-    if(cross!=="all" && CHATS[m.c].cross!==cross) continue;
+    if(cross && cross!=="all" && CHATS[m.c].cross!==cross) continue;
     var da=daysAgo(m.d);
     if(whenD && da>whenD) continue;
     var txt=m._, score=0, matched=0;
@@ -256,15 +286,24 @@ function search(){
     if(!matched) continue;
     score+=recencyBoost(da);
     hits.push({m:m,score:score,matched:matched,da:da});
+    var cr=CHATS[m.c].cross; byCross[cr]=(byCross[cr]||0)+1; if(!newest||m.d>newest) newest=m.d; if(da<=30) last30++;
   }
-  // count by crossing for the summary
-  var byCross={}, newest=null, last30=0;
-  for(var h=0;h<hits.length;h++){ var cr=CHATS[hits[h].m.c].cross; byCross[cr]=(byCross[cr]||0)+1; if(!newest||hits[h].m.d>newest) newest=hits[h].m.d; if(hits[h].da<=30) last30++; }
+  hits.sort(function(a,b){ return b.score-a.score || (a.m.d<b.m.d?1:-1); });
+  return {terms:terms,hits:hits,byCross:byCross,newest:newest,last30:last30};
+}
+function search(){
+  var q=document.getElementById("q").value.trim();
+  var cross=document.getElementById("fCross").value;
+  var whenD=parseInt(document.getElementById("fWhen").value,10);
+  var sortMode=document.getElementById("fSort").value;
+  var res=document.getElementById("results");
+  var r=collectHits(q,cross,whenD);
+  if(!r.terms.length){ res.innerHTML='<div class="empty">Type a topic above — e.g. <b>olive oil</b>, <b>cigarettes</b>, <b>fuel canister</b>, <b>queue time</b>, or a Russian word.</div>'; document.getElementById("foot").textContent=""; return; }
+  var hits=r.hits;
   if(sortMode==="date") hits.sort(function(a,b){ return a.m.d<b.m.d?1:a.m.d>b.m.d?-1:0; });
-  else hits.sort(function(a,b){ return b.score-a.score || (a.m.d<b.m.d?1:-1); });
-  LAST={q:q,terms:terms,hits:hits};
+  LAST={q:q,terms:r.terms,hits:hits};
   SHOWN=0;
-  renderResults(byCross,newest,last30);
+  renderResults(r.byCross,r.newest,r.last30);
 }
 
 function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -346,6 +385,7 @@ function afterLoad(payload){
   document.getElementById("lockCard").style.display="none";
   document.getElementById("app").style.display="block";
   document.getElementById("q").focus();
+  loadAIKey();   // decrypt any saved OpenAI key with the same vault-derived key
 }
 
 function unlock(){
@@ -379,8 +419,102 @@ function unlock(){
   });
 }
 
+/* ================= AI ASSISTANT (OpenAI · key encrypted on-device) ================= */
+var AI_KEY=null, AI_MODEL="gpt-4o-mini", AI_BUSY=false;
+function aiB64(u){ var s="";for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s); }
+function aiSetStatus(){
+  var el=document.getElementById("aiStatus"); if(!el) return;
+  if(AI_KEY){ el.className="ai-status on"; el.textContent="✓ AI key set ("+AI_MODEL+")"; }
+  else { el.className="ai-status off"; el.textContent="— no AI key set (tap settings)"; }
+}
+function loadAIKey(){
+  try{ AI_MODEL=localStorage.getItem("border_ai_model")||"gpt-4o-mini"; }catch(e){}
+  var mi=document.getElementById("aiModel"); if(mi) mi.value=AI_MODEL;
+  var raw; try{ raw=localStorage.getItem("border_ai_key"); }catch(e){}
+  if(!raw||!KEYK){ aiSetStatus(); return; }
+  var obj; try{ obj=JSON.parse(raw); }catch(e){ aiSetStatus(); return; }
+  crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(obj.iv)},KEYK,b64ToBytes(obj.ct)).then(function(pt){
+    AI_KEY=new TextDecoder().decode(new Uint8Array(pt)); aiSetStatus();
+  }).catch(function(){ aiSetStatus(); });
+}
+function saveAIKey(){
+  var k=document.getElementById("aiKey").value.trim();
+  var mdl=document.getElementById("aiModel").value.trim()||"gpt-4o-mini";
+  if(!k){ alert("Paste your OpenAI API key first."); return; }
+  if(!KEYK){ alert("Unlock the database first — it provides the encryption key."); return; }
+  var iv=crypto.getRandomValues(new Uint8Array(12));
+  crypto.subtle.encrypt({name:"AES-GCM",iv:iv},KEYK,new TextEncoder().encode(k)).then(function(ct){
+    try{ localStorage.setItem("border_ai_key", JSON.stringify({iv:aiB64(iv),ct:aiB64(new Uint8Array(ct))})); localStorage.setItem("border_ai_model",mdl); }catch(e){ alert("Couldn't save (storage blocked)."); return; }
+    AI_KEY=k; AI_MODEL=mdl; document.getElementById("aiKey").value=""; aiSetStatus();
+    alert("AI key saved — encrypted with your documents password, only on this device.");
+  }).catch(function(){ alert("Couldn't encrypt the key."); });
+}
+function clearAIKey(){ try{ localStorage.removeItem("border_ai_key"); }catch(e){} AI_KEY=null; aiSetStatus(); alert("AI key removed from this device."); }
+function aiEsc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function aiMarkdown(s){ return aiEsc(s).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/^#{1,4}\s*(.*)$/gm,"<b>$1</b>").replace(/^\s*[-*]\s+/gm,"• "); }
+function askAI(){
+  if(AI_BUSY) return;
+  var q=document.getElementById("q").value.trim();
+  if(!q){ document.getElementById("q").focus(); return; }
+  if(!AI_KEY){ document.getElementById("aiPanel").classList.add("open"); var ki=document.getElementById("aiKey"); if(ki) ki.focus(); alert("Add your OpenAI API key first (in 🤖 AI assistant settings)."); return; }
+  var cross=document.getElementById("fCross").value;
+  var whenD=parseInt(document.getElementById("fWhen").value,10);
+  var r=collectHits(q,cross,whenD);
+  if(r.hits.length<8){ var r2=collectHits(q,"all",whenD); if(r2.hits.length>r.hits.length) r=r2; }
+  var top=r.hits.slice(0,70);
+  var ans=document.getElementById("aiAnswer");
+  if(!top.length){ ans.innerHTML='<div class="ai-answer"><h3>🤖 AI answer</h3><div class="ai-body">I couldn\'t find messages about that in the archive, so I won\'t guess. Try different words or widen the When / Crossing filters.</div></div>'; return; }
+  var ctx=top.map(function(h,i){ var m=h.m; var txt=(m.e&&m.e!==m.t)?m.e:m.t; return "["+(i+1)+"] "+m.d.slice(0,10)+" ("+CHATS[m.c].cross+"): "+txt.replace(/\s+/g," ").slice(0,320); }).join("\n");
+  var sys="You are a practical border-crossing assistant for a family (2 adults + a baby) driving a Spanish-registered Toyota from Barcelona to Minsk in July–August 2026, most likely crossing Belarus⇄EU via POLAND. Answer ONLY from the real Telegram messages provided (traveller experiences from the Belarus–EU border groups, Sep 2025–Jul 2026).\nRules:\n- Base every claim on the messages; do NOT invent facts or use outside knowledge.\n- Prefer RECENT reports; note when reports conflict or look outdated.\n- Lead with a clear direct answer, then details and any numbers (fees, wait times, limits).\n- Cite the dates you rely on, e.g. (2026-06-14).\n- If the messages don't answer it, say so honestly.\n- These are traveller experiences, not official law — tell the user to verify anything critical.\n- Reply in the SAME language as the question (English or Russian). Be concise but complete.";
+  var user="Question: "+q+"\n\nRelevant real messages (newest-weighted):\n"+ctx;
+  ans.innerHTML='<div class="ai-answer"><h3>🤖 AI answer <span class="ai-spin"></span></h3><div class="ai-body" id="aiBody"></div><div class="ai-meta" id="aiMeta">Reading '+top.length+' relevant messages…</div></div>';
+  var body=document.getElementById("aiBody");
+  AI_BUSY=true; var acc="";
+  fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+AI_KEY},
+    body:JSON.stringify({model:AI_MODEL,temperature:0.2,stream:true,messages:[{role:"system",content:sys},{role:"user",content:user}]})
+  }).then(function(resp){
+    if(!resp.ok){ return resp.text().then(function(t){ throw new Error("HTTP "+resp.status+": "+t.slice(0,300)); }); }
+    var reader=resp.body.getReader(), dec=new TextDecoder(), buf="";
+    function pump(){
+      return reader.read().then(function(res){
+        if(res.done){ finishAI(top,acc); return; }
+        buf+=dec.decode(res.value,{stream:true});
+        var lines=buf.split("\n"); buf=lines.pop();
+        for(var i=0;i<lines.length;i++){
+          var ln=lines[i].replace(/\r$/,""); if(ln.indexOf("data:")!==0) continue;
+          var data=ln.slice(5).trim(); if(data==="[DONE]") continue;
+          try{ var j=JSON.parse(data); var d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content; if(d){ acc+=d; body.innerHTML=aiMarkdown(acc); } }catch(e){}
+        }
+        return pump();
+      });
+    }
+    return pump();
+  }).catch(function(err){
+    AI_BUSY=false;
+    var msg=String(err&&err.message||err);
+    var friendly=msg.indexOf("401")!==-1?"Invalid API key — check it in 🤖 AI settings.":(msg.indexOf("429")!==-1?"Rate limit or no credit on your OpenAI account.":(/Failed to fetch|NetworkError|CORS/.test(msg)?"Network error reaching OpenAI (connection or key restrictions).":msg));
+    document.getElementById("aiAnswer").innerHTML='<div class="ai-answer"><h3>🤖 AI answer</h3><div class="ai-body">⚠️ '+aiEsc(friendly)+'</div></div>';
+  });
+}
+function finishAI(top,acc){
+  AI_BUSY=false;
+  var spin=document.querySelector(".ai-spin"); if(spin) spin.remove();
+  var meta=document.getElementById("aiMeta");
+  if(meta){
+    var src=top.slice(0,12).map(function(h){ var m=h.m; var txt=(m.e&&m.e!==m.t)?m.e:m.t; return '<div class="msg" style="margin-top:8px"><div class="m-top"><span class="m-date">'+m.d.slice(0,10)+'</span><span class="m-flag">'+CHATS[m.c].flag+' '+esc(CHATS[m.c].short)+'</span></div><div class="m-en">'+esc(txt.slice(0,400))+'</div></div>'; }).join("");
+    meta.innerHTML='Written by '+aiEsc(AI_MODEL)+' from '+top.length+' real messages · machine-assisted, verify anything critical. <details class="ai-src" style="margin-top:8px"><summary>Show top sources used</summary>'+src+'</details>';
+  }
+  search(); // show the full quote list below the AI answer
+}
+
 document.getElementById("unlockBtn").onclick=unlock;
 document.getElementById("goBtn") && (document.getElementById("goBtn").onclick=search);
+document.getElementById("aiBtn") && (document.getElementById("aiBtn").onclick=askAI);
+document.getElementById("aiSetToggle") && (document.getElementById("aiSetToggle").onclick=function(){ document.getElementById("aiPanel").classList.toggle("open"); });
+document.getElementById("aiSave") && (document.getElementById("aiSave").onclick=saveAIKey);
+document.getElementById("aiClear") && (document.getElementById("aiClear").onclick=clearAIKey);
 document.addEventListener("keydown",function(e){ if(e.key==="Enter" && document.activeElement && document.activeElement.id==="q"){ search(); } });
 ["fCross","fWhen","fSort"].forEach(function(id){ var el=document.getElementById(id); if(el) el.addEventListener("change",function(){ if(LAST) search(); }); });
 
