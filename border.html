@@ -52,6 +52,10 @@
   .m-fresh{background:var(--sign-green);color:#fff;border-radius:999px;padding:1px 8px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
   .m-from{font-weight:600;color:var(--motorway)}
   .m-text{white-space:pre-wrap;word-break:break-word;font-size:.98rem}
+  .m-en{white-space:pre-wrap;word-break:break-word;font-size:.98rem}
+  .m-ru{white-space:pre-wrap;word-break:break-word;font-size:.88rem;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+  .m-lbl{font-size:.62rem;font-weight:800;letter-spacing:.05em;color:#fff;background:#9aa3b5;border-radius:4px;padding:1px 5px;vertical-align:middle}
+  .m-en mark,.m-ru mark{background:#FFE9A8;color:inherit;padding:0 1px;border-radius:3px}
   .m-text mark{background:#FFE9A8;color:inherit;padding:0 1px;border-radius:3px}
   .m-tr{margin-left:auto}
   .m-tr a{font-size:.76rem;color:var(--motorway-2);text-decoration:none;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
@@ -102,7 +106,7 @@
       <div class="face">🛂</div>
       <div class="who">
         <h1>Border chats — ask real travellers</h1>
-        <div class="role">Search 216,000+ real Telegram messages from the Belarus ⇄ EU crossing groups</div>
+        <div class="role">Search 216,000+ real Telegram messages (Russian + English) from the Belarus ⇄ EU crossing groups</div>
       </div>
     </div>
   </div>
@@ -113,7 +117,7 @@
     <!-- LOCK / LOAD -->
     <div class="card lock-card" id="lockCard">
       <h2>🔒 Encrypted border database</h2>
-      <p>These are real experiences travellers shared in the border Telegram groups (Sep 2025 – Jul 2026), stored <b>encrypted inside the app</b>. Unlock with your <b>documents password</b> to search what people actually said.</p>
+      <p>These are real experiences travellers shared in the border Telegram groups (Sep 2025 – Jul 2026), each stored in <b>Russian and English</b> and <b>encrypted inside the app</b>. Unlock with your <b>documents password</b> to search what people actually said — in either language.</p>
       <button class="btn btn-y" id="unlockBtn">🔓 Unlock &amp; load</button>
       <div class="prog" id="prog" style="display:none"><i id="progBar"></i></div>
       <div class="note" id="loadNote" style="margin-top:10px"></div>
@@ -123,7 +127,7 @@
     <div id="app" style="display:none">
       <div class="card">
         <div class="askrow">
-          <input type="text" id="q" placeholder="Ask anything… e.g. Can I take olive oil? / сколько стоит очередь?" autocomplete="off">
+          <input type="text" id="q" placeholder="Ask in English or Russian… e.g. Can I take olive oil? / сколько стоит очередь?" autocomplete="off">
           <button class="btn btn-g" id="goBtn">Search</button>
         </div>
         <div class="chips" id="chips"></div>
@@ -146,7 +150,7 @@
             </select>
           </label>
         </div>
-        <div class="warn">🌍 Messages are in <b>Russian</b> (that's the source). English questions are auto-mapped to Russian words, and every result has a <b>🌐 Translate</b> link. This is a <b>search of real quotes</b> — not an AI that invents answers. Treat rules as travellers' experience, not official law; verify anything critical.</div>
+        <div class="warn">🌍 Each message is shown in <b>English</b> (auto-translated) with the <b>Russian original</b> below, and search matches <b>both languages</b>. This is a <b>search of real quotes</b> — not an AI that invents answers; machine translation can be imperfect, so check the Russian (or the 🌐 Google link) for anything critical. Treat rules as travellers' experience, not official law.</div>
       </div>
 
       <div id="results"></div>
@@ -296,11 +300,15 @@ function appendMore(){
     var el=document.createElement("div"); el.className="msg";
     var fresh=h.da<=30?'<span class="m-fresh">new</span>':"";
     var trUrl="https://translate.google.com/?sl=ru&tl=en&op=translate&text="+encodeURIComponent(m.t.slice(0,1400));
+    var hasEn=m.e && m.e!==m.t;
+    var body = hasEn
+      ? '<div class="m-en">'+highlight(m.e,terms)+'</div><div class="m-ru"><span class="m-lbl">RU</span> '+highlight(m.t,terms)+'</div>'
+      : '<div class="m-text">'+highlight(m.t,terms)+'</div>';
     el.innerHTML='<div class="m-top"><span class="m-date">'+m.d.slice(0,10)+'</span>'+fresh
       +'<span class="m-flag">'+ch.flag+' '+esc(ch.short)+'</span>'
       +(m.f?'<span class="m-from">'+esc(m.f)+'</span>':"")
-      +'<span class="m-tr"><a href="'+trUrl+'" target="_blank" rel="noopener">🌐 Translate</a></span></div>'
-      +'<div class="m-text">'+highlight(m.t,terms)+'</div>';
+      +'<span class="m-tr"><a href="'+trUrl+'" target="_blank" rel="noopener">🌐 Google</a></span></div>'
+      +body;
     frag.appendChild(el);
   }
   box.appendChild(frag);
@@ -321,8 +329,8 @@ function appendMore(){
 function afterLoad(payload){
   CORP=payload.msgs; CHATS=payload.chats;
   BUILT_MS=Date.parse((MANIFEST.built||"2026-07-07")+"T23:59:59Z");
-  // precompute lowercase search field once
-  for(var i=0;i<CORP.length;i++) CORP[i]._=CORP[i].t.toLowerCase();
+  // precompute lowercase search field once (Russian + English so both languages match)
+  for(var i=0;i<CORP.length;i++){ var mm=CORP[i]; mm._=(mm.t+" "+(mm.e||"")).toLowerCase(); }
   // crossings filter
   var crosses={}; for(var c=0;c<CHATS.length;c++) crosses[CHATS[c].cross]=1;
   var fc=document.getElementById("fCross");
