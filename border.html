@@ -438,16 +438,30 @@ function loadAIKey(){
   }).catch(function(){ aiSetStatus(); });
 }
 function saveAIKey(){
-  var k=document.getElementById("aiKey").value.trim();
+  var k=document.getElementById("aiKey").value.replace(/\s+/g,"");   // strip ALL whitespace/newlines (keys never contain any)
   var mdl=document.getElementById("aiModel").value.trim()||"gpt-4o-mini";
   if(!k){ alert("Paste your OpenAI API key first."); return; }
+  if(!/^sk-/.test(k)){ if(!confirm("That doesn't start with 'sk-' — OpenAI keys usually do. Save it anyway?")) return; }
   if(!KEYK){ alert("Unlock the database first — it provides the encryption key."); return; }
   var iv=crypto.getRandomValues(new Uint8Array(12));
   crypto.subtle.encrypt({name:"AES-GCM",iv:iv},KEYK,new TextEncoder().encode(k)).then(function(ct){
     try{ localStorage.setItem("border_ai_key", JSON.stringify({iv:aiB64(iv),ct:aiB64(new Uint8Array(ct))})); localStorage.setItem("border_ai_model",mdl); }catch(e){ alert("Couldn't save (storage blocked)."); return; }
     AI_KEY=k; AI_MODEL=mdl; document.getElementById("aiKey").value=""; aiSetStatus();
-    alert("AI key saved — encrypted with your documents password, only on this device.");
+    verifyKey();   // ping OpenAI so you immediately know the key works
   }).catch(function(){ alert("Couldn't encrypt the key."); });
+}
+function verifyKey(){
+  var el=document.getElementById("aiStatus"); if(!el||!AI_KEY) return;
+  el.className="ai-status off"; el.textContent="Checking key with OpenAI…";
+  fetch("https://api.openai.com/v1/models",{headers:{"Authorization":"Bearer "+AI_KEY}}).then(function(r){
+    if(r.ok){ el.className="ai-status on"; el.textContent="✓ AI key verified & working ("+AI_MODEL+")"; return; }
+    return r.text().then(function(t){
+      var reason; try{ reason=JSON.parse(t).error.message; }catch(e){ reason="HTTP "+r.status; }
+      el.className="ai-status off";
+      el.textContent=(r.status===401?"⚠ OpenAI rejected the key (401): ":"⚠ ")+reason;
+      alert("Saved, but OpenAI rejected the key:\n\n"+reason+"\n\nFix: copy the FULL key from platform.openai.com → API keys (it's long, sk-… or sk-proj-…), make sure it isn't deleted, and that billing is set up. Then Save again.");
+    });
+  }).catch(function(){ el.className="ai-status on"; el.textContent="✓ AI key set ("+AI_MODEL+") — couldn't reach OpenAI to verify"; });
 }
 function clearAIKey(){ try{ localStorage.removeItem("border_ai_key"); }catch(e){} AI_KEY=null; aiSetStatus(); alert("AI key removed from this device."); }
 function aiEsc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -493,8 +507,14 @@ function askAI(){
     return pump();
   }).catch(function(err){
     AI_BUSY=false;
-    var msg=String(err&&err.message||err);
-    var friendly=msg.indexOf("401")!==-1?"Invalid API key — check it in 🤖 AI settings.":(msg.indexOf("429")!==-1?"Rate limit or no credit on your OpenAI account.":(/Failed to fetch|NetworkError|CORS/.test(msg)?"Network error reaching OpenAI (connection or key restrictions).":msg));
+    var msg=String(err&&err.message||err), reason="";
+    try{ reason=JSON.parse(msg.slice(msg.indexOf("{"))).error.message; }catch(e){}
+    var friendly;
+    if(/HTTP 401/.test(msg)) friendly="OpenAI rejected the key (401)"+(reason?": "+reason:"")+". Re-copy the FULL key in 🤖 AI settings and Save again.";
+    else if(/HTTP 429/.test(msg)) friendly="Rate-limited or no credit on your OpenAI account"+(reason?": "+reason:"")+".";
+    else if(/HTTP 404/.test(msg)) friendly="Model \""+AI_MODEL+"\" isn't available on your account — set gpt-4o-mini or gpt-4o in 🤖 AI settings.";
+    else if(/Failed to fetch|NetworkError|CORS/.test(msg)) friendly="Network error reaching OpenAI. Check your connection, or whether the key has IP/origin restrictions.";
+    else friendly=reason||msg;
     document.getElementById("aiAnswer").innerHTML='<div class="ai-answer"><h3>🤖 AI answer</h3><div class="ai-body">⚠️ '+aiEsc(friendly)+'</div></div>';
   });
 }
