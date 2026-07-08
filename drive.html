@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10214B">
+<title>Drive planner &amp; live progress · Barcelona ⇄ Minsk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--motorway:#10214B;--motorway-2:#1B3C8C;--paper:#F5F6F9;--ink:#171A22;--lane-yellow:#FFC93C;--sign-green:#1E7A46;--line:#D8DCE6;--muted:#464C5A}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(160deg,var(--motorway-2),var(--motorway) 70%);color:#fff;padding:22px 0}
+  .back{color:#C9D3EE;text-decoration:none;font-weight:600;font-size:.9rem}
+  .back:hover{color:#fff}
+  .top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:12px}
+  .face{font-size:2.4rem;background:linear-gradient(160deg,#FFF7DE,#FCEFC0);border:2px solid #F0D488;border-radius:50%;width:70px;height:70px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .who h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.7rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.05}
+  .who .role{font-size:.82rem;color:#C9D3EE}
+  main{padding:24px 0 60px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 18px;margin-bottom:18px;box-shadow:0 2px 10px rgba(16,33,75,.05)}
+  .card h2{font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:1.2rem;color:var(--motorway);margin-bottom:4px}
+  .card .sub{font-size:.86rem;color:var(--muted);margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .fld label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:4px}
+  .fld input,.fld select{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px 12px;font:inherit;font-size:16px;background:#fff}
+  .fld input:focus,.fld select:focus{outline:none;border-color:var(--motorway-2)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:16px}
+  .stat{background:#EEF1F7;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .stat .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+  .stat .v{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.5rem;color:var(--motorway);line-height:1.1;margin-top:2px}
+  .stat .v small{font-size:.85rem;color:var(--muted);font-weight:600}
+  .bar{height:16px;background:#E4E8F1;border-radius:999px;overflow:hidden;margin-top:8px}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sign-green),#33A867);transition:width .4s ease}
+  .bar.day>i{background:linear-gradient(90deg,var(--lane-yellow),#E9A800)}
+  .barlabel{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:6px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:9px;padding:12px 20px;font-weight:800;font-family:'Saira Condensed',sans-serif;text-transform:uppercase;letter-spacing:.03em;font-size:1rem;cursor:pointer}
+  .btn-g{background:var(--sign-green);color:#fff} .btn-b{background:var(--motorway-2);color:#fff}
+  .btn:hover{opacity:.92}
+  .sched{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .sched table{width:100%;border-collapse:collapse;font-size:.9rem}
+  .sched th,.sched td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  .sched th{background:#F1F4FA;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .sched tr:last-child td{border-bottom:none}
+  .sched tr.today{background:#FFF6E1}
+  .note{font-size:.82rem;color:var(--muted);margin-top:10px}
+  .live-out{margin-top:14px}
+  .sug{background:linear-gradient(160deg,#EAF7EE,#DDF0E4);border:1px solid #BFE0CB;border-radius:12px;padding:14px 16px;margin-top:14px;font-size:.95rem}
+  .sug b{color:var(--sign-green)}
+  .warn{background:#FFF6E1;border:1px solid #F0D488;border-left:5px solid var(--lane-yellow);border-radius:10px;padding:11px 14px;font-size:.85rem;color:#5b4a13;margin-top:12px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+</style>
+</head>
+<body>
+<div id="authGate" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#1B3C8C,#10214B 70%);display:flex;align-items:center;justify-content:center;padding:20px;font-family:'IBM Plex Sans',system-ui,sans-serif">
+  <form id="authForm" style="background:#10214B;border:3px solid #fff;border-radius:14px;padding:26px 24px;max-width:360px;width:100%;color:#fff;box-shadow:0 12px 40px rgba(0,0,0,.45)">
+    <div style="font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:1.55rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.1">🔒 Private family plan</div>
+    <p style="color:#C9D3EE;font-size:.9rem;margin:8px 0 16px">Enter your login to open the trip.</p>
+    <input id="authUser" placeholder="Username" autocomplete="username" autocapitalize="none" style="width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:none;margin-bottom:10px;font-size:16px">
+    <input id="authPass" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:none;margin-bottom:12px;font-size:16px">
+    <button type="submit" style="width:100%;padding:12px;border:none;border-radius:8px;background:#FFC93C;color:#10214B;font-weight:800;font-family:'Saira Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;cursor:pointer">Enter</button>
+    <div id="authErr" style="color:#FFB3AD;font-size:.85rem;margin-top:10px;min-height:1.1em"></div>
+  </form>
+</div>
+<script>
+(function(){
+  var KEY="eu_auth_v1", HASH="323905b683a1fd194c24b26c2f3808b74d7515fb7910f1842aeea3660bcbb09d";
+  var gate=document.getElementById("authGate");
+  function reveal(){ if(gate&&gate.parentNode) gate.parentNode.removeChild(gate); document.documentElement.style.overflow=""; }
+  try{ if(localStorage.getItem(KEY)==="1"){ reveal(); return; } }catch(e){}
+  document.documentElement.style.overflow="hidden";
+  function sha(s){ if(!(window.crypto&&crypto.subtle)) return Promise.resolve(""); return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function(b){ return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join(""); }); }
+  document.getElementById("authForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var u=document.getElementById("authUser").value.trim().toLowerCase();
+    var p=document.getElementById("authPass").value;
+    sha(u+":"+p).then(function(h){
+      if(h===HASH){ try{localStorage.setItem(KEY,"1");}catch(e){} reveal(); }
+      else { document.getElementById("authErr").textContent = h ? "Wrong username or password." : "Open this page over https:// or localhost to log in."; }
+    });
+  });
+})();
+</script>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="index.html">← Back to Home</a>
+    <div class="top">
+      <div class="face">🧭</div>
+      <div class="who">
+        <h1>Drive planner &amp; live progress</h1>
+        <div class="role">Plan the daily drive, then track how far you've come and when you'll arrive</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <main>
+    <!-- PLAN -->
+    <div class="card">
+      <h2>1 · Plan the drive</h2>
+      <div class="sub">Set your route and daily driving. Everything recalculates instantly and saves on this device.</div>
+      <div class="grid">
+        <div class="fld"><label>Direction</label>
+          <select id="dir">
+            <option value="out">Barcelona → Minsk</option>
+            <option value="ret">Minsk → Barcelona</option>
+          </select>
+        </div>
+        <div class="fld"><label>Total route distance (km)</label><input id="dist" type="number" min="1" step="10" value="2900"></div>
+        <div class="fld"><label>Average speed (km/h)</label><input id="spd" type="number" min="1" step="5" value="100"></div>
+        <div class="fld"><label>Driving hours / day</label><input id="hrs" type="number" min="1" step="0.5" value="8"></div>
+        <div class="fld"><label>Start date</label><input id="start" type="date"></div>
+        <div class="fld"><label>Target arrival (optional)</label><input id="target" type="date"></div>
+      </div>
+      <div class="stats" id="planStats"></div>
+      <div class="barlabel"><span>Overall plan</span><span id="planPct">0%</span></div>
+      <div class="bar"><i id="planBar"></i></div>
+      <div class="sched" id="sched"></div>
+      <div class="note">Rule of thumb: ~<b id="perDay">800</b> km/day at this pace. With a baby, many families keep it to 6–8 h/day with breaks.</div>
+    </div>
+
+    <!-- LIVE -->
+    <div class="card">
+      <h2>2 · Live progress on the road</h2>
+      <div class="sub">Tap the button to use your phone's GPS and see how far you've come, how much is left, and when you'll arrive at your current pace.</div>
+      <div class="row">
+        <button class="btn btn-b" id="locBtn">📍 Update my location</button>
+        <span class="note" id="locNote" style="margin-top:0">Location is used only in your browser — nothing is sent anywhere.</span>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <div class="fld" style="flex:1 1 220px"><label>…or enter km driven so far (manual)</label><input id="manual" type="number" min="0" step="10" placeholder="e.g. 1200"></div>
+      </div>
+      <div class="live-out" id="liveOut" style="display:none">
+        <div class="stats" id="liveStats"></div>
+        <div class="barlabel"><span>Journey progress</span><span id="livePct">0%</span></div>
+        <div class="bar"><i id="liveBar"></i></div>
+        <div class="sug" id="sug"></div>
+      </div>
+      <div class="warn">Distances are estimated from straight-line position scaled to your total route km — good for a “roughly how far left / when” read, not turn-by-turn navigation. Use maps for actual routing.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ================= DRIVE PLANNER ================= */
+var BCN=[41.3874,2.1686], MINSK=[53.9006,27.5590];
+var KEY="drive_plan_v1";
+function $(id){ return document.getElementById(id); }
+function num(id){ var v=parseFloat($(id).value); return isNaN(v)?0:v; }
+function todayISO(){ var d=new Date(); return d.toISOString().slice(0,10); }
+function addDays(iso,n){ var d=new Date(iso+"T00:00:00"); d.setDate(d.getDate()+n); return d; }
+function fmt(d){ return d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}); }
+function daysBetween(aIso,bIso){ return Math.round((new Date(bIso+"T00:00:00")-new Date(aIso+"T00:00:00"))/86400000); }
+function hav(a,b){
+  var R=6371, toR=Math.PI/180;
+  var dLat=(b[0]-a[0])*toR, dLon=(b[1]-a[1])*toR;
+  var la1=a[0]*toR, la2=b[0]*toR;
+  var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
+}
+function hoursText(h){
+  if(h<=0) return "0 h";
+  var d=Math.floor(h/24), r=h-d*24;
+  var hh=Math.floor(r), mm=Math.round((r-hh)*60);
+  var s=""; if(d) s+=d+"d "; s+=hh+"h"; if(mm && !d) s+=" "+mm+"m"; return s;
+}
+
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({dir:$("dir").value,dist:$("dist").value,spd:$("spd").value,hrs:$("hrs").value,start:$("start").value,target:$("target").value,manual:$("manual").value})); }catch(e){}
+}
+function load(){
+  var o=null; try{ o=JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){}
+  if(o){ ["dir","dist","spd","hrs","start","target","manual"].forEach(function(k){ if(o[k]!=null && o[k]!=="") $(k).value=o[k]; }); }
+  if(!$("start").value) $("start").value=todayISO();
+}
+
+function stat(k,v,sub){ return '<div class="stat"><div class="k">'+k+'</div><div class="v">'+v+(sub?' <small>'+sub+'</small>':'')+'</div></div>'; }
+
+function computePlan(){
+  var dist=num("dist"), spd=num("spd"), hrs=num("hrs"), start=$("start").value||todayISO();
+  var perDay = spd*hrs;
+  $("perDay").textContent = perDay?Math.round(perDay):"—";
+  if(dist<=0||spd<=0||hrs<=0){ $("planStats").innerHTML='<div class="note">Enter distance, speed and hours to see the plan.</div>'; $("sched").innerHTML=""; return null; }
+  var totalHours = dist/spd;
+  var daysNeeded = Math.max(1, Math.ceil(dist/perDay));
+  var arrival = addDays(start, daysNeeded-1);
+  $("planStats").innerHTML =
+    stat("Driving time", hoursText(totalHours)) +
+    stat("Days needed", daysNeeded, "at "+Math.round(perDay)+" km/day") +
+    stat("Distance / day", Math.round(perDay), "km") +
+    stat("Arrival", fmt(arrival));
+  // schedule
+  var rows="", cum=0, ti=todayISO();
+  for(var d=0; d<daysNeeded; d++){
+    var dayKm = Math.min(perDay, dist-cum); cum+=dayKm;
+    var dt=addDays(start,d), dIso=dt.toISOString().slice(0,10);
+    rows+='<tr'+(dIso===ti?' class="today"':'')+'><td>Day '+(d+1)+'</td><td>'+fmt(dt)+'</td><td>'+Math.round(dayKm)+' km</td><td>'+Math.round(cum)+' / '+dist+' km</td></tr>';
+  }
+  $("sched").innerHTML='<table><thead><tr><th>#</th><th>Date</th><th>Drive</th><th>Cumulative</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  // overall plan bar = elapsed days vs needed (if trip started)
+  var elapsed = Math.max(0, Math.min(daysNeeded, daysBetween(start, todayISO())+1));
+  var pct = Math.round(elapsed/daysNeeded*100); if(daysBetween(start,todayISO())<0) pct=0;
+  $("planBar").style.width=pct+"%"; $("planPct").textContent=pct+"%";
+  return {dist:dist,spd:spd,hrs:hrs,perDay:perDay,daysNeeded:daysNeeded,arrival:arrival,start:start};
+}
+
+function showLive(drivenKm){
+  var dist=num("dist"), spd=num("spd"), hrs=num("hrs");
+  if(dist<=0) return;
+  drivenKm=Math.max(0, Math.min(dist, drivenKm));
+  var remaining=dist-drivenKm, prog=drivenKm/dist;
+  var hoursLeft = spd>0? remaining/spd : 0;
+  var daysLeft = (spd>0&&hrs>0)? Math.max(0,Math.ceil(hoursLeft/hrs)) : 0;
+  var etaFromNow = addDays(todayISO(), Math.max(0,daysLeft-1));
+  $("liveOut").style.display="block";
+  $("liveStats").innerHTML =
+    stat("Driven", Math.round(drivenKm), "km") +
+    stat("Left", Math.round(remaining), "km") +
+    stat("Drive time left", hoursText(hoursLeft)) +
+    stat("Arrive (current pace)", remaining<=0?"Arrived! 🎉":fmt(etaFromNow), remaining<=0?"":"~"+daysLeft+" day(s)");
+  var pct=Math.round(prog*100);
+  $("liveBar").style.width=pct+"%"; $("livePct").textContent=pct+"%";
+  // suggestions vs target
+  var target=$("target").value, sug="";
+  if(remaining<=0){ sug="🎉 <b>You've arrived</b> (or as good as). Enjoy!"; }
+  else if(target){
+    var daysAvail=daysBetween(todayISO(), target)+1;
+    if(daysAvail<=0){ sug="⚠️ Your target date is today or past. At "+spd+" km/h you still need <b>"+hoursText(hoursLeft)+"</b> of driving."; }
+    else {
+      var reqHrsPerDay=(remaining/spd)/daysAvail;
+      var reqSpeed=remaining/(daysAvail*hrs);
+      sug="To arrive by <b>"+fmt(new Date(target+'T00:00:00'))+"</b> ("+daysAvail+" day(s)):<br>"+
+          "• keep <b>"+spd+" km/h</b> and drive about <b>"+reqHrsPerDay.toFixed(1)+" h/day</b>, or<br>"+
+          "• keep <b>"+hrs+" h/day</b> and average about <b>"+Math.round(reqSpeed)+" km/h</b>.";
+      if(daysLeft<daysAvail) sug+="<br>✅ At your current plan you'd actually arrive <b>"+(daysAvail-daysLeft)+" day(s) early</b> ("+fmt(etaFromNow)+").";
+      else if(daysLeft>daysAvail) sug+="<br>⏱️ Your current pace is <b>"+(daysLeft-daysAvail)+" day(s) late</b> — drive a bit more each day.";
+    }
+  } else {
+    sug="At <b>"+spd+" km/h</b> for <b>"+hrs+" h/day</b>, you'll arrive around <b>"+fmt(etaFromNow)+"</b>. Set a target date above for pace suggestions.";
+  }
+  $("sug").innerHTML=sug;
+}
+
+function locate(){
+  if(!navigator.geolocation){ $("locNote").textContent="This device has no GPS/location support."; return; }
+  $("locNote").textContent="Getting your location…";
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var cur=[pos.coords.latitude,pos.coords.longitude];
+    var out=$("dir").value!=="ret";
+    var origin=out?BCN:MINSK, dest=out?MINSK:BCN;
+    var straightOD=hav(origin,dest);
+    var dist=num("dist"); var factor= straightOD>0? dist/straightOD : 1;
+    var remaining=Math.max(0, Math.min(dist, hav(cur,dest)*factor));
+    var driven=dist-remaining;
+    $("manual").value=Math.round(driven);
+    $("locNote").textContent="📍 Location updated ("+cur[0].toFixed(3)+", "+cur[1].toFixed(3)+"). ~"+Math.round(driven)+" km along the route.";
+    save(); showLive(driven);
+  }, function(err){
+    $("locNote").textContent="Couldn't get location ("+(err.code===1?"permission denied — allow location, or use the manual km field":"unavailable")+").";
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+}
+
+function recompute(){ save(); computePlan(); var m=num("manual"); if($("manual").value!=="") showLive(m); }
+
+["dir","dist","spd","hrs","start","target"].forEach(function(id){ $(id).addEventListener("input",recompute); $(id).addEventListener("change",recompute); });
+$("manual").addEventListener("input",function(){ save(); if($("manual").value==="") { $("liveOut").style.display="none"; } else showLive(num("manual")); });
+$("locBtn").addEventListener("click",locate);
+
+load(); computePlan(); if($("manual").value!=="") showLive(num("manual"));
+</script>
+</body>
+</html>
