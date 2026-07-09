@@ -583,5 +583,6 @@ fetch("border/manifest.json").then(function(r){ return r.ok?r.json():null; }).th
   if(sessionStorage.getItem("vault_pw")){ /* auto-unlock if password already in session */ unlock(); }
 }).catch(function(){ document.getElementById("loadNote").textContent="Couldn't read the database manifest."; });
 </script>
+<script src="sync.js" defer></script>
 </body>
 </html>
